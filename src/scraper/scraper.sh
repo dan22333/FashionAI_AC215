@@ -43,7 +43,7 @@ if [ $CONTAINER_EXIT_CODE -ne 0 ]; then
 
     # Attempt to restore old data from DVC
     echo "Aborting script due to container failure. Restoring old data from DVC..."
-    if ! dvc pull scraped_raw_data; then
+    if ! pipenv run dvc pull scraped_raw_data; then
         echo "Failed to restore old data. Please check DVC remote."
         exit 1
     fi
@@ -61,7 +61,7 @@ rm -rf $TEMP_METADATA
 rm -rf $TEMP_RAW_IMAGES
 
 # Proceed with the rest of the script if no issues
-git pull --rebase
+pipenv run git pull --rebase
 
 # Check if the pull created any conflicts
 if [ $? -ne 0 ]; then
@@ -70,25 +70,25 @@ if [ $? -ne 0 ]; then
 fi
 
 # Add the scraped data to DVC only after ensuring there are no conflicts
-dvc add $(realpath $SCRAPED_RAW_IMAGES)
-dvc add $(realpath $SCRAPED_METADATA)
+pipenv run dvc add $(realpath $SCRAPED_RAW_IMAGES)
+pipenv run dvc add $(realpath $SCRAPED_METADATA)
 
 # Push data to DVC remote
-dvc push --remote scraped_raw_data
+pipenv run dvc push --remote scraped_raw_data
 
 # Commit the DVC changes to Git
-git add $(realpath $SCRAPED_RAW_IMAGES).dvc
-git add $(realpath $SCRAPED_METADATA).dvc
-git add $(realpath $GIT_IGNORE) 
+pipenv run git add $(realpath $SCRAPED_RAW_IMAGES).dvc
+pipenv run git add $(realpath $SCRAPED_METADATA).dvc
+pipenv run git add $(realpath $GIT_IGNORE)
 
-git commit -m "Scraped data for $TODAY"
+pipenv run git commit -m "Scraped data for $TODAY"
 
 # Tag the run with the current date and time
-git tag run-$(date +'%Y-%m-%d-%H-%M-%S')
+pipenv run git tag run-$(date +'%Y-%m-%d-%H-%M-%S')
 
 # Push the changes to Git
-git push origin main
-git push origin --tags
+pipenv run git push origin main
+pipenv run git push origin --tags
 
 if [ $? -ne 0 ]; then
     echo "Failed to push changes to Git. Please resolve conflicts manually."
