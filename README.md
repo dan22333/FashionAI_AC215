@@ -1,9 +1,9 @@
-## Milestone 2 Template
+## Milestone 2 Fashion AI Project
 
-```
+[```
 The files are empty placeholders only. You may adjust this template as appropriate for your project.
 Never commit large data files,trained models, personal API Keys/secrets to GitHub
-```
+```]
 
 #### Project Milestone 2 Organization
 
@@ -33,26 +33,43 @@ Never commit large data files,trained models, personal API Keys/secrets to GitHu
         └── train_model.py
 ```
 
-# AC215 - Milestone2 - Cheesy App
+# AC215 - Milestone2 - Fashion AI App
 
 **Team Members**
-Pavlos Parmigianopapas, Pavlos Ricottapapas and Pavlos Gouda-papas
+Yushu Qiu, Weiyue Li, Daniel Nurieli, Michelle Tan
 
 **Group Name**
-The Grate Cheese Group
+The Fashion AI Group
 
 **Project**
-In this project, we aim to develop an AI-powered cheese application. The app will feature visual recognition technology to identify various types of cheese and include a chatbot for answering all kinds of cheese-related questions. Users can simply take a photo of the cheese, and the app will identify it, providing detailed information. Additionally, the chatbot will allow users to ask cheese-related questions. It will be powered by a RAG model and fine-tuned models, making it a specialist in cheese expertise.
+Our goal is to create an AI-powered platform that aggregates fashion items from various brands, allowing users to quickly and easily find matching items without the hassle of endless browsing. Using our App, the users can put in a request such as "find me a classic dress for attending a summer wedding" and receive the clothing item that matches their request most closely.
 
 ### Milestone2 ###
 
-In this milestone, we have the components for data management, including versioning, as well as the computer vision and language models.
+For this milestone, we did the following: 
+1. Scraped ~1,500 images and clothing items for men and women from the Farfetch website
+2. Generated captions for the images using Gemini API
+3. Finetuned the Fashion CLIP model using the images alongside their captions
 
-**Data**
-We gathered a dataset of 100,000 cheese images representing approximately 1,500 different varieties. The dataset, approximately 100GB in size, was collected from the following sources: (1), (2), (3). We have stored it in a private Google Cloud Bucket.
-Additionally, we compiled 250 bibliographical sources on cheese, including books and reports, from sources such as (4) and (5).
+In our submission file, we have the components for data scraping, caption generation, and Fashion CLIP finetuning. 
 
-**Data Pipeline Containers**
+**Data scraping**
+
+We gathered a dataset of 1,500 clothing items from the Farfetch website. We have stored it in a private Google Cloud Bucket. Note we limited the number of images used in this current training dataset because of budget and processing speed limitations related to scraping and caption generation. We plan to expand our dataset for future milestones. We used Apify API to automate the scraping process.
+
+**Caption generation**
+
+We used Gemini 1.5 Flash model to come up with captions for the images used for training. Here is the prompt we used: "For this image, come up with a caption that has 4 parts, and uses short phrases to answer each of the four categories below: - the style - the occasions that it’s worn in - material used - texture and patterns."
+
+**Fashion CLIP finetuning**
+
+[To add description]
+
+
+-----
+BELOW HAS NOT BEEN UPDATED
+
+[**Data Pipeline Containers**
 1. One container processes the 100GB dataset by resizing the images and storing them back to Google Cloud Storage (GCS).
 
 	**Input:** Source and destination GCS locations, resizing parameters, and required secrets (provided via Docker).
@@ -74,10 +91,10 @@ Additionally, we compiled 250 bibliographical sources on cheese, including books
    - `special cheese package`
 
 4. **`src/preprocessing/Dockerfile(s)`**
-   Our Dockerfiles follow standard conventions, with the exception of some specific modifications described in the Dockerfile/described below.
+   Our Dockerfiles follow standard conventions, with the exception of some specific modifications described in the Dockerfile/described below.]
 
 
-## Running Dockerfile
+[## Running Dockerfile
 Instructions for running the Dockerfile can be added here.
 To run Dockerfile - `Instructions here`
 
@@ -86,7 +103,7 @@ To run Dockerfile - `Instructions here`
 - Instructions for running the model container - `Instructions here`
 
 **Notebooks/Reports**
-This folder contains code that is not part of container - for e.g: Application mockup, EDA, any 🔍 🕵️‍♀️ 🕵️‍♂️ crucial insights, reports or visualizations.
+This folder contains code that is not part of container - for e.g: Application mockup, EDA, any 🔍 🕵️‍♀️ 🕵️‍♂️ crucial insights, reports or visualizations.]
 
 ----
 You may adjust this template as appropriate for your project.
