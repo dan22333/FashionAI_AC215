@@ -126,7 +126,7 @@ if __name__ == '__main__':
         base_url_men = "https://www.farfetch.com/shopping/men/clothing-2/items.aspx?page=1"
 
         # Set number of pages to scrape (can be dynamically determined later)
-        num_of_items = 4
+        num_of_items = 2
 
         df_women = get_items_seed(base_url_women)
         df_men  = get_items_seed(base_url_men)
