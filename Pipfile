@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 dvc = "*"
+dvc-gs = "*"
 
 [dev-packages]
 

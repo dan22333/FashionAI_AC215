@@ -1,4 +1,4 @@
 [core]
-    remote = myremote
-['remote "myremote"']
+    remote = scraped_raw_data
+['remote "scraped_raw_data"']
     url = gs://scraped_raw_data
