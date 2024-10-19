@@ -251,8 +251,8 @@ def sweep_train():
 
     # Save the fine-tuned FashionCLIP model and processor with hyperparameters in the filename
     model_save_name = f"fine_tuned_fashionclip_bs{config.batch_size}_lr{config.learning_rate}_ep{config.epochs}"
-    model.save_pretrained(f"finetuned_models/{model_save_name}")
-    processor.save_pretrained(f"finetuned_models/{model_save_name}_processor")
+    model.save_pretrained(f"models/{model_save_name}")
+    processor.save_pretrained(f"models/{model_save_name}_processor")
 
     wandb.finish()
 
