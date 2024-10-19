@@ -25,8 +25,7 @@ bad_urls_women_file_name = os.getenv('BAD_URLS_WOMEN')
 
 # Initialize the ApifyClient with your API token
 client = secretmanager.SecretManagerServiceClient()
-secret_name = "projects/847437182223/secrets/ApifyAPI/versions/latest"
-response = client.access_secret_version(request={"name": secret_name})
+response = client.access_secret_version(request={"name": os.getenv('APIFY_GCP_SECRET_ACCESS')})
 secret_value = response.payload.data.decode("UTF-8")
 client = ApifyClient(secret_value)
 
