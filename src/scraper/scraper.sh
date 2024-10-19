@@ -69,6 +69,8 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+cd ../../
+
 # Add the scraped data to DVC only after ensuring there are no conflicts
 pipenv run dvc add $(realpath $SCRAPED_RAW_IMAGES)
 pipenv run dvc add $(realpath $SCRAPED_METADATA)
