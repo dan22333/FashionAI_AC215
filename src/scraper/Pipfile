@@ -10,6 +10,7 @@ pandas = "*"
 requests = "*"
 aiohttp = "*"
 asyncio = "*"
+google-cloud-secret-manager = "*"
 
 [dev-packages]
 

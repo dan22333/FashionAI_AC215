@@ -8,7 +8,7 @@ import os
 import sys
 import aiohttp
 import asyncio
-
+from google.cloud import secretmanager
 # Load the .env file
 load_dotenv()
 
@@ -24,9 +24,11 @@ bad_urls_men_file_name = os.getenv('BAD_URLS_MEN')
 bad_urls_women_file_name = os.getenv('BAD_URLS_WOMEN')
 
 # Initialize the ApifyClient with your API token
-client = ApifyClient("apify_api_Xf0IoH4ysoEbF45NEgVzD7pC2RX7XP0IknHs")
-
-
+client = secretmanager.SecretManagerServiceClient()
+secret_name = "projects/847437182223/secrets/ApifyAPI/versions/latest"
+response = client.access_secret_version(request={"name": secret_name})
+secret_value = response.payload.data.decode("UTF-8")
+client = ApifyClient(secret_value)
 
 def get_items_seed(url):
     # Prepare the Actor input for each page
