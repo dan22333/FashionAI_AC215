@@ -33,8 +33,11 @@ RUN set -ex; \
     chown app:app /app
 
 
+# Create the /src directory inside the container
+RUN mkdir -p /src
+
 # Switch to the new user
-USER app
+
 WORKDIR /app
 
 ADD --chown=app:app Pipfile Pipfile.lock /app/
@@ -46,8 +49,7 @@ RUN pipenv sync
 # We'll mount our project folder dynamically to this path during runtime
 #WORKDIR /src
 
-
-CMD ["pipenv run python /src/scraper.py"]
+CMD ["pipenv", "run", "python", "/src/scraper.py"]
 # Install python packages
 #ADD --chown=app:app Pipfile Pipfile.lock /app/
 

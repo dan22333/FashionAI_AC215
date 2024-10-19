@@ -70,16 +70,16 @@ if [ $? -ne 0 ]; then
 fi
 
 # Add the scraped data to DVC only after ensuring there are no conflicts
-dvc add $SCRAPED_RAW_IMAGES
-dvc add $SCRAPED_METADATA
+dvc add $(realpath $SCRAPED_RAW_IMAGES)
+dvc add $(realpath $SCRAPED_METADATA)
 
 # Push data to DVC remote
 dvc push --remote scraped_raw_data
 
 # Commit the DVC changes to Git
-git add $SCRAPED_RAW_IMAGES_CONTAINER.dvc
-git add $SCRAPED_METADATA_CONTAINER.dvc
-git add $GIT_IGNORE
+git add $(realpath $SCRAPED_RAW_IMAGES).dvc
+git add $(realpath $SCRAPED_METADATA).dvc
+git add $(realpath $GIT_IGNORE) 
 
 git commit -m "Scraped data for $TODAY"
 
