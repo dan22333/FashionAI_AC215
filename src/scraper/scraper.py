@@ -118,59 +118,6 @@ async def download_images(urls_df, output_folder):
     else:
         return pd.DataFrame(columns=['url', 'id', 'error'])  # Return an empty DataFrame if no errors
 
-
-# Function to download a single photo
-def download_photo(url, file_name):
-    try:
-        # Send a GET request to the URL
-        response = requests.get(url)
-
-        # Check if the request was successful
-        if response.status_code == 200:
-            # Write the content to a file
-            with open(file_name, 'wb') as file:
-                file.write(response.content)
-            print(f"Photo successfully downloaded as {file_name}")
-            return True
-        else:
-            print(f"Failed to download {file_name}. Status code: {response.status_code}")
-            return False
-    except Exception as e:
-        print(f"Error downloading {file_name}: {e}")
-        return False
-
-
-# Function to download photos from a CSV and return a DataFrame with bad URLs
-def download_photos_from_df(df, output_folder):
-    # Ensure the output folder exists
-    os.makedirs(output_folder, exist_ok=True)
-
-    # List to hold information about failed downloads
-    bad_urls = []
-
-    # Iterate through each row in the DataFrame
-    for i, row in df.iterrows():
-        url = row.get(image_url_col)  # Assuming the DataFrame has a column with URLs
-        if url:
-            # Construct the file name (you can modify this as needed)
-            file_name = os.path.join(output_folder, f"image_{row.get(id_col_name)}.jpg")
-            # Download the photo and check if it succeeded
-            if not download_photo(url, file_name):
-                # If the download failed, add the URL and filename to bad_urls list
-                bad_urls.append({'url': url, 'id': row.get(id_col_name), 'error': 'Failed to download image'})
-        else:
-            # If the URL is missing, log it
-            print(f"URL missing in row {i + 1}")
-            bad_urls.append({'url': 'Missing', 'id': row.get(id_col_name), 'error': 'No URL provided'})
-        print(f"Image number {i} out of {len(df)} was saved")
-    # Convert bad_urls list to a Pandas DataFrame and return it
-    if bad_urls:
-        bad_urls_df = pd.DataFrame(bad_urls)
-        print(f"Bad URLs collected: {len(bad_urls_df)}")
-        return bad_urls_df
-    else:
-        return pd.DataFrame(columns=['url', 'id', 'error'])  # Return an empty DataFrame if no errors
-
 if __name__ == '__main__':
     try:
         # Base URL for pagination
