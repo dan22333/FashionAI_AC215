@@ -147,7 +147,7 @@ def parse_args():
     parser.add_argument('--batch_size', type=int, default=32, help="Batch size for training")
     parser.add_argument('--learning_rate', type=float, default=5e-6, help="Learning rate for optimizer")
     parser.add_argument('--epochs', type=int, default=3, help="Number of epochs to train for")
-    parser.add_argument('--project', type=str, default="fashion-clip-finetuning_1500", help="Wandb project name")
+    parser.add_argument('--project', type=str, default="fashion-clip-finetuning_1500_sweep", help="Wandb project name")
     return parser.parse_args()
 
 # Define the sweep configuration
@@ -251,14 +251,14 @@ def sweep_train():
 
     # Save the fine-tuned FashionCLIP model and processor with hyperparameters in the filename
     model_save_name = f"fine_tuned_fashionclip_bs{config.batch_size}_lr{config.learning_rate}_ep{config.epochs}"
-    model.save_pretrained(model_save_name)
-    processor.save_pretrained(f"{model_save_name}_processor")
+    model.save_pretrained(f"finetuned_models/{model_save_name}")
+    processor.save_pretrained(f"finetuned_models/{model_save_name}_processor")
 
     wandb.finish()
 
 if __name__ == "__main__":
     # Initialize the sweep
-    sweep_id = wandb.sweep(sweep_config, project="fashion-clip-finetuning")
+    sweep_id = wandb.sweep(sweep_config, project="fashion-clip-finetuning_1500_sweep")
     
     # Run the sweep agent
     wandb.agent(sweep_id, function=sweep_train)
