@@ -12,12 +12,14 @@ from transformers import AdamW, CLIPProcessor, CLIPModel
 # Function to parse arguments
 def parse_args():
     parser = argparse.ArgumentParser(description="Fine-tune FashionCLIP on a custom dataset")
-    parser.add_argument('--json_file', type=str, default='/home/wel019/AC215_FashionAI/src/finetune/finetune_data/fashion_dataset.json', help="Path to the dataset JSON file")
-    parser.add_argument('--image_dir', type=str, default='/home/wel019/AC215_FashionAI/src/finetune/finetune_data', help="Path to the directory containing images")
+    parser.add_argument('--json_file', type=str, default='/home/wel019/AC215_FashionAI/src/finetune/finetune_data/final_output.json', help="Path to the dataset JSON file")
+    parser.add_argument('--image_dir', type=str, default='/home/wel019/AC215_FashionAI/src/finetune/finetune_data/AC215Images4', help="Path to the directory containing images")
     parser.add_argument('--batch_size', type=int, default=32, help="Batch size for training")
     parser.add_argument('--learning_rate', type=float, default=5e-6, help="Learning rate for optimizer")
     parser.add_argument('--epochs', type=int, default=3, help="Number of epochs to train for")
-    parser.add_argument('--project', type=str, default="fashion-clip-finetuning", help="Wandb project name")
+    parser.add_argument('--project', type=str, default="fashion-clip-finetuning_1500", help="Wandb project name")
+    parser.add_argument('--save_model_name', type=str, default="fine_tuned_fashionclip_1500", help="Directory to save the fine-tuned model")
+    parser.add_argument('--save_processor_name', type=str, default="fine_tuned_fashionclip_processor_1500", help="Directory to save the fine-tuned processor")
     return parser.parse_args()
 
 # Main function
@@ -83,7 +85,8 @@ def main():
             images = images.to(device)
             
             # Preprocess inputs for FashionCLIP
-            inputs = processor(text=texts, images=images, return_tensors="pt", padding=True).to(device)
+            inputs = processor(text=texts, images=images, return_tensors="pt", padding=True, truncation=True, max_length=77, do_rescale=False).to(device)
+
             
             # Forward pass
             outputs = model(**inputs)
@@ -114,8 +117,8 @@ def main():
         print(f"Epoch {epoch}, Average Loss: {average_loss}")
 
     # Save fine-tuned FashionCLIP model
-    model.save_pretrained("fine_tuned_fashionclip")
-    processor.save_pretrained("fine_tuned_fashionclip_processor")
+    model.save_pretrained(args.save_model_name)
+    processor.save_pretrained(args.save_processor_name)
 
     # End the wandb run
     wandb.finish()

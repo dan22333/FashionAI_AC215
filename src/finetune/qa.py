@@ -5,15 +5,16 @@ import os
 import argparse
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
+from tqdm import tqdm
 
 # Function to parse arguments
 def parse_args():
     parser = argparse.ArgumentParser(description="Search for similar images based on a text query")
-    parser.add_argument('--question', type=str, default="A dress for wedding", help="Text query to search for similar images")
-    parser.add_argument('--image_dir', type=str, default="/home/wel019/AC215_FashionAI/src/finetune/finetune_data/images", help="Path to the directory containing images")
+    parser.add_argument('--question', type=str, default="A jacket for causal outings.", help="Text query to search for similar images")
+    parser.add_argument('--image_dir', type=str, default="/home/wel019/AC215_FashionAI/src/finetune/finetune_data/AC215Images4", help="Path to the directory containing images")
     parser.add_argument('--model_dir', type=str, default="/home/wel019/AC215_FashionAI/src/finetune/fine_tuned_fashionclip", help="Path to the directory containing the fine-tuned model")
     parser.add_argument('--processor_dir', type=str, default="/home/wel019/AC215_FashionAI/src/finetune/fine_tuned_fashionclip_processor", help="Path to the directory containing the processor")
-    parser.add_argument('--batch_size', type=int, default=16, help="Batch size for processing images")
+    parser.add_argument('--batch_size', type=int, default=32, help="Batch size for processing images")
     return parser.parse_args()
 
 # Define a custom Dataset for the images
@@ -46,7 +47,7 @@ def search_similar_images(text, image_loader, model, processor, device):
     all_probs = []
     all_image_paths = []
     
-    for images, image_paths in image_loader:
+    for images, image_paths in tqdm(image_loader):
         # Preprocess inputs (text and images)
         inputs = processor(text=[text], images=images, return_tensors="pt", padding=True, do_rescale=False).to(device)
 
