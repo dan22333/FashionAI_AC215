@@ -3,5 +3,6 @@ torchvision
 transformers
 Pillow==9.2.0
 wandb==0.15.5
-fashion-clip==0.2.1
+annoy
+fashion-clip
   # Install the appropriate version of FashionCLIP if it's available via PyPI or through source

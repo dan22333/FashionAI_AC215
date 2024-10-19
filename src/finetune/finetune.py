@@ -6,7 +6,12 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 from PIL import Image
 from transformers import AdamW
-from fashion_clip import FashionCLIPProcessor, FashionCLIPModel  # Assuming the correct imports for FashionCLIP
+from transformers import CLIPProcessor, CLIPModel
+# from fashion_clip import FashionCLIPModel
+
+# Replace FashionCLIPProcessor with CLIPProcessor
+processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+
 
 # Initialize wandb for tracking experiments
 wandb.init(project="fashion-clip-finetuning", config={
@@ -39,18 +44,17 @@ class FashionDataset(Dataset):
 
 # Define image transformations
 transform = transforms.Compose([
-    transforms.Resize((224, 224)),  # Resize image for FashionCLIP
-    transforms.ToTensor(),
-    transforms.Normalize((0.48145466, 0.4578275, 0.40821073), (0.26862954, 0.26130258, 0.27577711))  # FashionCLIP normalization
+    transforms.Resize((224, 224)),  # Resize the image as required
+    transforms.ToTensor(),  # Convert the image to tensor but without normalization
 ])
 
 # Load dataset and create a DataLoader
-train_dataset = FashionDataset(json_file='/home/wel019/AC215_FashionAI/src/finetune/finetune_data/fashion_dataset.json', image_dir='/home/wel019/AC215_FashionAI/src/finetune/finetune_data/images', transform=transform)
+train_dataset = FashionDataset(json_file='/home/wel019/AC215_FashionAI/src/finetune/finetune_data/fashion_dataset.json', image_dir='/home/wel019/AC215_FashionAI/src/finetune/finetune_data', transform=transform)
 train_loader = DataLoader(train_dataset, batch_size=wandb.config.batch_size, shuffle=True)
 
 # Load pre-trained FashionCLIP model and processor
-model = FashionCLIPModel.from_pretrained("fashion-clip/fashion-clip-base")
-processor = FashionCLIPProcessor.from_pretrained("fashion-clip/fashion-clip-base")
+model = CLIPModel.from_pretrained("patrickjohncyh/fashion-clip")
+processor = CLIPProcessor.from_pretrained("patrickjohncyh/fashion-clip")
 
 # Move model to GPU if available
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
