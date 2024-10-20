@@ -43,6 +43,9 @@ if [ $CONTAINER_EXIT_CODE -ne 0 ]; then
     rm -rf $TEMP_METADATA
     rm -rf $TEMP_RAW_IMAGES
 
+    cd ../../
+
+
     # Attempt to restore old data from DVC
     echo "Aborting script due to container failure. Restoring old data from DVC..."
     if ! pipenv run dvc pull --force ; then
