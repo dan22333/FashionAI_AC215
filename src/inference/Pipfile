@@ -12,10 +12,8 @@ wandb = "==0.15.5"
 annoy = "*"
 fashion-clip = "*"
 google-cloud-secret-manager = "*"
-dvc-gs = "*"
-dvc = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.11"
+python_version = "3.8"

@@ -1,5 +1,5 @@
 # Use Python 3.8 slim image
-FROM python:3.8-slim-bookworm
+FROM python:3.8-slim
 
 # Argument for Debian packages to be installed
 ARG DEBIAN_PACKAGES="build-essential git screen vim"

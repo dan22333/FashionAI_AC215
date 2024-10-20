@@ -41,7 +41,7 @@ CONTAINER_EXIT_CODE=$?
 
 # Check if the container ran successfully
 if [ $CONTAINER_EXIT_CODE -ne 0 ]; then
-    echo "The scraper container encountered an issue. Checking logs..."
+    echo "The finetune container encountered an issue. Checking logs..."
     
     # # Show the logs (from scraper.log)
     # cat scraper.log
