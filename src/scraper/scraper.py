@@ -33,7 +33,7 @@ client = ApifyClient(secret_value)
 
 os.environ['APIFY_TOKEN'] = secret_value
 
-num_items_to_download = os.getenv('MAX_ITEMS')
+num_items_to_download = int(os.getenv('MAX_ITEMS'))
 
 def get_items_seed(url):
     # Prepare the Actor input for each page
@@ -173,11 +173,14 @@ if __name__ == '__main__':
         df_women.to_csv(os.path.join(meta_data_folder, women_file_name), index=False)
         df_men.to_csv(os.path.join(meta_data_folder, men_file_name), index=False)
 
-        print("Metadata files were saved")
+        print("Metadata files saved for women")
         bad_image_metadata_women = asyncio.run(download_images(df_women, os.path.join(images_folder, os.path.splitext(women_file_name)[0])))
+        print("Images saved for women")
         bad_image_metadata_women.to_csv(os.path.join(meta_data_folder, bad_urls_women_file_name),  index=False)
 
+        print("Metadata files saved for men")
         bad_image_metadata_men = asyncio.run(download_images(df_men, os.path.join(images_folder, os.path.splitext(men_file_name)[0])))
+        print("Images saved for men")
         bad_image_metadata_men.to_csv(os.path.join(meta_data_folder, bad_urls_men_file_name), index=False)
 
         print("Images files were saved")
