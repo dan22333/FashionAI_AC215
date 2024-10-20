@@ -3,8 +3,10 @@
 # Load environment variables from the .env file
 export $(grep -v '^#' .env | xargs)
 
+cd ../../
 export GOOGLE_APPLICATION_CREDENTIALS=$PATH_TO_SECRET_KEY
 pipenv run dvc pull --remote fashion_ai_models
+cd src/inference
 
 # Check if the image already exists
 if ! docker images $IMAGE_NAME | awk '{ print $1 }' | grep -q $IMAGE_NAME; then
