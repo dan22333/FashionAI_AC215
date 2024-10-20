@@ -13,8 +13,8 @@ from google.cloud import secretmanager
 load_dotenv()
 
 
-meta_data_folder = os.getenv('SCRAPED_METADATA_CONTAINER')
-images_folder = os.getenv('SCRAPED_RAW_IMAGES_CONTAINER')
+meta_data_folder = os.getenv('SCRAPED_METADATA')
+images_folder = os.getenv('SCRAPED_RAW_IMAGES')
 
 men_file_name = os.getenv('MEN_FILE_NAME')
 women_file_name = os.getenv('WOMEN_FILE_NAME')
@@ -124,17 +124,17 @@ async def download_images(urls_df, output_folder):
 
 if __name__ == '__main__':
     try:
-        # Base URL for pagination
-        base_url_women = "https://www.farfetch.com/shopping/women/clothing-1/items.aspx?page=1"
-        base_url_men = "https://www.farfetch.com/shopping/men/clothing-2/items.aspx?page=1"
-
-        # Set number of pages to scrape (can be dynamically determined later)
-        num_of_items = 2
-
-        df_women = get_items_seed(base_url_women)
-        df_men  = get_items_seed(base_url_men)
-
-        print("Metadata files were downloaded")
+        # # Base URL for pagination
+        # base_url_women = "https://www.farfetch.com/shopping/women/clothing-1/items.aspx?page=1"
+        # base_url_men = "https://www.farfetch.com/shopping/men/clothing-2/items.aspx?page=1"
+        #
+        # # Set number of pages to scrape (can be dynamically determined later)
+        # num_of_items = 2
+        #
+        # df_women = get_items_seed(base_url_women)
+        # df_men  = get_items_seed(base_url_men)
+        # 
+        # print("Metadata files were downloaded")
 
         # Save the DataFrame to the full path
         df_women.to_csv(os.path.join(meta_data_folder, women_file_name), index=False)
