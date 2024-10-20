@@ -4,6 +4,8 @@ TODAY=$(date +'%Y-%m-%d %H:%M:%S')
 # Load environment variables from the .env file
 export $(grep -v '^#' .env | xargs)
 
+export GOOGLE_APPLICATION_CREDENTIALS=$PATH_TO_SECRET_KEY
+
 # Check if the image already exists
 if ! docker images $IMAGE_NAME | awk '{ print $1 }' | grep -q $IMAGE_NAME; then
     echo "Image does not exist. Building..."
@@ -44,6 +46,7 @@ if [ $CONTAINER_EXIT_CODE -ne 0 ]; then
 
     cd ../../
 
+    export GOOGLE_APPLICATION_CREDENTIALS=$NEW_PATH_TO_SECRET_KEY
 
     # Attempt to restore old data from DVC
     echo "Aborting script due to container failure. Restoring old data from DVC..."
@@ -91,7 +94,7 @@ fi
 
 cd ../../
 
-
+export GOOGLE_APPLICATION_CREDENTIALS=$NEW_PATH_TO_SECRET_KEY
 # Add the scraped data to DVC only after ensuring there are no conflicts
 pipenv run dvc add data/scraped_raw_images
 pipenv run dvc add data/scraped_metadata
