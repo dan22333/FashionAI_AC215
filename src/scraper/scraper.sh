@@ -27,7 +27,7 @@ docker run --rm --name $IMAGE_NAME \
     -v $(pwd):/src \
     -v $(realpath $SCRAPED_METADATA):$SCRAPED_METADATA_CONTAINER \
     -v $(realpath $SCRAPED_RAW_IMAGES):$SCRAPED_RAW_IMAGES_CONTAINER \
-    -v $(realpath $SECRET_FILE):/secrets/$SECRET_FILE_NAME:ro \
+    -v $(realpath ${SECRETS_PATH}${SECRET_FILE_NAME}):/secrets/$SECRET_FILE_NAME:ro \
     -e GOOGLE_APPLICATION_CREDENTIALS="/secrets/$SECRET_FILE_NAME" \
     $IMAGE_NAME > scraper.log 2>&1
 CONTAINER_EXIT_CODE=$?
