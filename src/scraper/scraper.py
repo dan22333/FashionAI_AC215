@@ -9,7 +9,7 @@ import sys
 import aiohttp
 import asyncio
 from google.cloud import secretmanager
-from apify import Actor
+#from apify import Actor
 from aiohttp import ClientTimeout
 # Load the .env file
 load_dotenv()
