@@ -1,6 +1,6 @@
 outs:
-- md5: 135f9af650bd822a29af82fb6c6b757d.dir
-  size: 271305
-  nfiles: 5
+- md5: 6015b5472ddb726b380e86587be3c164.dir
+  size: 6148
+  nfiles: 1
   hash: md5
   path: scraped_metadata
