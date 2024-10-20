@@ -12,8 +12,8 @@ from google.cloud import secretmanager
 # Load the .env file
 load_dotenv()
 
-meta_data_folder = os.getenv('SCRAPED_METADATA')
-images_folder = os.getenv('SCRAPED_RAW_IMAGES')
+meta_data_folder = os.getenv('SCRAPED_METADATA_CONTAINER')
+images_folder = os.getenv('SCRAPED_RAW_IMAGES_CONTAINER')
 
 men_file_name = os.getenv('MEN_FILE_NAME')
 women_file_name = os.getenv('WOMEN_FILE_NAME')
@@ -126,7 +126,7 @@ if __name__ == '__main__':
         base_url_men = "https://www.farfetch.com/shopping/men/clothing-2/items.aspx?page=1"
 
         # Set number of pages to scrape (can be dynamically determined later)
-        num_of_items = 4
+        num_of_items = 2
 
         df_women = get_items_seed(base_url_women)
         df_men  = get_items_seed(base_url_men)
@@ -138,11 +138,9 @@ if __name__ == '__main__':
         df_men.to_csv(os.path.join(meta_data_folder, men_file_name), index=False)
 
         print("Metadata files were saved")
-        df_women = pd.read_csv(os.path.join(meta_data_folder, women_file_name))
         bad_image_metadata_women = asyncio.run(download_images(df_women, os.path.join(images_folder, os.path.splitext(women_file_name)[0])))
         bad_image_metadata_women.to_csv(os.path.join(meta_data_folder, bad_urls_women_file_name),  index=False)
 
-        df_men = pd.read_csv(os.path.join(meta_data_folder, men_file_name))
         bad_image_metadata_men = asyncio.run(download_images(df_men, os.path.join(images_folder, os.path.splitext(men_file_name)[0])))
         bad_image_metadata_men.to_csv(os.path.join(meta_data_folder, bad_urls_men_file_name), index=False)
 

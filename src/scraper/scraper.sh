@@ -25,10 +25,10 @@ mkdir -p $TEMP_RAW_IMAGES
 # Run the scraper container and redirect output to a log file
 docker run --rm --name $IMAGE_NAME \
     -v $(pwd):/src \
-    -v $TEMP_METADATA:$SCRAPED_METADATA_CONTAINER \
-    -v $TEMP_RAW_IMAGES:$SCRAPED_RAW_IMAGES_CONTAINER \
-    -v $(realpath $SECRET_FILE):$SECRETS_PATH_CONTAINER$SECRET_FILE:ro \ 
-    -e GOOGLE_APPLICATION_CREDENTIALS=$SECRETS_PATH_CONTAINER$SECRET_FILE \
+    -v $(realpath $TEMP_METADATA):$SCRAPED_METADATA_CONTAINER \
+    -v $(realpath $TEMP_RAW_IMAGES):$SCRAPED_RAW_IMAGES_CONTAINER \
+    -v $(realpath ${SECRETS_PATH}${SECRET_FILE_NAME}):/secrets/$SECRET_FILE_NAME:ro \
+    -e GOOGLE_APPLICATION_CREDENTIALS="/secrets/$SECRET_FILE_NAME" \
     $IMAGE_NAME > scraper.log 2>&1
 CONTAINER_EXIT_CODE=$?
 
@@ -43,9 +43,12 @@ if [ $CONTAINER_EXIT_CODE -ne 0 ]; then
     rm -rf $TEMP_METADATA
     rm -rf $TEMP_RAW_IMAGES
 
+    cd ../../
+
+
     # Attempt to restore old data from DVC
     echo "Aborting script due to container failure. Restoring old data from DVC..."
-    if ! pipenv run dvc pull scraped_raw_data; then
+    if ! pipenv run dvc pull --force ; then
         echo "Failed to restore old data. Please check DVC remote."
         exit 1
     fi
@@ -72,6 +75,8 @@ if [ $? -ne 0 ]; then
 fi
 
 cd ../../
+
+pwd
 
 # Add the scraped data to DVC only after ensuring there are no conflicts
 pipenv run dvc add $(realpath $SCRAPED_RAW_IMAGES_CONTAINER)
