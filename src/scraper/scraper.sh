@@ -92,7 +92,7 @@ cd ../../
 pwd
 
 # Add the scraped data to DVC only after ensuring there are no conflicts
-pipenv run dvc add $SCRAPED_RAW_IMAGES_CONTAINER
+pipenv run dvc add data/scraped_raw_images
 pipenv run dvc add $SCRAPED_METADATA_CONTAINER
 
 # Push data to DVC remote
