@@ -1,6 +1,5 @@
 
 from apify_client import ApifyClient
-from apify import Actor
 import pandas as pd
 from io import StringIO
 import requests
@@ -122,6 +121,7 @@ async def download_images(urls_df, output_folder):
 
 if __name__ == '__main__':
     try:
+        sys.exit(0)
         # # Base URL for pagination
         # base_url_women = "https://www.farfetch.com/shopping/women/clothing-1/items.aspx?page=1"
         # base_url_men = "https://www.farfetch.com/shopping/men/clothing-2/items.aspx?page=1"
