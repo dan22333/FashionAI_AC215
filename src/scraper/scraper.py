@@ -1,5 +1,6 @@
 
 from apify_client import ApifyClient
+from apify import Actor
 import pandas as pd
 from io import StringIO
 import requests
@@ -11,7 +12,6 @@ import asyncio
 from google.cloud import secretmanager
 # Load the .env file
 load_dotenv()
-
 
 meta_data_folder = os.getenv('SCRAPED_METADATA')
 images_folder = os.getenv('SCRAPED_RAW_IMAGES')
@@ -69,12 +69,11 @@ def get_items_seed(url):
     df = pd.read_csv(csv_data)
     return df
 
-
-# Function to asynchronously download a single image
+# Function to asynchronously download a single image using Apify proxy
 async def download_image(session, url, image_name, bad_urls, id):
     try:
-        # Fetch the image
-        async with session.get(url, proxy=APIFY_PROXY_URL) as response:
+        # Fetch the image using Apify's proxy service
+        async with session.get(url) as response:
             if response.status == 200:
                 # Save the image
                 with open(image_name, 'wb') as f:
@@ -82,13 +81,12 @@ async def download_image(session, url, image_name, bad_urls, id):
                 print(f"Photo successfully downloaded as {image_name}")
             else:
                 # Log the failed download
-                print(f"Failed to download {image_name}. Status code: {response.status_code}")
-                bad_urls.append({'url': url, 'id':id, 'error': f'Failed with status code {response.status}'})
+                print(f"Failed to download {image_name}. Status code: {response.status}")
+                bad_urls.append({'url': url, 'id': id, 'error': f'Failed with status code {response.status}'})
     except Exception as e:
         # Log any exceptions
-        print(f"Error downloading {url} : {e}")
-        bad_urls.append({'url': url, 'id':id, 'error': str(e)})
-
+        print(f"Error downloading {url}: {e}")
+        bad_urls.append({'url': url, 'id': id, 'error': str(e)})
 
 # Function to download multiple images asynchronously and return a DataFrame of failed downloads
 async def download_images(urls_df, output_folder):
@@ -137,10 +135,12 @@ if __name__ == '__main__':
         # print("Metadata files were downloaded")
 
         # Save the DataFrame to the full path
-        df_women.to_csv(os.path.join(meta_data_folder, women_file_name), index=False)
-        df_men.to_csv(os.path.join(meta_data_folder, men_file_name), index=False)
+
+        #df_women.to_csv(os.path.join(meta_data_folder, women_file_name), index=False)
+       # df_men.to_csv(os.path.join(meta_data_folder, men_file_name), index=False)
 
         print("Metadata files were saved")
+        df_women = pd.read_csv(os.path.join(meta_data_folder, women_file_name))
         bad_image_metadata_women = asyncio.run(download_images(df_women, os.path.join(images_folder, os.path.splitext(women_file_name)[0])))
         bad_image_metadata_women.to_csv(os.path.join(meta_data_folder, bad_urls_women_file_name),  index=False)
 

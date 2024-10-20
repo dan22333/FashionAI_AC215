@@ -30,15 +30,13 @@ docker run --rm --name $IMAGE_NAME \
     -v $(realpath $TEMP_RAW_IMAGES):$SCRAPED_RAW_IMAGES_CONTAINER \
     -v $(realpath ${SECRETS_PATH}${SECRET_FILE_NAME}):/secrets/$SECRET_FILE_NAME:ro \
     -e GOOGLE_APPLICATION_CREDENTIALS="/secrets/$SECRET_FILE_NAME" \
-    $IMAGE_NAME > scraper.log 2>&1
+    $IMAGE_NAME 
 CONTAINER_EXIT_CODE=$?
 
 # Check if the container ran successfully
 if [ $CONTAINER_EXIT_CODE -ne 0 ]; then
     echo "The scraper container encountered an issue. Checking logs..."
     
-    # Show the logs (from scraper.log)
-    cat scraper.log
 
     # Cleanup temporary directories
     rm -rf $TEMP_METADATA
@@ -49,7 +47,7 @@ if [ $CONTAINER_EXIT_CODE -ne 0 ]; then
 
     # Attempt to restore old data from DVC
     echo "Aborting script due to container failure. Restoring old data from DVC..."
-    if ! pipenv run dvc pull --force ; then
+    if ! pipenv run dvc pull --remote "$DVC_BUCKET" --force ; then
         echo "Failed to restore old data. Please check DVC remote."
         exit 1
     fi
@@ -78,8 +76,12 @@ fi
 rm -rf $TEMP_METADATA
 rm -rf $TEMP_RAW_IMAGES
 
+pipenv run git stash
+
 # Proceed with the rest of the script if no issues
 pipenv run git pull --rebase
+
+pipenv run git stash pop
 
 # Check if the pull created any conflicts
 if [ $? -ne 0 ]; then
@@ -95,7 +97,7 @@ pipenv run dvc add data/scraped_raw_images
 pipenv run dvc add data/scraped_metadata
 
 # Push data to DVC remote
-pipenv run dvc push --remote scraped_raw_data
+pipenv run dvc push --remote "$DVC_BUCKET"
 
 # Commit the DVC changes to Git
 pipenv run git add data/scraped_metadata.dvc

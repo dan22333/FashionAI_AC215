@@ -44,7 +44,6 @@ ADD --chown=app:app Pipfile Pipfile.lock /app/
 
 RUN pipenv sync
 
-
 # Set the default working directory for the Python app (mounted folder)
 # We'll mount our project folder dynamically to this path during runtime
 #WORKDIR /src
