@@ -95,6 +95,7 @@ fi
 cd ../../
 
 export GOOGLE_APPLICATION_CREDENTIALS=$NEW_PATH_TO_SECRET_KEY
+
 # Add the scraped data to DVC only after ensuring there are no conflicts
 pipenv run dvc add data/scraped_raw_images
 pipenv run dvc add data/scraped_metadata
