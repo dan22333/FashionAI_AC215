@@ -43,11 +43,11 @@ WORKDIR /app
 # Install pipenv
 RUN pip install pipenv
 
-# Copy the Python scripts (finetune.py and qa.py) into the container
-COPY --chown=app:app finetune.py qa.py /app/
+# # Copy the Python scripts (finetune.py and qa.py) into the container
+# COPY --chown=app:app finetune.py qa.py /app/
 
-# copy everything from the current directory into the container
-COPY --chown=app:app . /app/
+# # copy everything from the current directory into the container
+# COPY --chown=app:app . /app/
 
 # Install any required dependencies
 ADD --chown=app:app Pipfile Pipfile.lock /app/
@@ -56,6 +56,8 @@ RUN pipenv sync
 # Set the default working directory for Python execution
 WORKDIR /app
 
-# Use ENTRYPOINT to open bash and automatically start pipenv shell
-ENTRYPOINT ["/bin/bash", "-c", "pipenv shell && exec \"$@\"", "--"]
+# # Use ENTRYPOINT to open bash and automatically start pipenv shell
+# ENTRYPOINT ["/bin/bash", "-c", "pipenv shell && exec \"$@\"", "--"]
+
+CMD ["pipenv", "run", "python", "/src/finetune.py"]
 
