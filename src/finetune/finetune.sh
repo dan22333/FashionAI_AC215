@@ -16,7 +16,6 @@ else
     echo "Image already exists. Skipping build..."
 fi
 
-docker build -t $IMAGE_NAME .
 # # Create temporary directories for scraped data
 # TEMP_METADATA=$(realpath $SCRAPED_METADATA)_tmp
 # TEMP_RAW_IMAGES=$(realpath $SCRAPED_RAW_IMAGES)_tmp
