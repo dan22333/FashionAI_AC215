@@ -31,6 +31,8 @@ docker build -t $IMAGE_NAME .
 # Run the scraper container and redirect output to a log file
 docker run --rm --name $IMAGE_NAME \
     -v $(pwd):/src \
+    -v $(realpath ${SECRETS_PATH}${SECRET_FILE_NAME}):/secrets/$SECRET_FILE_NAME:ro \
+    -e GOOGLE_APPLICATION_CREDENTIALS="/secrets/$SECRET_FILE_NAME" \
     $IMAGE_NAME
 
 CONTAINER_EXIT_CODE=$?
@@ -103,10 +105,9 @@ export GOOGLE_APPLICATION_CREDENTIALS=$NEW_PATH_TO_SECRET_KEY
 pipenv run dvc push --remote fashion_ai_models
 
 # Commit the DVC changes to Git
-# pipenv run git add src/finetune/models.dvc
-# pipenv run git add src/finetune/finetune_data.dvc
-# pipenv run git add src/finetune/wandb.dvc
-pipenv run git add src/finetune
+pipenv run git add src/finetune/models.dvc
+pipenv run git add src/finetune/finetune_data.dvc
+pipenv run git add src/finetune/wandb.dvc
 pipenv run git add $GIT_IGNORE
 
 pipenv run git commit -m "finetuned models for $TODAY"
