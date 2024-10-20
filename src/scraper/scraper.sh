@@ -22,6 +22,7 @@ rm -rf $TEMP_RAW_IMAGES
 mkdir -p $TEMP_METADATA
 mkdir -p $TEMP_RAW_IMAGES
 
+
 # Run the scraper container and redirect output to a log file
 docker run --rm --name $IMAGE_NAME \
     -v $(pwd):/src \
@@ -55,11 +56,23 @@ if [ $CONTAINER_EXIT_CODE -ne 0 ]; then
     exit 1
 fi
 
-# If the scraper succeeds, move the new data from the temporary directories to the actual directories
-rm -rf $(realpath $SCRAPED_METADATA)/*
-rm -rf $(realpath $SCRAPED_RAW_IMAGES)/*
-mv $TEMP_METADATA/* $(realpath $SCRAPED_METADATA)
-mv $TEMP_RAW_IMAGES/* $(realpath $SCRAPED_RAW_IMAGES)
+rm -rf $SCRAPED_METADATA/*
+rm -rf $SCRAPED_RAW_IMAGES/*
+
+if [ "$(ls -A $TEMP_METADATA)" ]; then
+    mv $TEMP_METADATA/* $(realpath $SCRAPED_METADATA)
+    echo "Copied contents from $TEMP_METADATA to $SCRAPED_METADATA."
+else
+    echo "No files to copy, $SOURCE_DIR is empty."
+fi
+
+if [ "$(ls -A $TEMP_RAW_IMAGES)" ]; then
+    mv $TEMP_RAW_IMAGES/* $(realpath $SCRAPED_RAW_IMAGES)
+    echo "Copied contents from $TEMP_RAW_IMAGES to $SCRAPED_RAW_IMAGES."
+else
+    echo "No files to copy, $SOURCE_DIR is empty."
+fi
+
 
 # Clean up temporary directories
 rm -rf $TEMP_METADATA
@@ -76,19 +89,18 @@ fi
 
 cd ../../
 
-pwd
 
 # Add the scraped data to DVC only after ensuring there are no conflicts
-pipenv run dvc add $(realpath $SCRAPED_RAW_IMAGES_CONTAINER)
-pipenv run dvc add $(realpath $SCRAPED_METADATA_CONTAINER)
+pipenv run dvc add data/scraped_raw_images
+pipenv run dvc add data/scraped_metadata
 
 # Push data to DVC remote
 pipenv run dvc push --remote scraped_raw_data
 
 # Commit the DVC changes to Git
-pipenv run git add $(realpath $SCRAPED_RAW_IMAGES_CONTAINER).dvc
-pipenv run git add $(realpath $SCRAPED_METADATA_CONTAINER).dvc
-pipenv run git add $(realpath $GIT_IGNORE)
+pipenv run git add data/scraped_metadata.dvc
+pipenv run git add data/scraped_raw_images.dvc
+pipenv run git add $GIT_IGNORE
 
 pipenv run git commit -m "Scraped data for $TODAY"
 
