@@ -12,6 +12,7 @@ from google.cloud import secretmanager
 # Load the .env file
 load_dotenv()
 
+
 meta_data_folder = os.getenv('SCRAPED_METADATA_CONTAINER')
 images_folder = os.getenv('SCRAPED_RAW_IMAGES_CONTAINER')
 
@@ -28,6 +29,8 @@ client = secretmanager.SecretManagerServiceClient()
 response = client.access_secret_version(request={"name": os.getenv('APIFY_GCP_SECRET_ACCESS')})
 secret_value = response.payload.data.decode("UTF-8")
 client = ApifyClient(secret_value)
+
+APIFY_PROXY_URL = f"http://auto:{secret_value}@proxy.apify.com:8000?groups=residential"
 
 def get_items_seed(url):
     # Prepare the Actor input for each page
@@ -71,7 +74,7 @@ def get_items_seed(url):
 async def download_image(session, url, image_name, bad_urls, id):
     try:
         # Fetch the image
-        async with session.get(url) as response:
+        async with session.get(url, proxy=APIFY_PROXY_URL) as response:
             if response.status == 200:
                 # Save the image
                 with open(image_name, 'wb') as f:

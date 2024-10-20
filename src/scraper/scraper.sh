@@ -91,15 +91,15 @@ cd ../../
 
 
 # Add the scraped data to DVC only after ensuring there are no conflicts
-pipenv run dvc add data/scraped_raw_images
-pipenv run dvc add data/scraped_metadata
+pipenv run dvc add $RAW_IMAGES_SAVE_FOLDER
+pipenv run dvc add $METADATA_SAVE_FOLDER
 
 # Push data to DVC remote
 pipenv run dvc push --remote scraped_raw_data
 
 # Commit the DVC changes to Git
-pipenv run git add data/scraped_raw_images.dvc
-pipenv run git add data/scraped_metadata.dvc
+pipenv run git add $METADATA_SAVE_FOLDER.dvc
+pipenv run git add $RAW_IMAGES_SAVE_FOLDER.dvc
 pipenv run git add $GIT_IGNORE
 
 pipenv run git commit -m "Scraped data for $TODAY"
