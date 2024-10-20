@@ -44,6 +44,49 @@ if [ $CONTAINER_EXIT_CODE -ne 0 ]; then
     rm -rf $TEMP_METADATA
     rm -rf $TEMP_RAW_IMAGES
 
+    cd ../../
+
+
+    # Attempt to restore old data from DVC
+    echo "Aborting script due to container failure. Restoring old data from DVC..."
+    if ! pipenv run dvc pull --force ; then
+        echo "Failed to restore old data. Please check DVC remote."
+        exit 1
+    fi
+    exit 1
+fi
+
+rm -rf $SCRAPED_METADATA/*
+rm -rf $SCRAPED_RAW_IMAGES/*
+
+if [ "$(ls -A $TEMP_METADATA)" ]; then
+    mv $TEMP_METADATA/* $(realpath $SCRAPED_METADATA)
+    echo "Copied contents from $TEMP_METADATA to $SCRAPED_METADATA."
+else
+    echo "No files to copy, $SOURCE_DIR is empty."
+fi
+
+if [ "$(ls -A $TEMP_RAW_IMAGES)" ]; then
+    mv $TEMP_RAW_IMAGES/* $(realpath $SCRAPED_RAW_IMAGES)
+    echo "Copied contents from $TEMP_RAW_IMAGES to $SCRAPED_RAW_IMAGES."
+else
+    echo "No files to copy, $SOURCE_DIR is empty."
+fi
+
+
+# Clean up temporary directories
+rm -rf $TEMP_METADATA
+rm -rf $TEMP_RAW_IMAGES
+
+# Proceed with the rest of the script if no issues
+pipenv run git pull --rebase
+
+# Check if the pull created any conflicts
+if [ $? -ne 0 ]; then
+    echo "There was a merge conflict. Aborting script."
+    exit 1
+fi
+
 cd ../../
 
 
