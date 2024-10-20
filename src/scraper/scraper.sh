@@ -44,62 +44,19 @@ if [ $CONTAINER_EXIT_CODE -ne 0 ]; then
     rm -rf $TEMP_METADATA
     rm -rf $TEMP_RAW_IMAGES
 
-    cd ../../
-
-
-    # Attempt to restore old data from DVC
-    echo "Aborting script due to container failure. Restoring old data from DVC..."
-    if ! pipenv run dvc pull --force ; then
-        echo "Failed to restore old data. Please check DVC remote."
-        exit 1
-    fi
-    exit 1
-fi
-
-rm -rf $SCRAPED_METADATA/*
-rm -rf $SCRAPED_RAW_IMAGES/*
-
-if [ "$(ls -A $TEMP_METADATA)" ]; then
-    mv $TEMP_METADATA/* $(realpath $SCRAPED_METADATA)
-    echo "Copied contents from $TEMP_METADATA to $SCRAPED_METADATA."
-else
-    echo "No files to copy, $SOURCE_DIR is empty."
-fi
-
-if [ "$(ls -A $TEMP_RAW_IMAGES)" ]; then
-    mv $TEMP_RAW_IMAGES/* $(realpath $SCRAPED_RAW_IMAGES)
-    echo "Copied contents from $TEMP_RAW_IMAGES to $SCRAPED_RAW_IMAGES."
-else
-    echo "No files to copy, $SOURCE_DIR is empty."
-fi
-
-
-# Clean up temporary directories
-rm -rf $TEMP_METADATA
-rm -rf $TEMP_RAW_IMAGES
-
-# Proceed with the rest of the script if no issues
-pipenv run git pull --rebase
-
-# Check if the pull created any conflicts
-if [ $? -ne 0 ]; then
-    echo "There was a merge conflict. Aborting script."
-    exit 1
-fi
-
 cd ../../
 
 
 # Add the scraped data to DVC only after ensuring there are no conflicts
-pipenv run dvc add $RAW_IMAGES_SAVE_FOLDER
-pipenv run dvc add $METADATA_SAVE_FOLDER
+pipenv run dvc add data/scraped_raw_images
+pipenv run dvc add data/scraped_metadata
 
 # Push data to DVC remote
 pipenv run dvc push --remote scraped_raw_data
 
 # Commit the DVC changes to Git
-pipenv run git add $METADATA_SAVE_FOLDER.dvc
-pipenv run git add $RAW_IMAGES_SAVE_FOLDER.dvc
+pipenv run git add data/scraped_metadata.dvc
+pipenv run git add data/scraped_raw_images.dvc
 pipenv run git add $GIT_IGNORE
 
 pipenv run git commit -m "Scraped data for $TODAY"
