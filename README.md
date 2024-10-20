@@ -109,10 +109,9 @@ This folder contains code that is not part of container - for e.g: Application m
 You may adjust this template as appropriate for your project.
 
 
-<hr> <!-- This creates a horizontal line to visually separate sections -->
-
-<!-- Start a new section using a div or section tag -->
-<div style="margin-top: 40px;">
+<section style="margin-top: 40px;">
+  <!-- Your content here -->
+</section>
 
 
 #### ML model reports
