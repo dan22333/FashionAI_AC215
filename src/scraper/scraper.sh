@@ -76,6 +76,8 @@ fi
 
 cd ../../
 
+pwd
+
 # Add the scraped data to DVC only after ensuring there are no conflicts
 pipenv run dvc add $(realpath $SCRAPED_RAW_IMAGES_CONTAINER)
 pipenv run dvc add $(realpath $SCRAPED_METADATA_CONTAINER)
