@@ -107,3 +107,5 @@ This folder contains code that is not part of container - for e.g: Application m
 
 ----
 You may adjust this template as appropriate for your project.
+
+![Interactive SVG](https://storage.googleapis.com/model-result-screens/W%26B%20Chart%2010_19_2024%2C%2010_13_28%20PM%20(1).svg)
