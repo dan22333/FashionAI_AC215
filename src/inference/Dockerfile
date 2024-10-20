@@ -43,9 +43,6 @@ WORKDIR /app
 # Install pipenv
 RUN pip install pipenv
 
-# copy everything from the current directory into the container
-COPY --chown=app:app . /app/
-
 # Install any required dependencies
 ADD --chown=app:app Pipfile Pipfile.lock /app/
 RUN pipenv sync
@@ -53,8 +50,6 @@ RUN pipenv sync
 # Set the default working directory for Python execution
 WORKDIR /app
 
-# # Use ENTRYPOINT to open bash and automatically start pipenv shell
-# ENTRYPOINT ["/bin/bash", "-c", "pipenv shell && exec \"$@\"", "--"]
-
-CMD ["pipenv", "run", "python", "qa.py"]
+# Command to run the application
+CMD ["pipenv", "run", "python", "/src/qa.py"]
 

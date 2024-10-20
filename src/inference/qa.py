@@ -11,9 +11,9 @@ from tqdm import tqdm
 def parse_args():
     parser = argparse.ArgumentParser(description="Search for similar images based on a text query")
     parser.add_argument('--question', type=str, default="A jacket for causal outings.", help="Text query to search for similar images")
-    parser.add_argument('--image_dir', type=str, default="finetune_data/AC215Images4", help="Path to the directory containing images")
-    parser.add_argument('--model_dir', type=str, default="models/fine_tuned_fashionclip_bs32_lr5e-06_ep3", help="Path to the directory containing the fine-tuned model")
-    parser.add_argument('--processor_dir', type=str, default="models/fine_tuned_fashionclip_bs32_lr5e-06_ep3_processor", help="Path to the directory containing the processor")
+    parser.add_argument('--image_dir', type=str, default="/src/finetune_data/AC215Images4", help="Path to the directory containing images")
+    parser.add_argument('--model_dir', type=str, default="/src/models/fine_tuned_fashionclip_bs32_lr5e-06_ep3", help="Path to the directory containing the fine-tuned model")
+    parser.add_argument('--processor_dir', type=str, default="/src/models/fine_tuned_fashionclip_bs32_lr5e-06_ep3_processor", help="Path to the directory containing the processor")
     parser.add_argument('--batch_size', type=int, default=32, help="Batch size for processing images")
     return parser.parse_args()
 
@@ -96,5 +96,7 @@ if __name__ == "__main__":
     best_image, similarities = search_similar_images(question, image_loader, model, processor, device)
     
     print(f"Question: {question}")
+    if "/src/" == best_image[:5]:
+        best_image = best_image[5:]
     print(f"Best matching image: {best_image}")
     # print(f"Similarities: {similarities}")
