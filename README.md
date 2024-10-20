@@ -109,6 +109,12 @@ This folder contains code that is not part of container - for e.g: Application m
 You may adjust this template as appropriate for your project.
 
 
+<hr> <!-- This creates a horizontal line to visually separate sections -->
+
+<!-- Start a new section using a div or section tag -->
+<div style="margin-top: 40px;">
+
+
 #### ML model reports
 
 <a href="https://github.com/weiyueli7/AC215_FashionAI/blob/michelle-test-branch/reports/W%26B%20Chart%2010_19_2024%2C%2010_13_28%20PM%20(3).svg">
