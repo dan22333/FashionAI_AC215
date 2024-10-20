@@ -1,11 +1,6 @@
-## Milestone 2 Fashion AI Project
+# AC215 - Milestone2 - Fashion AI App
 
-[```
-The files are empty placeholders only. You may adjust this template as appropriate for your project.
-Never commit large data files,trained models, personal API Keys/secrets to GitHub
-```]
-
-#### Project Milestone 2 Organization
+### Project Milestone 2 Organization
 
 ```
 ├── Readme.md
@@ -33,7 +28,7 @@ Never commit large data files,trained models, personal API Keys/secrets to GitHu
         └── train_model.py
 ```
 
-# AC215 - Milestone2 - Fashion AI App
+### Overview
 
 **Team Members**
 Yushu Qiu, Weiyue Li, Daniel Nurieli, Michelle Tan
@@ -44,7 +39,7 @@ The Fashion AI Group
 **Project**
 Our goal is to create an AI-powered platform that aggregates fashion items from various brands, allowing users to quickly and easily find matching items without the hassle of endless browsing. Using our App, the users can put in a request such as "find me a classic dress for attending a summer wedding" and receive the clothing item that matches their request most closely.
 
-### Milestone2 ###
+### Milestone 2 Summary
 
 For this milestone, we did the following: 
 1. Scraped ~1,500 images and clothing items for men and women from the Farfetch website
@@ -64,6 +59,31 @@ We used Gemini 1.5 Flash model to come up with captions for the images used for 
 **Fashion CLIP finetuning**
 
 [To add description]
+
+
+### ML model reports
+
+<a href="https://github.com/weiyueli7/AC215_FashionAI/blob/michelle-test-branch/reports/W%26B%20Chart%2010_19_2024%2C%2010_13_28%20PM%20(3).svg">
+    <img src="https://github.com/weiyueli7/AC215_FashionAI/blob/michelle-test-branch/reports/W%26B%20Chart%2010_19_2024%2C%2010_13_28%20PM%20(3).svg" alt="Interactive SVG" width="600" height="460" />
+</a>
+
+
+<a href="https://github.com/weiyueli7/AC215_FashionAI/blob/michelle-test-branch/reports/W%26B%20Chart%2010_19_2024%2C%2010_13_28%20PM%20(1).svg">
+    <img src="https://github.com/weiyueli7/AC215_FashionAI/blob/michelle-test-branch/reports/W%26B%20Chart%2010_19_2024%2C%2010_13_28%20PM%20(1).svg" alt="Interactive SVG" width="600" height="460" />
+</a>
+
+
+<a href="https://github.com/weiyueli7/AC215_FashionAI/blob/michelle-test-branch/reports/W%26B%20Chart%2010_19_2024%2C%2010_13_28%20PM%20(2).svg">
+    <img src="https://github.com/weiyueli7/AC215_FashionAI/blob/michelle-test-branch/reports/W%26B%20Chart%2010_19_2024%2C%2010_13_28%20PM%20(2).svg" alt="Interactive SVG" width="600" height="460" />
+</a>
+
+
+[```
+The files are empty placeholders only. You may adjust this template as appropriate for your project.
+Never commit large data files,trained models, personal API Keys/secrets to GitHub
+```]
+
+
 
 
 -----
@@ -94,6 +114,8 @@ BELOW HAS NOT BEEN UPDATED
    Our Dockerfiles follow standard conventions, with the exception of some specific modifications described in the Dockerfile/described below.]
 
 
+├── Readme.md ├── data # DO NOT UPLOAD DATA TO GITHUB, only .gitkeep to keep the directory or a really small sample ├── notebooks │ └── eda.ipynb ├── references ├── reports │ └── Statement of Work_Sample.pdf └── src ├── datapipeline │ ├── Dockerfile │ ├── Pipfile │ ├── Pipfile.lock │ ├── dataloader.py │ ├── docker-shell.sh │ ├── preprocess_cv.py │ ├── preprocess_rag.py ├── docker-compose.yml └── models ├── Dockerfile ├── docker-shell.sh ├── infer_model.py ├── model_rag.py └── train_model.py
+
 [## Running Dockerfile
 Instructions for running the Dockerfile can be added here.
 To run Dockerfile - `Instructions here`
@@ -109,23 +131,3 @@ This folder contains code that is not part of container - for e.g: Application m
 You may adjust this template as appropriate for your project.
 
 
-<section style="margin-top: 40px;">
-  <!-- Your content here -->
-</section>
-
-
-#### ML model reports
-
-<a href="https://github.com/weiyueli7/AC215_FashionAI/blob/michelle-test-branch/reports/W%26B%20Chart%2010_19_2024%2C%2010_13_28%20PM%20(3).svg">
-    <img src="https://github.com/weiyueli7/AC215_FashionAI/blob/michelle-test-branch/reports/W%26B%20Chart%2010_19_2024%2C%2010_13_28%20PM%20(3).svg" alt="Interactive SVG" width="600" height="460" />
-</a>
-
-
-<a href="https://github.com/weiyueli7/AC215_FashionAI/blob/michelle-test-branch/reports/W%26B%20Chart%2010_19_2024%2C%2010_13_28%20PM%20(1).svg">
-    <img src="https://github.com/weiyueli7/AC215_FashionAI/blob/michelle-test-branch/reports/W%26B%20Chart%2010_19_2024%2C%2010_13_28%20PM%20(1).svg" alt="Interactive SVG" width="600" height="460" />
-</a>
-
-
-<a href="https://github.com/weiyueli7/AC215_FashionAI/blob/michelle-test-branch/reports/W%26B%20Chart%2010_19_2024%2C%2010_13_28%20PM%20(2).svg">
-    <img src="https://github.com/weiyueli7/AC215_FashionAI/blob/michelle-test-branch/reports/W%26B%20Chart%2010_19_2024%2C%2010_13_28%20PM%20(2).svg" alt="Interactive SVG" width="600" height="460" />
-</a>
