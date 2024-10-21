@@ -82,7 +82,7 @@ pipenv run git commit -m "Scraped data for $TODAY"
 pipenv run git tag run-$(date +'%Y-%m-%d-%H-%M-%S')
 
 # Push the changes to Git
-pipenv run git push origin yushu
+pipenv run git push origin main
 pipenv run git push origin --tags
 
 if [ $? -ne 0 ]; then
