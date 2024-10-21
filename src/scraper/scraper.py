@@ -14,8 +14,8 @@ from aiohttp import ClientTimeout
 # Load the .env file
 load_dotenv()
 
-meta_data_folder = os.getenv('SCRAPED_METADATA')
-images_folder = os.getenv('SCRAPED_RAW_IMAGES')
+meta_data_folder = os.getenv('SCRAPED_METADATA_CONTAINER')
+images_folder = os.getenv('SCRAPED_RAW_IMAGES_CONTAINER')
 
 men_file_name = os.getenv('MEN_FILE_NAME')
 women_file_name = os.getenv('WOMEN_FILE_NAME')
