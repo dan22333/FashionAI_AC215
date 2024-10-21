@@ -40,7 +40,6 @@ if [ $CONTAINER_EXIT_CODE -ne 0 ]; then
 
     cd ../../
 
-
     # Attempt to restore old data from DVC
     echo "Aborting script due to container failure. Restoring old data from DVC..."
     if ! pipenv run dvc pull --remote "$DVC_BUCKET" force ; then
