@@ -1,6 +1,6 @@
 outs:
-- md5: 4a25ad483699309d122dd6a6f76813b9.dir
-  size: 752548
-  nfiles: 9
+- md5: b5ddcc24631a8d104b2fb59598cff1d9.dir
+  size: 969504
+  nfiles: 14
   hash: md5
   path: scraped_raw_images
