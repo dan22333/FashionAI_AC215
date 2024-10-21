@@ -9,7 +9,7 @@ import sys
 import aiohttp
 import asyncio
 from google.cloud import secretmanager
-#from apify import Actor
+from apify import Actor
 from aiohttp import ClientTimeout
 # Load the .env file
 load_dotenv()
@@ -24,6 +24,8 @@ id_col_name = os.getenv('COLUMN_ID_NAME')
 image_url_col = os.getenv('URL_IMAGE')
 bad_urls_men_file_name = os.getenv('BAD_URLS_MEN')
 bad_urls_women_file_name = os.getenv('BAD_URLS_WOMEN')
+
+scrape_data = os.getenv('SCRAP_IMAGES')
 
 # Initialize the ApifyClient with your API token
 client = secretmanager.SecretManagerServiceClient()
@@ -162,23 +164,21 @@ if __name__ == '__main__':
 
         # Set number of pages to scrape (can be dynamically determined later)
         num_of_items = 2
+        df_women = pd.DataFrame()
+        df_men = pd.DataFrame()
 
-        df_women = get_items_seed(base_url_women)
-        df_men  = get_items_seed(base_url_men)
+        if(not int(scrape_data)):
+            df_women = get_items_seed(base_url_women)
+            df_men  = get_items_seed(base_url_men)
+            print("Metadata files were downloaded")
+            # Save the DataFrame to the full path
+            df_women.to_csv(os.path.join(meta_data_folder, women_file_name), index=False)
+            df_men.to_csv(os.path.join(meta_data_folder, men_file_name), index=False)
 
-        print("Metadata files were downloaded")
-
-        #Save the DataFrame to the full path
-
-        df_women.to_csv(os.path.join(meta_data_folder, women_file_name), index=False)
-        df_men.to_csv(os.path.join(meta_data_folder, men_file_name), index=False)
-
-        print("Metadata files saved for women")
         bad_image_metadata_women = asyncio.run(download_images(df_women, os.path.join(images_folder, os.path.splitext(women_file_name)[0])))
         print("Images saved for women")
         bad_image_metadata_women.to_csv(os.path.join(meta_data_folder, bad_urls_women_file_name),  index=False)
 
-        print("Metadata files saved for men")
         bad_image_metadata_men = asyncio.run(download_images(df_men, os.path.join(images_folder, os.path.splitext(men_file_name)[0])))
         print("Images saved for men")
         bad_image_metadata_men.to_csv(os.path.join(meta_data_folder, bad_urls_men_file_name), index=False)
