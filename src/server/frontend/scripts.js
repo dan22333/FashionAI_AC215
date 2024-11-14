@@ -10,7 +10,7 @@ document.getElementById("search-button").addEventListener("click", async () => {
     resultsContainer.innerHTML = "<p>Loading...</p>";
 
     try {
-        const response = await fetch("/search", {
+        const response = await fetch("http://localhost:8000/search", {  // Updated to point to backend
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -24,7 +24,7 @@ document.getElementById("search-button").addEventListener("click", async () => {
         if (results.length === 0) {
             resultsContainer.innerHTML = "<p>No results found.</p>";
         } else {
-            results.sort((a, b) => b.score - a.score); // Sort by score, highest first
+            results.sort((a, b) => b.score - a.score);
             results.forEach((result, index) => {
                 const resultItem = document.createElement("div");
                 resultItem.className = "result-item";
