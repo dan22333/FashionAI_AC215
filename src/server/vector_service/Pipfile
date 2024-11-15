@@ -10,9 +10,12 @@ verify_ssl = true
 
 [packages]
 fastapi = "*"
-uvicorn = "*"
+uvicorn = "*"   
+transformers = "*"
+numpy = "1.21.4"
 python-dotenv = "*"
-requests = "*"
+torch = {version = "*", index = "pytorch"}
+pillow = "*"
 
 [dev-packages]
 

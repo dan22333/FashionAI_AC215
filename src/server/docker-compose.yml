@@ -4,9 +4,8 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile  # Replace with the actual Dockerfile for backend
+      dockerfile: Dockerfile
     volumes:
-      - ./backend:/app
       - ../../../secrets:/secrets
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=/secrets/secret.json
@@ -14,11 +13,40 @@ services:
       - "8000:8000"
     networks:
       - app-network
+    depends_on:
+      - vector_service
+      - pinecone_service
+
+  vector_service:
+    build:
+      context: ./vector_service
+      dockerfile: Dockerfile
+    volumes:
+      - ../../../secrets:/secrets
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/secrets/secret.json
+    ports:
+      - "8001:8001"
+    networks:
+      - app-network
+
+  pinecone_service:
+    build:
+      context: ./pinecone_service
+      dockerfile: Dockerfile
+    volumes:
+      - ../../../secrets:/secrets
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/secrets/secret.json
+    ports:
+      - "8002:8002"
+    networks:
+      - app-network
 
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile  # Replace with the actual Dockerfile for frontend
+      dockerfile: Dockerfile
     volumes:
       - ./frontend:/app
     ports:

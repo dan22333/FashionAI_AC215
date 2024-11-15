@@ -4,7 +4,7 @@
 set -e
 
 # Define environment variables
-export IMAGE_NAME="backend-app"
+export IMAGE_NAME="vector-service"
 export BASE_DIR=$(pwd)
 
 # Dynamically convert the relative path to an absolute path for the secrets directory
@@ -16,9 +16,15 @@ if [ ! -f "$GOOGLE_CREDENTIALS_PATH/secret.json" ]; then
     exit 1
 fi
 
-
 # Build the Docker image
 docker build -t $IMAGE_NAME -f Dockerfile .
+
+# Determine if /bin/bash is passed as an argument
+if [ "$1" == "/bin/bash" ]; then
+    CMD="/bin/bash"
+else
+    CMD=""
+fi
 
 # Run the Docker container
 docker run --rm --name "${IMAGE_NAME}-shell" -ti \
