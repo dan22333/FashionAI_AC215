@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware  # Import CORSMiddleware
 from pydantic import BaseModel
 from .clip_model import get_clip_vector, initialize_pinecone
 import numpy as np
@@ -7,6 +8,15 @@ app = FastAPI()
 
 # Initialize Pinecone
 index_p = initialize_pinecone()
+
+# Configure CORS to allow requests from the frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins; you can restrict this to your frontend's origin
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all HTTP methods, including POST, GET, OPTIONS
+    allow_headers=["*"],  # Allows all headers
+)
 
 class SearchQuery(BaseModel):
     queryText: str

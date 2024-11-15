@@ -1,17 +1,33 @@
-version: '3.8'
+version: "3.9"
+
 services:
   backend:
     build:
       context: ./backend
+      dockerfile: Dockerfile  # Replace with the actual Dockerfile for backend
+    volumes:
+      - ./backend:/app
+      - /Users/danielnurieli/ac215/secrets:/secrets
     environment:
-      - PINECONE_API_KEY=your_pinecone_api_key
+      - GOOGLE_APPLICATION_CREDENTIALS=/secrets/secret.json
     ports:
       - "8000:8000"
+    networks:
+      - app-network
 
   frontend:
     build:
       context: ./frontend
+      dockerfile: Dockerfile  # Replace with the actual Dockerfile for frontend
+    volumes:
+      - ./frontend:/app
     ports:
       - "8080:8080"
+    networks:
+      - app-network
     depends_on:
       - backend
+
+networks:
+  app-network:
+    driver: bridge

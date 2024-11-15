@@ -13,4 +13,4 @@ docker build -t $IMAGE_NAME -f Dockerfile .
 # Run the container
 docker run --rm --name $IMAGE_NAME -ti \
     -v "$BASE_DIR":/app \
-    -p 8000:8000 $IMAGE_NAME
+    -p 8080:8080 $IMAGE_NAME
