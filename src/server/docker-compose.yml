@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile  # Replace with the actual Dockerfile for backend
     volumes:
       - ./backend:/app
-      - ../../../../secrets:/secrets
+      - ../../../secrets:/secrets
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=/secrets/secret.json
     ports:

@@ -8,7 +8,7 @@ export IMAGE_NAME="backend-app"
 export BASE_DIR=$(pwd)
 
 # Convert the relative path to an absolute path for the secrets directory
-export GOOGLE_CREDENTIALS_PATH="/Users/danielnurieli/ac215/secrets"
+export GOOGLE_CREDENTIALS_PATH="../../../../secrets"
 
 # Check if the credentials file exists in the directory
 if [ ! -f "$GOOGLE_CREDENTIALS_PATH/secret.json" ]; then
@@ -19,7 +19,9 @@ fi
 # Build the Docker image
 docker build -t $IMAGE_NAME -f Dockerfile .
 
-# Run the container interactively with a shell, mounting the secrets directory
+IMAGE_NAME="backend-app" && BASE_DIR=$(pwd) && GOOGLE_CREDENTIALS_PATH=$(realpath "$GOOGLE_CREDENTIALS_PATH") && \
+if [ ! -f "$GOOGLE_CREDENTIALS_PATH/secret.json" ]; then echo "Error: Credentials file not found at $GOOGLE_CREDENTIALS_PATH/secret.json" && exit 1; fi && \
+docker build -t "$IMAGE_NAME" -f Dockerfile . && \
 docker run --rm --name "${IMAGE_NAME}-shell" -ti \
     -v "$BASE_DIR":/app \
     -v "$GOOGLE_CREDENTIALS_PATH":/secrets \
