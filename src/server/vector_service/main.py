@@ -21,3 +21,8 @@ async def get_vector(request: VectorRequest):
         return {"vector": vector}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error generating vector: {str(e)}")
+
+# Add this block to run the app with Uvicorn
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="127.0.0.1", port=8001, reload=True)

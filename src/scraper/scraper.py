@@ -30,7 +30,7 @@ scrape_data = os.getenv('SCRAP_IMAGES')
 # Initialize the ApifyClient with your API token
 client = secretmanager.SecretManagerServiceClient()
 response = client.access_secret_version(request={"name": os.getenv('APIFY_GCP_SECRET_ACCESS')})
-secret_value = response.payload.data.decode("UTF-8")
+secret_value = "apify_api_fmyOzdUdJa6NnRysW2LKPGccavak5R3YiHro"
 client = ApifyClient(secret_value)
 
 os.environ['APIFY_TOKEN'] = secret_value
@@ -75,27 +75,12 @@ def get_items_seed(url):
     return df
 
 # Function to asynchronously download a single image using Apify proxy
-async def download_image(session, url, image_name, bad_urls, id, proxies):
-    try:
-        # Fetch the image using Apify's proxy service
-        async with requests.get(url, proxies=proxies, timeout=ClientTimeout(total=60)) as response:
-            if response.status == 200:
-                # Save the image
-                with open(image_name, 'wb') as f:
-                    f.write(await response.read())
-                print(f"Photo successfully downloaded as {image_name}")
-            else:
-                # Log the failed download
-                print(f"Failed to download {image_name}. Status code: {response.status}")
-                bad_urls.append({'url': url, 'id': id, 'error': f'Failed with status code {response.status}'})
-    except Exception as e:
-        # Log any exceptions
-        print(f"Error downloading {url}: {e}")
-        bad_urls.append({'url': url, 'id': id, 'error': str(e)})
-
-
-# Function to asynchronously download a single image using Apify proxy
 async def download_image(session, url, image_name, bad_urls, id, proxy_url):
+    # Check if the image already exists locally to skip downloading
+    if os.path.exists(image_name):
+        print(f"{image_name} already exists, skipping download.")
+        return
+
     try:
         # Fetch the image using Apify's proxy service
         async with session.get(url, proxy=proxy_url, timeout=ClientTimeout(total=600)) as response:
@@ -112,7 +97,6 @@ async def download_image(session, url, image_name, bad_urls, id, proxy_url):
         # Log any exceptions
         print(f"Error downloading {url}: {e}")
         bad_urls.append({'url': url, 'id': id, 'error': str(e)})
-
 
 # Function to download multiple images asynchronously and return a DataFrame of failed downloads
 async def download_images(urls_df, output_folder):
@@ -175,11 +159,12 @@ if __name__ == '__main__':
         #     df_women.to_csv(os.path.join(meta_data_folder, women_file_name), index=False)
         #     df_men.to_csv(os.path.join(meta_data_folder, men_file_name), index=False)
         #
-        df_women = pd.read_csv(os.path.join(meta_data_folder, women_file_name))
-        bad_image_metadata_women = asyncio.run(download_images(df_women, os.path.join(images_folder, os.path.splitext(women_file_name)[0])))
-        print("Images saved for women")
-        bad_image_metadata_women.to_csv(os.path.join(meta_data_folder, bad_urls_women_file_name),  index=False)
+        # df_women = pd.read_csv(os.path.join(meta_data_folder, women_file_name))
+        # bad_image_metadata_women = asyncio.run(download_images(df_women, os.path.join(images_folder, os.path.splitext(women_file_name)[0])))
+        # print("Images saved for women")
+        # bad_image_metadata_women.to_csv(os.path.join(meta_data_folder, bad_urls_women_file_name),  index=False)
 
+        df_men = pd.read_csv(os.path.join(meta_data_folder, men_file_name))
         bad_image_metadata_men = asyncio.run(download_images(df_men, os.path.join(images_folder, os.path.splitext(men_file_name)[0])))
         print("Images saved for men")
         bad_image_metadata_men.to_csv(os.path.join(meta_data_folder, bad_urls_men_file_name), index=False)

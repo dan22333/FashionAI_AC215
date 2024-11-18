@@ -37,3 +37,8 @@ async def search(request: SearchRequest):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error querying Pinecone: {str(e)}")
+
+# Add this block to run the app with Uvicorn
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="127.0.0.1", port=8002, reload=True)

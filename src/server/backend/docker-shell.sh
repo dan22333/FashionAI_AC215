@@ -16,6 +16,12 @@ if [ ! -f "$GOOGLE_CREDENTIALS_PATH/secret.json" ]; then
     exit 1
 fi
 
+# Determine if /bin/bash is passed as an argument
+if [ "$1" == "/bin/bash" ]; then
+    CMD="/bin/bash"
+else
+    CMD=""
+fi
 
 # Build the Docker image
 docker build -t $IMAGE_NAME -f Dockerfile .
@@ -25,4 +31,6 @@ docker run --rm --name "${IMAGE_NAME}-shell" -ti \
     -v "$BASE_DIR":/app \
     -v "$GOOGLE_CREDENTIALS_PATH":/secrets \
     -e GOOGLE_APPLICATION_CREDENTIALS=/secrets/secret.json \
-    -p 8001:8001 "$IMAGE_NAME" $CMD
+    -e VECTOR_SERVICE_HOST=localhost \
+    -e PINECONE_SERVICE_HOST=localhost \
+    -p 8000:8000 "$IMAGE_NAME" $CMD
