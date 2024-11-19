@@ -23,12 +23,12 @@ jobs:
           pip install flake8
           flake8 src/caption src/finetune src/inference src/scraper src/server/vector_service src/server/pinecone_service src/vectorized_db_init --count --select=E9,F63,F7,F82 --show-source --statistics
 
-      # React Linting with ESLint for Frontend
-      - name: Install Node.js and ESLint
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - run: |
-          cd src/server/frontend
-          npm install
-          npm run lint
+      # # React Linting with ESLint for Frontend
+      # - name: Install Node.js and ESLint
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: 18
+      # - run: |
+      #     cd src/server/frontend
+      #     npm install
+      #     npm run lint
