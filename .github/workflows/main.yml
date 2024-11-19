@@ -41,18 +41,18 @@ jobs:
 
       # Build Docker Images for each service
       - name: Build Caption Service
-        run: docker build -t caption:latest caption/
+        run: docker build -t caption:latest src/caption/
       - name: Build Finetune Service
-        run: docker build -t finetune:latest finetune/
+        run: docker build -t finetune:latest src/finetune/
       - name: Build Vectorized DB Init Service
-        run: docker build -t vectorized_db_init:latest vectorized_db_init/
+        run: docker build -t vectorized_db_init:latest src/vectorized_db_init/
       - name: Build Scraper Service
-        run: docker build -t scraper:latest scraper/
+        run: docker build -t scraper:latest src/scraper/
       - name: Build Backend Service
-        run: docker build -t backend:latest server/backend/
+        run: docker build -t backend:latest src/server/backend/
       - name: Build Pinecone Service
-        run: docker build -t pinecone_service:latest server/pinecone_service/
+        run: docker build -t pinecone_service:latest src/server/pinecone_service/
       - name: Build Vector Service
-        run: docker build -t vector_service:latest server/vector_service/
+        run: docker build -t vector_service:latest src/server/vector_service/
       - name: Build Frontend
-        run: docker build -t frontend:latest server/frontend/
+        run: docker build -t frontend:latest src/server/frontend/
