@@ -32,3 +32,27 @@ jobs:
       #     cd src/server/frontend
       #     npm install
       #     npm run lint
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Build Docker Images for each service
+      - name: Build Caption Service
+        run: docker build -t caption:latest caption/
+      - name: Build Finetune Service
+        run: docker build -t finetune:latest finetune/
+      - name: Build Vectorized DB Init Service
+        run: docker build -t vectorized_db_init:latest vectorized_db_init/
+      - name: Build Scraper Service
+        run: docker build -t scraper:latest scraper/
+      - name: Build Backend Service
+        run: docker build -t backend:latest server/backend/
+      - name: Build Pinecone Service
+        run: docker build -t pinecone_service:latest server/pinecone_service/
+      - name: Build Vector Service
+        run: docker build -t vector_service:latest server/vector_service/
+      - name: Build Frontend
+        run: docker build -t frontend:latest server/frontend/
