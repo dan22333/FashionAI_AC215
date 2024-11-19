@@ -18,7 +18,7 @@ jobs:
       - name: Install Python and Flake8
         uses: actions/setup-python@v4
         with:
-          python-version: 3.10  # Change this to a valid version
+          python-version: 3.9  # Change this to a valid version
       - run: |
           pip install flake8
           flake8 caption finetune inference scraper server/vector_service server/pinecone_service vectorized_db_init --count --select=E9,F63,F7,F82 --show-source --statistics
