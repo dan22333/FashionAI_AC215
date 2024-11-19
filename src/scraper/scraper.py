@@ -41,7 +41,7 @@ def get_items_seed(url):
     # Prepare the Actor input for each page
     run_input = {
         "startUrls": [{"url": url}],
-        "maxRequestsPerCrawl": num_of_items/2,
+        "maxRequestsPerCrawl": num_items_to_download/2,
         "proxy": {
             "useApifyProxy": True,
             "apifyProxyGroups": ["RESIDENTIAL"],  # This specifies using the residential proxy group
@@ -158,10 +158,10 @@ if __name__ == '__main__':
         #     df_women.to_csv(os.path.join(meta_data_folder, women_file_name), index=False)
         #     df_men.to_csv(os.path.join(meta_data_folder, men_file_name), index=False)
 
-        df_women = pd.read_csv(os.path.join(meta_data_folder, women_file_name))
-        bad_image_metadata_women = asyncio.run(download_images(df_women, os.path.join(images_folder, os.path.splitext(women_file_name)[0])))
-        print("Images saved for women")
-        bad_image_metadata_women.to_csv(os.path.join(meta_data_folder, bad_urls_women_file_name),  index=False)
+        # df_women = pd.read_csv(os.path.join(meta_data_folder, women_file_name))
+        # bad_image_metadata_women = asyncio.run(download_images(df_women, os.path.join(images_folder, os.path.splitext(women_file_name)[0])))
+        # print("Images saved for women")
+        # bad_image_metadata_women.to_csv(os.path.join(meta_data_folder, bad_urls_women_file_name),  index=False)
 
         df_men = pd.read_csv(os.path.join(meta_data_folder, men_file_name))
         bad_image_metadata_men = asyncio.run(download_images(df_men, os.path.join(images_folder, os.path.splitext(men_file_name)[0])))
