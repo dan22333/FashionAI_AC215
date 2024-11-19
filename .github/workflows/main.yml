@@ -7,52 +7,87 @@ on:
   pull_request:
     branches:
       - main
+
 jobs:
   lint:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - src/caption
+          - src/finetune
+          - src/inference
+          - src/scraper
+          - src/server/vector_service
+          - src/server/pinecone_service
+          - src/vectorized_db_init
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Python Linting with Flake8 across all relevant folders
       - name: Install Python and Flake8
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9  # Change this to a valid version
+          python-version: 3.9
       - run: |
+          cd ${{ matrix.service }}
           pip install flake8
-          flake8 src/caption src/finetune src/inference src/scraper src/server/vector_service src/server/pinecone_service src/vectorized_db_init --count --select=E9,F63,F7,F82 --show-source --statistics
-
-      # # React Linting with ESLint for Frontend
-      # - name: Install Node.js and ESLint
-      #   uses: actions/setup-node@v3
-      #   with:
-      #     node-version: 18
-      # - run: |
-      #     cd src/server/frontend
-      #     npm install
-      #     npm run lint
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - src/caption
+          - src/finetune
+          - src/vectorized_db_init
+          - src/scraper
+          - src/server/backend
+          - src/server/pinecone_service
+          - src/server/vector_service
+          - src/server/frontend
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Build Docker Images for each service
-      - name: Build Caption Service
-        run: docker build -t caption:latest src/caption/
-      - name: Build Finetune Service
-        run: docker build -t finetune:latest src/finetune/
-      - name: Build Vectorized DB Init Service
-        run: docker build -t vectorized_db_init:latest src/vectorized_db_init/
-      - name: Build Scraper Service
-        run: docker build -t scraper:latest src/scraper/
-      - name: Build Backend Service
-        run: docker build -t backend:latest src/server/backend/
-      - name: Build Pinecone Service
-        run: docker build -t pinecone_service:latest src/server/pinecone_service/
-      - name: Build Vector Service
-        run: docker build -t vector_service:latest src/server/vector_service/
-      - name: Build Frontend
-        run: docker build -t frontend:latest src/server/frontend/
+      - name: Build Docker Image for ${{ matrix.service }}
+        run: docker build -t ${{ matrix.service##*/ }}:latest ${{ matrix.service }}
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - src/caption
+          - src/finetune
+          - src/scraper
+          - src/vectorized_db_init
+          - src/server/backend
+          - src/server/pinecone_service
+          - src/server/vector_service
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Install Python and pipenv
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+      - run: pip install pipenv
+
+      - name: Install Dependencies for ${{ matrix.service }}
+        run: |
+          cd ${{ matrix.service }}
+          pipenv install --dev
+
+      - name: Run Tests for ${{ matrix.service }}
+        run: |
+          cd ${{ matrix.service }}
+          pipenv run pytest --cov=. --cov-report=xml --cov-fail-under=50
+
+      - name: Upload Coverage Report for ${{ matrix.service }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report-${{ matrix.service##*/ }}
+          path: ${{ matrix.service }}/coverage.xml
