@@ -1,20 +1,21 @@
 #!/bin/bash
-TODAY=$(date +'%Y-%m-%d %H:%M:%S')
+# TODAY=$(date +'%Y-%m-%d %H:%M:%S')
 
-# Load environment variables from the .env file
-export $(grep -v '^#' .env | xargs)
+# # Load environment variables from the .env file
+# export $(grep -v '^#' .env | xargs)
 
-cd ../../
-echo $PATH_TO_SECRET_KEY
-export GOOGLE_APPLICATION_CREDENTIALS=$PATH_TO_SECRET_KEY
-pipenv run dvc pull --remote fashion_ai_models --force
+# cd ../../
+# echo $PATH_TO_SECRET_KEY
+# export GOOGLE_APPLICATION_CREDENTIALS=$PATH_TO_SECRET_KEY
+# pipenv run dvc pull --remote fashion_ai_models --force
 
-cd src/finetune
+# cd src/finetune
 
 export IMAGE_NAME=fashion_ai_training-cli
 export BASE_DIR=$(pwd)
 export SECRETS_DIR=$(pwd)/../../../secrets/
 export GCS_BUCKET_URI="gs://vertexai_train"
+export GCS_DATA_BUCKET_URI="gs://fashion_ai_data"
 export GCP_PROJECT="fashion-ai-438801"
 
 # Check if the image already exists
