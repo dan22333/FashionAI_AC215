@@ -20,9 +20,6 @@ jobs:
           - name: finetune
             path: src/finetune
             python_version: 3.8
-          - name: inference
-            path: src/inference
-            python_version: 3.9
           - name: scraper
             path: src/scraper
             python_version: 3.11
