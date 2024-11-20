@@ -98,8 +98,8 @@ def main():
     local_model_dir = "local_fine_tuned_model"
 
     # Create dedicated subfolder for the model in the output directory
-    model_subfolder = os.path.join(local_model_dir, "model")
-    processor_subfolder = os.path.join(local_model_dir, "processor")
+    model_subfolder = local_model_dir#os.path.join(local_model_dir, "model")
+    processor_subfolder = local_model_dir#os.path.join(local_model_dir, "processor")
     os.makedirs(model_subfolder, exist_ok=True)
     os.makedirs(processor_subfolder, exist_ok=True)
 
