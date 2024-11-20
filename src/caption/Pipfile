@@ -17,6 +17,7 @@ dvc = "*"
 dvc-gdrive = "*"
 dvc-gs = "*"
 gitpython = "*" 
+pytest = "*"
 
 [dev-packages]
 

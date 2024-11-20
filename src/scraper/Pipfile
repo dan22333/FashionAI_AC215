@@ -12,6 +12,7 @@ aiohttp = "*"
 asyncio = "*"
 google-cloud-secret-manager = "*"
 apify = "*"
+pytest = "*"
 
 [dev-packages]
 

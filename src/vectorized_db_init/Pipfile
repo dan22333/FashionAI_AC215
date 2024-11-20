@@ -11,6 +11,7 @@ pinecone-client = "*"
 Pillow = "*"
 transformers = "*"
 tqdm = "*"
+pytest = "*"
 
 [dev-packages]
 
