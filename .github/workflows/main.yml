@@ -39,33 +39,48 @@ jobs:
     strategy:
       matrix:
         service:
-          - src/caption
-          - src/finetune
-          - src/vectorized_db_init
-          - src/scraper
-          - src/server/backend
-          - src/server/pinecone_service
-          - src/server/vector_service
-          - src/server/frontend
+          - name: caption
+            path: src/caption
+          - name: finetune
+            path: src/finetune
+          - name: vectorized_db_init
+            path: src/vectorized_db_init
+          - name: scraper
+            path: src/scraper
+          - name: backend
+            path: src/server/backend
+          - name: pinecone_service
+            path: src/server/pinecone_service
+          - name: vector_service
+            path: src/server/vector_service
+          - name: frontend
+            path: src/server/frontend
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Build Docker Image for ${{ matrix.service }}
-        run: docker build -t ${{ matrix.service##*/ }}:latest ${{ matrix.service }}
+      - name: Build Docker Image for ${{ matrix.service.name }}
+        run: docker build -t ${{ matrix.service.name }}:latest ${{ matrix.service.path }}
 
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         service:
-          - src/caption
-          - src/finetune
-          - src/scraper
-          - src/vectorized_db_init
-          - src/server/backend
-          - src/server/pinecone_service
-          - src/server/vector_service
+          - name: caption
+            path: src/caption
+          - name: finetune
+            path: src/finetune
+          - name: scraper
+            path: src/scraper
+          - name: vectorized_db_init
+            path: src/vectorized_db_init
+          - name: backend
+            path: src/server/backend
+          - name: pinecone_service
+            path: src/server/pinecone_service
+          - name: vector_service
+            path: src/server/vector_service
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -76,18 +91,18 @@ jobs:
           python-version: 3.9
       - run: pip install pipenv
 
-      - name: Install Dependencies for ${{ matrix.service }}
+      - name: Install Dependencies for ${{ matrix.service.name }}
         run: |
-          cd ${{ matrix.service }}
+          cd ${{ matrix.service.path }}
           pipenv install --dev
 
-      - name: Run Tests for ${{ matrix.service }}
+      - name: Run Tests for ${{ matrix.service.name }}
         run: |
-          cd ${{ matrix.service }}
+          cd ${{ matrix.service.path }}
           pipenv run pytest --cov=. --cov-report=xml --cov-fail-under=50
 
-      - name: Upload Coverage Report for ${{ matrix.service }}
+      - name: Upload Coverage Report for ${{ matrix.service.name }}
         uses: actions/upload-artifact@v3
         with:
-          name: coverage-report-${{ matrix.service##*/ }}
-          path: ${{ matrix.service }}/coverage.xml
+          name: coverage-report-${{ matrix.service.name }}
+          path: ${{ matrix.service.path }}/coverage.xml
