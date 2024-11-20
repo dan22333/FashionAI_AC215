@@ -12,6 +12,8 @@ wandb = "==0.15.5"
 annoy = "*"
 fashion-clip = "*"
 google-cloud-secret-manager = "*"
+pytest = "*"
+pytest-cov = "*"
 
 [dev-packages]
 

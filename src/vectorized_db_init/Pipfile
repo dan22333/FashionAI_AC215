@@ -12,6 +12,7 @@ Pillow = "*"
 transformers = "*"
 tqdm = "*"
 pytest = "*"
+pytest-cov = "*"
 
 [dev-packages]
 
