@@ -25,7 +25,7 @@ jobs:
             python_version: 3.9
           - name: scraper
             path: src/scraper
-            python_version: 3.9
+            python_version: 3.11
           - name: vector_service
             path: src/server/vector_service
             python_version: 3.9
@@ -64,7 +64,7 @@ jobs:
             python_version: 3.9
           - name: scraper
             path: src/scraper
-            python_version: 3.9
+            python_version: 3.11
           - name: backend
             path: src/server/backend
             python_version: 3.9
@@ -97,7 +97,7 @@ jobs:
             python_version: 3.9
           - name: scraper
             path: src/scraper
-            python_version: 3.9
+            python_version: 3.11
           - name: vectorized_db_init
             path: src/vectorized_db_init
             python_version: 3.9

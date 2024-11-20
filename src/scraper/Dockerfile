@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.11-slim-bookworm
 
 ARG DEBIAN_PACKAGES="build-essential git screen vim"
 
