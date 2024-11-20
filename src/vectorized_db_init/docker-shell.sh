@@ -4,7 +4,7 @@
 set -e
 
 # Define environment variables
-export IMAGE_NAME="backend-app"
+export IMAGE_NAME="docker-shell"
 export BASE_DIR=$(pwd)
 
 # Dynamically convert the relative path to an absolute path for the secrets directory
@@ -29,8 +29,5 @@ docker build -t $IMAGE_NAME -f Dockerfile .
 # Run the Docker container
 docker run --rm --name "${IMAGE_NAME}-shell" -ti \
     -v "$BASE_DIR":/app \
-    -v "$GOOGLE_CREDENTIALS_PATH":/secrets \
     -e GOOGLE_APPLICATION_CREDENTIALS=/secrets/secret.json \
-    -e VECTOR_SERVICE_HOST=localhost \
-    -e PINECONE_SERVICE_HOST=localhost \
-    -p 8000:8000 "$IMAGE_NAME" $CMD
+    "$IMAGE_NAME" $CMD

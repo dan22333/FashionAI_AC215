@@ -10,30 +10,44 @@ document.getElementById("search-button").addEventListener("click", async () => {
     resultsContainer.innerHTML = "<p>Loading...</p>";
 
     try {
-        const response = await fetch("http://localhost:8000/search", {  // Updated to point to backend
+        const response = await fetch("http://localhost:8000/search", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ queryText }),
+            body: JSON.stringify({ queryText }), // Send queryText as JSON
         });
 
-        const results = await response.json();
-        resultsContainer.innerHTML = "";
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
-        if (results.length === 0) {
+        const results = await response.json();
+        resultsContainer.innerHTML = ""; // Clear the results container
+
+        // Check if results.items exists and is an array
+        if (!Array.isArray(results.items) || results.items.length === 0) {
             resultsContainer.innerHTML = "<p>No results found.</p>";
         } else {
-            results.sort((a, b) => b.score - a.score);
-            results.forEach((result, index) => {
+            // Sort the items by score
+            results.items.sort((a, b) => b.score - a.score);
+
+            // Add the description
+            const description = document.createElement("p");
+            description.textContent = results.description;
+            resultsContainer.appendChild(description);
+
+            // Add the items
+            results.items.forEach((item) => {
                 const resultItem = document.createElement("div");
                 resultItem.className = "result-item";
                 resultItem.innerHTML = `
-                    <img src="${result.metadata.url}" alt="Fashion item ${result.id}">
+                    <img src="${item.item_url}" alt="${item.item_name}" />
                     <div>
-                        <h3>Rank ${index + 1}</h3>
-                        <p>Image ID: ${result.id}</p>
-                        <p>Score: ${result.score.toFixed(2)}</p>
+                        <h3>${item.item_name}</h3>
+                        <p>Brand: ${item.item_brand}</p>
+                        <p>${item.item_caption}</p>
+                        <p>Score: ${item.score}</p>
                     </div>
                 `;
                 resultsContainer.appendChild(resultItem);
@@ -41,6 +55,6 @@ document.getElementById("search-button").addEventListener("click", async () => {
         }
     } catch (error) {
         console.error("Error fetching results:", error);
-        resultsContainer.innerHTML = "<p>Error fetching results.</p>";
+        resultsContainer.innerHTML = "<p>Error fetching results. Please try again later.</p>";
     }
 });

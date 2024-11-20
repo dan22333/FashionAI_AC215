@@ -4,18 +4,17 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-apify-client = "*"
-python-dotenv = "*"
 pandas = "*"
-requests = "*"
-aiohttp = "*"
-asyncio = "*"
+google-cloud-storage = "*"
 google-cloud-secret-manager = "*"
-apify = "*"
+pinecone-client = "*"
+Pillow = "*"
+transformers = "*"
+tqdm = "*"
 pytest = "*"
 pytest-cov = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.11"
+python_version = "3.9"
