@@ -47,6 +47,7 @@ async def search(query: SearchQuery):
             items = [
                 {
                     "item_name": result["metadata"].get("name", "Unknown Name"),
+                    "item_type": result["metadata"].get("type", "Unknown Name"),
                     "item_url": result["metadata"].get("url", "Unknown URL"),
                     "item_caption": result["metadata"].get("caption", "No caption available"),
                     "item_brand": result["metadata"].get("brand", "Unknown Brand"),

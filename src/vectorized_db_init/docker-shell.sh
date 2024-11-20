@@ -29,6 +29,5 @@ docker build -t $IMAGE_NAME -f Dockerfile .
 # Run the Docker container
 docker run --rm --name "${IMAGE_NAME}-shell" -ti \
     -v "$BASE_DIR":/app \
-    -v "$GOOGLE_CREDENTIALS_PATH":/secrets \
     -e GOOGLE_APPLICATION_CREDENTIALS=/secrets/secret.json \
     "$IMAGE_NAME" $CMD
