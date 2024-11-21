@@ -49,22 +49,24 @@ def parse_metadata(metadata_text):
 
 # List subfolders in a GCP bucket path
 def list_subfolders(bucket_name, prefix):
-    # Debug: Print the bucket and prefix being used
-    print(f"Bucket: {bucket_name}, Prefix: {prefix}")
+    # Ensure the prefix ends with a slash
+    if not prefix.endswith('/'):
+        prefix += '/'
 
-    blobs = storage_client.list_blobs(bucket_name, prefix=prefix)
+    blobs = storage_client.list_blobs(bucket_name, prefix=prefix, delimiter='/')
 
-    # Debug: Check if any prefixes are returned
+    # Collect and return subfolder names
+    subfolders = set()
     if blobs.prefixes:
-        print("Found prefixes:")
-        for folder in blobs.prefixes:
-            print(folder)
-        return [folder for folder in blobs.prefixes]
+        subfolders.update(blobs.prefixes)
     else:
-        print("No prefixes found. Listing all blobs:")
         for blob in blobs:
-            print(blob.name)
-        return []
+            path_parts = blob.name[len(prefix):].split('/', 1)
+            if len(path_parts) > 1:  # Ensure it's a subfolder, not a file
+                subfolders.add(path_parts[0] + '/')
+
+    print(f"Subfolders under {prefix}: {subfolders}")
+    return list(subfolders)
 
 # Process and upload data for a specific topic
 def process_and_upload_topic(topic, base_bucket, pinecone_index):

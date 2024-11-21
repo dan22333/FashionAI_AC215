@@ -6,8 +6,8 @@ import torch
 app = FastAPI()
 
 # Load CLIP model and processor
-model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
-processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+model = CLIPModel.from_pretrained("weiyueli7/fashionclip")
+processor = CLIPProcessor.from_pretrained("weiyueli7/fashionclip")
 
 class VectorRequest(BaseModel):
     text: str

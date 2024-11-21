@@ -1,8 +1,8 @@
 from transformers import CLIPProcessor, CLIPModel
 
 # Load CLIP model and processor
-model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
-processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+model = CLIPModel.from_pretrained("weiyueli7/fashionclip")
+processor = CLIPProcessor.from_pretrained("weiyueli7/fashionclip")
 
 def get_clip_vector(input_data, is_image=False):
     if is_image:
