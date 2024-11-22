@@ -7,7 +7,7 @@ from google.cloud import secretmanager
 
 # Load environment variables
 APP_HOST = os.getenv("APP_HOST", "127.0.0.1")
-APP_PORT = int(os.getenv("APP_PORT_PINECONE", 8002))
+APP_PORT_PINECONE = int(os.getenv("APP_PORT_PINECONE", 8002))
 PINECONE_SECRET_NAME = os.getenv("PINECONE_SECRET_NAME", "projects/1087474666309/secrets/pincone/versions/latest")
 PINECONE_INDEX_NAME = os.getenv("PINECONE_INDEX_NAME", "clip-vector-index-test-prod")
 

@@ -15,8 +15,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-VECTOR_SERVICE_HOST = os.getenv("VECTOR_SERVICE_HOST", "localhost")
+APP_PORT_BACKEND = int(os.getenv("APP_PORT_BACKEND", 8000)) 
+APP_HOST = os.getenv("APP_HOST", "127.0.0.1")  # Default to 127.0.0.1# Default to 8001
 PINECONE_SERVICE_HOST = os.getenv("PINECONE_SERVICE_HOST", "localhost")
+VECTOR_SERVICE_HOST = os.getenv("VECTOR_SERVICE_HOST", "localhost")
 
 class SearchQuery(BaseModel):
     queryText: str
@@ -77,4 +79,4 @@ async def search(query: SearchQuery):
 # Add this block to run the app with Uvicorn
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:app", host=APP_HOST, port=APP_PORT_BACKEND, reload=True)
