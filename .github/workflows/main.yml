@@ -42,7 +42,7 @@ jobs:
       - name: Load Global .env Variables
         run: |
           set -a
-          . src/.env
+          . src/server/.env
           set +a
 
       - name: Install Python and Flake8
@@ -129,9 +129,9 @@ jobs:
       - name: Load Global .env Variables
         run: |
           set -a
-          . src/.env
+          . src/server/.env
           set +a
-          
+
       - name: Install Dependencies for ${{ matrix.service.name }}
         run: |
           cd ${{ matrix.service.path }}
