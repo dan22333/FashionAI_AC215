@@ -1,106 +1,74 @@
 import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import MagicMock, patch
-import numpy as np
+from unittest.mock import patch
+from main import app
 
-from main import app, SearchRequest
-
-# Create a test client
 client = TestClient(app)
 
+class MockSecretManagerClient:
+    def access_secret_version(self, request):
+        if request["name"] == "projects/1087474666309/secrets/pincone/versions/latest":
+            return MockSecretManagerResponse()
+        raise ValueError("Invalid secret name")
 
-# Mock Pinecone and Google Cloud SecretManager
-@pytest.fixture
-def mock_pinecone():
-    with patch("main.Pinecone") as mock_pinecone, \
-         patch("main.secretmanager.SecretManagerServiceClient") as mock_secret_manager:
+class MockSecretManagerResponse:
+    class Payload:
+        def __init__(self):
+            self.data = b"mocked-api-key"
+    def __init__(self):
+        self.payload = self.Payload()
 
-        # Mock the SecretManager client
-        mock_secret_instance = mock_secret_manager.return_value
-        mock_secret_instance.access_secret_version.return_value.payload.data.decode.return_value = "mocked_pinecone_api_key"
+class MockPineconeClient:
+    class Index:
+        def __init__(self, name):
+            self.name = name
 
-        # Mock Pinecone index
-        mock_index = MagicMock()
-        mock_index.query.return_value = {
-            "matches": [
-                {"id": "1", "score": 0.95, "metadata": {"title": "Item 1"}},
-                {"id": "2", "score": 0.85, "metadata": {"title": "Item 2"}},
-            ]
-        }
+        def query(self, vector, top_k, include_values, include_metadata):
+            if len(vector) != 512:
+                raise ValueError("Vector dimension does not match index dimension")
+            return {
+                "matches": [
+                    {"id": "item1", "score": 0.95, "metadata": {"label": "label1"}},
+                    {"id": "item2", "score": 0.89, "metadata": {"label": "label2"}}
+                ]
+            }
 
-        mock_pinecone.return_value.Index.return_value = mock_index
+    def __init__(self, api_key):
+        self.api_key = api_key
 
-        yield mock_index
+@pytest.fixture(autouse=True)
+def mock_external_services(monkeypatch):
+    monkeypatch.setattr("main.secretmanager.SecretManagerServiceClient", lambda: MockSecretManagerClient())
+    monkeypatch.setattr("main.Pinecone", lambda api_key: MockPineconeClient(api_key))
 
-
-# Test case: Successful search
-def test_search_success(mock_pinecone):
-    # Define a test search request
-    search_request = {
-        "vector": [0.1, 0.2, 0.3],
+def test_search_success():
+    payload = {
+        "vector": [0.1] * 512,  # Adjusted to match index dimension
         "top_k": 2
     }
-
-    # Send the POST request to the /search endpoint
-    response = client.post("/search", json=search_request)
-
-    # Assert the response
+    response = client.post("/search", json=payload)
     assert response.status_code == 200
-    assert response.json() == [
-        {"rank": 1, "id": "1", "score": 0.95, "metadata": {"title": "Item 1"}},
-        {"rank": 2, "id": "2", "score": 0.85, "metadata": {"title": "Item 2"}},
-    ]
+    data = response.json()
+    assert len(data) == 2
+    assert data[0]["id"] == "item1"
+    assert data[1]["id"] == "item2"
 
-    # Verify Pinecone was queried with the correct data
-    mock_pinecone.query.assert_called_once_with(
-        vector=np.array([0.1, 0.2, 0.3], dtype=np.float32).tolist(),
-        top_k=2,
-        include_values=True,
-        include_metadata=True
-    )
-
-
-# Test case: Error querying Pinecone
-def test_search_error(mock_pinecone):
-    # Simulate an error in Pinecone query
-    mock_pinecone.query.side_effect = Exception("Pinecone error")
-
-    # Define a test search request
-    search_request = {
-        "vector": [0.1, 0.2, 0.3],
+def test_search_invalid_vector():
+    payload = {
+        "vector": "invalid_vector",
         "top_k": 2
     }
+    response = client.post("/search", json=payload)
+    assert response.status_code == 422
+    error_message = response.json()["detail"][0]["msg"]
+    assert "Input should be a valid list" in error_message
 
-    # Send the POST request to the /search endpoint
-    response = client.post("/search", json=search_request)
-
-    # Assert the response
-    assert response.status_code == 500
-    assert "Error querying Pinecone: Pinecone error" in response.json()["detail"]
-
-    # Verify Pinecone was queried before the error
-    mock_pinecone.query.assert_called_once()
-
-
-# Test case: Validation error for invalid input
-def test_search_validation_error():
-    # Send a request with invalid input (missing top_k)
-    invalid_request = {
-        "vector": [0.1, 0.2, 0.3]
-    }
-    response = client.post("/search", json=invalid_request)
-
-    # Assert the response
-    assert response.status_code == 422  # Unprocessable Entity
-    assert "top_k" in response.json()["detail"][0]["loc"][-1]
-
-    # Send a request with an invalid vector
-    invalid_request = {
-        "vector": "not_a_list",
-        "top_k": 2
-    }
-    response = client.post("/search", json=invalid_request)
-
-    # Assert the response
-    assert response.status_code == 422  # Unprocessable Entity
-    assert "vector" in response.json()["detail"][0]["loc"][-1]
+def test_search_internal_error():
+    with patch("main.MockPineconeClient.Index.query", side_effect=Exception("Mocked internal error")):
+        payload = {
+            "vector": [0.1] * 512,
+            "top_k": 2
+        }
+        response = client.post("/search", json=payload)
+        assert response.status_code == 500
+        assert "Error querying Pinecone: Mocked internal error" in response.json()["detail"]

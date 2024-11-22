@@ -1,0 +1,149 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - name: caption
+            path: src/caption
+            python_version: 3.11
+          - name: finetune
+            path: src/finetune
+            python_version: 3.8
+          - name: scraper
+            path: src/scraper
+            python_version: 3.11
+          - name: vector_service
+            path: src/server/vector_service
+            python_version: 3.9
+          - name: pinecone_service
+            path: src/server/pinecone_service
+            python_version: 3.9
+          - name: vectorized_db_init
+            path: src/vectorized_db_init
+            python_version: 3.9
+          - name: backend
+            path: src/server/backend
+            python_version: 3.9
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Load Global .env Variables
+        run: |
+          set -a
+          . src/server/.env
+          set +a
+
+      - name: Install Python and Flake8
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.service.python_version }}
+      - run: |
+          cd ${{ matrix.service.path }}
+          pip install flake8
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - name: caption
+            path: src/caption
+            python_version: 3.11
+          - name: finetune
+            path: src/finetune
+            python_version: 3.8
+          - name: vectorized_db_init
+            path: src/vectorized_db_init
+            python_version: 3.9
+          - name: scraper
+            path: src/scraper
+            python_version: 3.11
+          - name: backend
+            path: src/server/backend
+            python_version: 3.9
+          - name: pinecone_service
+            path: src/server/pinecone_service
+            python_version: 3.9
+          - name: vector_service
+            path: src/server/vector_service
+            python_version: 3.9
+          - name: frontend
+            path: src/server/frontend
+            python_version: 3.9
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Build Docker Image for ${{ matrix.service.name }}
+        run: docker build -t ${{ matrix.service.name }}:latest ${{ matrix.service.path }}
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - name: caption
+            path: src/caption
+            python_version: 3.11
+          - name: finetune
+            path: src/finetune
+            python_version: 3.8
+          - name: scraper
+            path: src/scraper
+            python_version: 3.11
+          - name: vectorized_db_init
+            path: src/vectorized_db_init
+            python_version: 3.9
+          - name: backend
+            path: src/server/backend
+            python_version: 3.9
+          - name: pinecone_service
+            path: src/server/pinecone_service
+            python_version: 3.9
+          - name: vector_service
+            path: src/server/vector_service
+            python_version: 3.9
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Install Python and pipenv
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.service.python_version }}
+      - run: pip install pipenv
+
+      - name: Load Global .env Variables
+        run: |
+          set -a
+          . src/server/.env
+          set +a
+
+      - name: Install Dependencies for ${{ matrix.service.name }}
+        run: |
+          cd ${{ matrix.service.path }}
+          pipenv install --dev
+
+      - name: Run Unit Tests for ${{ matrix.service.name }}
+        run: |
+          cd ${{ matrix.service.path }}
+          pipenv run pytest --cov=. --cov-report=xml --cov-fail-under=50
+
+      - name: Upload Coverage Report for ${{ matrix.service.name }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report-${{ matrix.service.name }}
+          path: ${{ matrix.service.path }}/coverage.xml

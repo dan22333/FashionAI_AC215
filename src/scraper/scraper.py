@@ -41,7 +41,7 @@ def get_items_seed(url):
     # Prepare the Actor input for each page
     run_input = {
         "startUrls": [{"url": url}],
-        "maxRequestsPerCrawl": num_of_items/2,
+        "maxRequestsPerCrawl": num_items_to_download/2,
         "proxy": {
             "useApifyProxy": True,
             "apifyProxyGroups": ["RESIDENTIAL"],  # This specifies using the residential proxy group
@@ -142,7 +142,6 @@ async def download_images(urls_df, output_folder):
 
 if __name__ == '__main__':
     try:
-        # Base URL for pagination
         # base_url_women = "https://www.farfetch.com/shopping/women/clothing-1/items.aspx?page=1"
         # base_url_men = "https://www.farfetch.com/shopping/men/clothing-2/items.aspx?page=1"
         #
@@ -158,7 +157,7 @@ if __name__ == '__main__':
         #     # Save the DataFrame to the full path
         #     df_women.to_csv(os.path.join(meta_data_folder, women_file_name), index=False)
         #     df_men.to_csv(os.path.join(meta_data_folder, men_file_name), index=False)
-        #
+
         # df_women = pd.read_csv(os.path.join(meta_data_folder, women_file_name))
         # bad_image_metadata_women = asyncio.run(download_images(df_women, os.path.join(images_folder, os.path.splitext(women_file_name)[0])))
         # print("Images saved for women")

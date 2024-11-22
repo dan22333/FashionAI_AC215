@@ -32,8 +32,6 @@ RUN pipenv install --deploy --ignore-pipfile
 # Copy application code
 COPY . .
 
-# Expose the port
-EXPOSE 8002
 
 # Run the application with Uvicorn
-CMD ["pipenv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8002"]
+CMD ["sh", "-c", "pipenv run uvicorn main:app --host 0.0.0.0 --port ${APP_PORT_PINECONE:-8002}"]

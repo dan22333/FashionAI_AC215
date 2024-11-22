@@ -1,19 +1,12 @@
 [[source]]
+name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
-name = "pypi"
-
-[packages]
-torch = "*"
-torchvision = "*"
-transformers = "*"
-Pillow = "==9.2.0"
-wandb = "==0.15.5"
-annoy = "*"
-fashion-clip = "*"
-google-cloud-secret-manager = "*"
 
 [dev-packages]
 
+[packages]
+google-cloud-aiplatform = "*"
+
 [requires]
-python_version = "3.8"
+python_version = "3.9"

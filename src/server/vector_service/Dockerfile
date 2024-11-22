@@ -1,12 +1,14 @@
 # Use Python base image
 FROM python:3.9-slim
 
+# Set default environment variables for build-time configuration
 ARG DEBIAN_PACKAGES="build-essential git screen vim"
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8
 ENV PYENV_SHELL=/bin/bash
 ENV PYTHONUNBUFFERED=1
 
+# Install system dependencies and Python tools
 RUN set -ex; \
     for i in $(seq 1 8); do mkdir -p "/usr/share/man/man${i}"; done && \
     apt-get update && \
@@ -20,20 +22,18 @@ RUN set -ex; \
     mkdir -p /app && \
     chown app:app /app
 
-# Set working directory
+# Set the working directory
 WORKDIR /app
 
-# Copy Pipfile first to leverage Docker caching
+# Copy Pipfile and Pipfile.lock for dependency installation
 COPY Pipfile Pipfile.lock ./
 
-# Install dependencies
+# Install dependencies using Pipenv
 RUN pipenv install --deploy --ignore-pipfile
 
-# Copy application code
+# Copy the application code
 COPY . .
 
-# Expose the port
-EXPOSE 8001
 
-# Run the application with Uvicorn
-CMD ["pipenv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001"]
+# Use environment variables to dynamically set the host and port for Uvicorn
+CMD ["sh", "-c", "pipenv run uvicorn main:app --host ${APP_HOST:-0.0.0.0} --port ${APP_PORT_VECTOR:-8001}"]

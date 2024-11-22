@@ -14,6 +14,8 @@ uvicorn = "*"
 python-dotenv = "*"
 requests = "*"
 httpx = "*"
+pytest = "*"
+pytest-cov = "*"
 
 [dev-packages]
 
