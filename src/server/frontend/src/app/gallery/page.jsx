@@ -77,7 +77,7 @@ export default function StyleTransferPage() {
             allStyleResults.forEach((styleResult) => {
                 console.log(`Style: ${styleResult.style}`);
                 styleResult.items.forEach((item) => {
-                    console.log(`Image URL: ${item.item_url}, Rank: ${item.rank}`);
+                    console.log(`Image URL: ${item.image_url}, Rank: ${item.rank}`);
                 });
             });
 
@@ -139,8 +139,8 @@ export default function StyleTransferPage() {
                                     {gallery.items && gallery.items.map((item, itemIndex) => (
                                         <div key={itemIndex} className="flex flex-col">
                                             <div className="relative aspect-square rounded-xl overflow-hidden shadow-lg mb-4">
-                                                <Image 
-                                                    src={item.item_url}
+                                                <img 
+                                                    src={item.image_url}
                                                     alt={item.item_name}
                                                     fill
                                                     className="object-cover hover:scale-105 transition-transform duration-300"

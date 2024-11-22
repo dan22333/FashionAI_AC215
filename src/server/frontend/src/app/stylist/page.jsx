@@ -90,7 +90,7 @@ export default function ChatPage({ searchParams }) {
                             {fashionItems.items.map((item, index) => (
                                 <div key={index} className="flex flex-col">
                                     <div className="relative aspect-square rounded-xl overflow-hidden shadow-lg mb-4">
-                                        <Image
+                                        <img
                                             src={item.image_url}
                                             alt={item.item_name}
                                             fill

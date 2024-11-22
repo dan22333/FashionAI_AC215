@@ -16,7 +16,7 @@
     "axios": "^1.7.7",
     "classnames": "^2.5.1",
     "mic-recorder-to-mp3": "^2.2.2",
-    "next": "latest",
+    "next": "^15.0.3",
     "next-auth": "^4.24.10",
     "plotly.js-dist": "^2.35.2",
     "react": "latest",
