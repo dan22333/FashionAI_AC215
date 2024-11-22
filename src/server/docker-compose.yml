@@ -49,7 +49,11 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "3000:3000"
+    environment:
+      NODE_ENV: production  # Ensure the app runs in production mode
+    stdin_open: true  # Keep STDIN open for interactive mode (optional)
+    tty: true         # Allocate a pseudo-TTY (optional)
     networks:
       - app-network
     depends_on:
