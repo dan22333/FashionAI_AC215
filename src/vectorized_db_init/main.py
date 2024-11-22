@@ -88,6 +88,7 @@ def process_image_metadata(caption_entry, metadata_df, topic, data_name, image_b
         return None
 
     # Extract metadata fields
+
     metadata_entry = metadata_entry.iloc[0]  # Convert to a series for easy access
     brand = metadata_entry.get("brand", "")
     image_url = metadata_entry.get("medias/0/url", "")
@@ -95,6 +96,7 @@ def process_image_metadata(caption_entry, metadata_df, topic, data_name, image_b
     item_type = metadata_entry.get("categories/1", "")
     item_sub_type = metadata_entry.get("categories/2", "")
     item_url = metadata_entry.get("source/crawlUrl", "")
+    image_description = metadata_entry.get("medias/0/alt", "")
 
     # Get image data and generate vector
     image_path = f"scrapped_data/{topic}/{data_name}{image_name}"
@@ -107,7 +109,7 @@ def process_image_metadata(caption_entry, metadata_df, topic, data_name, image_b
 
     # Prepare metadata for Pinecone
     pinecone_metadata = {
-        "image_name": f"{topic} {image_name}",
+        "image_name": image_description,
         "brand": brand,
         "gender": gender,
         "item_type": item_type,
