@@ -16,8 +16,7 @@ ENV PYENV_SHELL=/bin/bash
 # Tell Python to disable buffering so we don't lose any logs.
 ENV PYTHONUNBUFFERED=1
 
-
-# Ensure we have an up to date baseline, install dependencies and
+# Ensure we have an up-to-date baseline, install dependencies, and
 # create a user so we don't run the app as root
 RUN set -ex; \
     for i in $(seq 1 8); do mkdir -p "/usr/share/man/man${i}"; done && \
@@ -46,8 +45,8 @@ RUN pipenv install --deploy --ignore-pipfile
 # Copy the rest of the application code
 COPY . .
 
-# Expose the application port
+# Expose the default application port
 EXPOSE 8000
 
-# Run the application with Uvicorn
-CMD ["pipenv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run the application with Uvicorn, dynamically using APP_PORT_BACKEND
+CMD ["sh", "-c", "pipenv run uvicorn main:app --host 0.0.0.0 --port ${APP_PORT_BACKEND:-8000}"]

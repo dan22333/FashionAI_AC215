@@ -40,7 +40,5 @@ RUN pipenv install --deploy --ignore-pipfile
 # Copy the rest of the application code
 COPY . .
 
-COPY ../../../secrets /secrets
-
 # Run the application or open a shell
 CMD ["pipenv", "run", "python", "main.py"]

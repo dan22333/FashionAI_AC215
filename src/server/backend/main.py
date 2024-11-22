@@ -15,8 +15,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-VECTOR_SERVICE_HOST = os.getenv("VECTOR_SERVICE_HOST", "vector_service")
-PINECONE_SERVICE_HOST = os.getenv("PINECONE_SERVICE_HOST", "pinecone_service")
+VECTOR_SERVICE_HOST = os.getenv("VECTOR_SERVICE_HOST", "localhost")
+PINECONE_SERVICE_HOST = os.getenv("PINECONE_SERVICE_HOST", "localhost")
 
 class SearchQuery(BaseModel):
     queryText: str
@@ -46,13 +46,16 @@ async def search(query: SearchQuery):
             search_results = pinecone_response.json()
             items = [
                 {
-                    "item_name": result["metadata"].get("name", "Unknown Name"),
-                    "item_type": result["metadata"].get("type", "Unknown Name"),
-                    "item_url": result["metadata"].get("url", "Unknown URL"),
+                    "item_name": result["metadata"].get("image_name", "Unknown Name"),
+                    "item_brand": result["metadata"].get("brand", "Unknown Name"),
+                    "item_gender": result["metadata"].get("gender", "Unknown Name"),
+                    "item_type": result["metadata"].get("item_type", "Unknown Name"),
+                    "item_sub_type": result["metadata"].get("item_sub_type", "Unknown Name"),
+                    "item_url": result["metadata"].get("item_url", "Unknown URL"),
+                    "image_url": result["metadata"].get("image_url", "Unknown URL"),
                     "item_caption": result["metadata"].get("caption", "No caption available"),
-                    "item_brand": result["metadata"].get("brand", "Unknown Brand"),
                     "rank": result.get("rank", "N/A"),
-                    "score": result.get("score", "N/A"),
+                    "score": result.get("score", "N/A"),                  
                 }
                 for result in search_results if "metadata" in result
             ]
