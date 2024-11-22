@@ -51,7 +51,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "${APP_PORT_FRONTEND}:${APP_PORT_FRONTEND}"
     environment:
       NODE_ENV: production  # Ensure the app runs in production mode
     stdin_open: true  # Keep STDIN open for interactive mode (optional)
