@@ -32,9 +32,18 @@ jobs:
           - name: vectorized_db_init
             path: src/vectorized_db_init
             python_version: 3.9
+          - name: backend
+            path: src/server/backend
+            python_version: 3.9
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
+
+      - name: Load Global .env Variables
+        run: |
+          set -a
+          . src/.env
+          set +a
 
       - name: Install Python and Flake8
         uses: actions/setup-python@v4
@@ -117,6 +126,12 @@ jobs:
           python-version: ${{ matrix.service.python_version }}
       - run: pip install pipenv
 
+      - name: Load Global .env Variables
+        run: |
+          set -a
+          . src/.env
+          set +a
+          
       - name: Install Dependencies for ${{ matrix.service.name }}
         run: |
           cd ${{ matrix.service.path }}
