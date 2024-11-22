@@ -27,6 +27,7 @@ const DataService = {
                     item_name: item.item_name,
                     item_url: item.item_url,
                     item_type: item.item_type,
+                    image_url: item.image_url,
                     item_caption: item.item_caption,
                     item_brand: item.item_brand,
                     rank: item.rank,

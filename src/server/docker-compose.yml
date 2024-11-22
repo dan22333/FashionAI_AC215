@@ -53,7 +53,7 @@ services:
     ports:
       - "${APP_PORT_FRONTEND}:${APP_PORT_FRONTEND}"
     environment:
-      NODE_ENV: production  # Ensure the app runs in production mode
+      NODE_ENV: production  # Ensure  the app runs in production mode
     stdin_open: true  # Keep STDIN open for interactive mode (optional)
     tty: true         # Allocate a pseudo-TTY (optional)
     networks:

@@ -14,6 +14,7 @@ const nextConfig = {
         domains: [
             'localhost',
             'rag-system-api-service',
+            'cdn-images.farfetch-contents.com',
             // Add any other domains you'll be loading images from
         ],
         remotePatterns: [
