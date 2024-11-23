@@ -7,9 +7,22 @@ export $(grep -v '^#' .env | xargs)
 cd ../../
 
 cd data
-pipenv run dvc pull sample_scrapped_images.dvc --remote sample_scrapped_images --force
 echo ../$PATH_TO_SECRET_KEY
 export GOOGLE_APPLICATION_CREDENTIALS=../$PATH_TO_SECRET_KEY
+
+# Check if the desired remote exists in DVC configuration
+REMOTE_NAME="sample_scrapped_images"
+REMOTE_URL="gs://sample_scrapped_images"
+
+if ! dvc remote list | grep -q "$REMOTE_NAME"; then
+  echo "Adding DVC remote '$REMOTE_NAME' with URL '$REMOTE_URL'"
+  dvc remote add -d "$REMOTE_NAME" "$REMOTE_URL"
+else
+  echo "DVC remote '$REMOTE_NAME' already exists"
+fi
+
+pipenv run dvc pull sample_scrapped_images.dvc --remote sample_scrapped_images --force
+
 
 
 cd ../src/caption
