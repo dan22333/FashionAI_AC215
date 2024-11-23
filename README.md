@@ -1,34 +1,15 @@
-# AC215 - Milestone2 - Fashion AI App
+# AC215 - Milestone4 - Fashion AI App
 
-### Project Milestone 2 Organization
+## Project Milestone 4 Organization
+
 
 ```
-├── Readme.md
-├── data # DO NOT UPLOAD DATA TO GITHUB, only .gitkeep to keep the directory or a really small sample
-├── notebooks
-│   └── eda.ipynb
-├── references
-├── reports
-│   └── Statement of Work_Sample.pdf
-└── src
-    ├── datapipeline
-    │   ├── Dockerfile
-    │   ├── Pipfile
-    │   ├── Pipfile.lock
-    │   ├── dataloader.py
-    │   ├── docker-shell.sh
-    │   ├── preprocess_cv.py
-    │   ├── preprocess_rag.py
-    ├── docker-compose.yml
-    └── models
-        ├── Dockerfile
-        ├── docker-shell.sh
-        ├── infer_model.py
-        ├── model_rag.py
-        └── train_model.py
+TODO: replace with file structure
 ```
 
-### Overview
+
+
+## Overview
 
 **Team Members**
 Yushu Qiu, Weiyue Li, Daniel Nurieli, Michelle Tan
@@ -37,97 +18,217 @@ Yushu Qiu, Weiyue Li, Daniel Nurieli, Michelle Tan
 The Fashion AI Group
 
 **Project**
-Our goal is to create an AI-powered platform that aggregates fashion items from various brands, allowing users to quickly and easily find matching items without the hassle of endless browsing. Using our App, the users can put in a request such as "find me a classic dress for attending a summer wedding" and receive the clothing item that matches their request most closely.
+Our goal is to create an AI-powered platform that aggregates fashion items from various brands, allowing users to quickly and easily find matching items without the hassle of endless browsing. Using our App, the users can put in a request such as "find me a classic dress for attending a summer wedding" and receive the clothing item that matches their request most closely. 
 
-### Milestone 2 Summary
+## 1. Application Design Document
 
-For this milestone, we did the following: 
-1. Scraped ~1,500 images and clothing items for men and women from the Farfetch website
-2. Generated captions for the images using Gemini API
-3. Finetuned the Fashion CLIP model using the images alongside their captions
+### Overview
 
-In our submission file, we have the components for data scraping, caption generation, and Fashion CLIP finetuning. 
+We have designed this application to use a server to access our finetuned FashionClip model, a vector database, to take user text queries and return recommended fashion items with key metadata information. The application design and architecture choices reflect these user needs.
 
-**Data scraping**
+In the next milestone, we intend to deploy an LLM agent to improve the flexibility of how the users could interact with the Application.
 
-We gathered a dataset of 1,500 clothing items from the Farfetch website. We have stored it in a private Google Cloud Bucket. Note we limited the number of images used in this current training dataset because of budget and processing speed limitations related to scraping and caption generation. We plan to expand our dataset for future milestones. We used Apify API to automate the scraping process.
+---
 
-**Caption generation**
+### Solution Architecture
 
-We used Gemini 1.5 Flash model to come up with captions for the images used for training. Here is the prompt we used: "For this image, come up with a caption that has 4 parts, and uses short phrases to answer each of the four categories below: - the style - the occasions that it’s worn in - material used - texture and patterns."
+The Fashion AI application integrates key components to deliver a seamless user experience. During the application run, pinecone_service, vector_service, backend and frontend components are run. Users interact with the frontend application through a web browser, sending requests to the backend API for fashion recommendations and stylist interactions.
 
-**Fashion CLIP finetuning**
+During the development cycle, we also have additional components that handle scraping, captioning, fintuning.
 
-[To add description]
+User interface will be covered in the frontend section below.
 
+Here are the key components. each is a subfolder in the server folder:
 
-### ML model reports
+1. **Frontend**: the frontend application is built using Next.js. It serves as the user interface for the Fashion AI application, allowing users to interact with the AI stylist and browse fashion items.
 
-<a href="https://github.com/weiyueli7/AC215_FashionAI/blob/michelle-test-branch/reports/W%26B%20Chart%2010_19_2024%2C%2010_13_28%20PM%20(3).svg">
-    <img src="https://github.com/weiyueli7/AC215_FashionAI/blob/michelle-test-branch/reports/W%26B%20Chart%2010_19_2024%2C%2010_13_28%20PM%20(3).svg" alt="Interactive SVG" width="600" height="460" />
-</a>
+2. **Backend**: The backend directory contains the core API for the Fashion AI application. It handles requests from the frontend, processes user queries, and interacts with the database and external services to provide fashion recommendations.
 
+3. **Pinecone service**: The pinecone_service directory contains the implementation for interacting with Pinecone, a vector database service used for managing and querying high-dimensional data. This service is essential for handling fashion item embeddings and similarity searches.
 
-<a href="https://github.com/weiyueli7/AC215_FashionAI/blob/michelle-test-branch/reports/W%26B%20Chart%2010_19_2024%2C%2010_13_28%20PM%20(1).svg">
-    <img src="https://github.com/weiyueli7/AC215_FashionAI/blob/michelle-test-branch/reports/W%26B%20Chart%2010_19_2024%2C%2010_13_28%20PM%20(1).svg" alt="Interactive SVG" width="600" height="460" />
-</a>
+4. **Vector service**: The vector_service directory is responsible for managing vector representations of fashion items and performing similarity searches. This service leverages machine learning models to generate embeddings for fashion items, enabling efficient retrieval based on user queries.
 
+---
 
-<a href="https://github.com/weiyueli7/AC215_FashionAI/blob/michelle-test-branch/reports/W%26B%20Chart%2010_19_2024%2C%2010_13_28%20PM%20(2).svg">
-    <img src="https://github.com/weiyueli7/AC215_FashionAI/blob/michelle-test-branch/reports/W%26B%20Chart%2010_19_2024%2C%2010_13_28%20PM%20(2).svg" alt="Interactive SVG" width="600" height="460" />
-</a>
+### Technical Architecture
 
+#### Technologies and Frameworks
 
-[```
-The files are empty placeholders only. You may adjust this template as appropriate for your project.
-Never commit large data files,trained models, personal API Keys/secrets to GitHub
-```]
+1. **Frontend**:
+   - **Next.js**: A React framework for building server-rendered applications, providing features like static site generation and API routes.
+   - **React**: A JavaScript library for building user interfaces, enabling the creation of reusable components.
+   - **Tailwind CSS**: A utility-first CSS framework for styling the application, allowing for rapid UI development.
+   - **Axios**: A promise-based HTTP client for making API requests from the frontend.
 
+2. **Backend**:
+   - **Node.js**: A JavaScript runtime for building the backend API, allowing for asynchronous processing and scalability.
+   - **Fast API**: A modern Python framework for creating high-performance APIs, used for handling AI model requests and processing user queries efficiently.
 
+   - **Pytest**: A testing framework for writing and running unit tests to ensure the backend API's functionality and reliability.
 
+3. **Deployment**:
+   - **Docker**: A platform for developing, shipping, and running applications in containers, ensuring consistency across environments.
 
------
-BELOW HAS NOT BEEN UPDATED
+#### Design Patterns
 
-[**Data Pipeline Containers**
-1. One container processes the 100GB dataset by resizing the images and storing them back to Google Cloud Storage (GCS).
+- **MVC (Model-View-Controller)**: The application follows the MVC design pattern, separating concerns between the data model, user interface, and control logic.
+- **Service Layer**: A service layer is implemented in the backend to handle business logic and API interactions, promoting code reusability and separation of concerns.
+- **Component-Based Architecture**: The frontend is built using a component-based architecture, allowing for modular development and easier maintenance.
 
-	**Input:** Source and destination GCS locations, resizing parameters, and required secrets (provided via Docker).
+---
 
-	**Output:** Resized images stored in the specified GCS location.
-
-2. Another container prepares data for the RAG model, including tasks such as chunking, embedding, and populating the vector database.
-
-## Data Pipeline Overview
-
-1. **`src/datapipeline/preprocess_cv.py`**
-   This script handles preprocessing on our 100GB dataset. It reduces the image sizes to 128x128 (a parameter that can be changed later) to enable faster iteration during processing. The preprocessed dataset is now reduced to 10GB and stored on GCS.
-
-2. **`src/datapipeline/preprocess_rag.py`**
-   This script prepares the necessary data for setting up our vector database. It performs chunking, embedding, and loads the data into a vector database (ChromaDB).
-
-3. **`src/datapipeline/Pipfile`**
-   We used the following packages to help with preprocessing:
-   - `special cheese package`
-
-4. **`src/preprocessing/Dockerfile(s)`**
-   Our Dockerfiles follow standard conventions, with the exception of some specific modifications described in the Dockerfile/described below.]
+## 2. Frontend and API Documentation
 
 
-├── Readme.md ├── data # DO NOT UPLOAD DATA TO GITHUB, only .gitkeep to keep the directory or a really small sample ├── notebooks │ └── eda.ipynb ├── references ├── reports │ └── Statement of Work_Sample.pdf └── src ├── datapipeline │ ├── Dockerfile │ ├── Pipfile │ ├── Pipfile.lock │ ├── dataloader.py │ ├── docker-shell.sh │ ├── preprocess_cv.py │ ├── preprocess_rag.py ├── docker-compose.yml └── models ├── Dockerfile ├── docker-shell.sh ├── infer_model.py ├── model_rag.py └── train_model.py
+### Application Components
 
-[## Running Dockerfile
-Instructions for running the Dockerfile can be added here.
-To run Dockerfile - `Instructions here`
+#### Frontend Components
 
-**Models container**
-- This container has scripts for model training, rag pipeline and inference
-- Instructions for running the model container - `Instructions here`
+1. **Pages**: The application consists of various pages, each representing a different route:
+   - **Home Page**: Introduces the application and provides navigation options.
+   - **Stylist Page**: Users can interact with the AI fashion stylist for personalized recommendations.
+   - **Gallery Page**: Showcases various fashion items and styles.
 
-**Notebooks/Reports**
-This folder contains code that is not part of container - for e.g: Application mockup, EDA, any 🔍 🕵️‍♀️ 🕵️‍♂️ crucial insights, reports or visualizations.]
+2. **Components**: Reusable UI components used across different pages:
+   - **Buttons**: Custom button components for navigation and actions.
+   - **Image Gallery**: Displays images in a grid format.
+   - **Chat Input**: Component for user input in stylist interactions.
 
-----
-You may adjust this template as appropriate for your project.
+3. **Services**: Modules that handle API calls and data fetching, such as `DataService`, which communicates with the backend to retrieve fashion items and stylist recommendations.
+
+4. **Styles**: The application uses Tailwind CSS for styling, allowing for responsive design and utility-first CSS classes.
+
+#### API Components
+
+The application utilizes a set of APIs to facilitate communication between the frontend and backend services. Key APIs include:
+
+1. **Get Fashion Items**: Retrieves fashion items based on user queries.
+2. **User Interaction with Stylist**: Allows users to send messages to the AI stylist and receive recommendations.
+
+---
+
+### Setup Instructions
+
+To set up the Fashion AI application, follow these steps:
+
+#### Frontend Setup
+
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/yourusername/your-repo-name.git
+   cd your-repo-name/src/server/frontend
+   ```
+
+2. **Install Dependencies**:
+   Ensure you have Node.js and npm installed. Then, install the required dependencies:
+   ```bash
+   npm install
+   ```
+<!-- 
+3. **Environment Variables**:
+   Create a `.env.production` file in the root of the frontend directory and add the necessary environment variables. Refer to the `.env.example` file for required variables.
+
+4. **Build the Application**:
+   Build the Next.js application for production:
+   ```bash
+   npm run build
+   ``` -->
+
+3. **Start the Development Server**:
+   To start the application in development mode:
+   ```bash
+   npm run dev
+   ```
+   The application will be available at `http://localhost:3000`.
+
+#### API Setup
+
+1. **Backend Service**: Ensure that the backend service is running and accessible. The frontend relies on the backend APIs to function correctly.
+
+2. **API Configuration**: Make sure the API base URL is correctly set in the environment variables. This is typically done in the `.env.production` file.
+
+---
+
+### Usage Guidelines
+
+#### Frontend Usage
+
+- **Navigating the Application**: Use the navigation buttons on the home page to access different sections.
+- **Interacting with the Stylist**: On the Stylist page, describe your occasion and style preferences to receive personalized recommendations.
+- **Viewing the Gallery**: The Gallery page allows browsing through various fashion items. Click on any item for more details.
+
+#### API Usage
+
+The function GetFashionItems posts the user query and gets items below in return to be serviced on the frontend. The url used is "/search".
+
+    {
+        "items": [
+            {
+                "item_name": "string",
+                "item_caption": "string",
+                "image_url": "string",
+                "item_url": "string",
+                "item_brand": "string",
+                "item_type": "string",
+                "rank": "number",
+                "score": "number"
+            }
+        ]
+    }
+
+    
+<!-- 
+#### Error Handling
+
+Implement error handling in the frontend to manage API response errors gracefully. Common error responses include:
+- `400 Bad Request`: Invalid input data.
+- `404 Not Found`: Requested resource does not exist.
+- `500 Internal Server Error`: An unexpected error occurred on the server.
+
+#### Testing
+
+Use tools like Postman or cURL to test API endpoints during development. Ensure that all endpoints are functioning as expected before deploying changes.
+ -->
 
 
+---
+---
+---
+
+****Requirements****
+
+
+ Description of application components, setup instructions, and usage guidelines.
+
+
+1. **Application Design Document**:
+   - A detailed document outlining the application’s architecture, user interface, and code organization.
+   - **Should Include**:
+     - **Solution Architecture**: High-level overview of system components and their interactions.
+     - **Technical Architecture**: Specific technologies, frameworks, and design patterns used.
+
+2. **APIs & Frontend Implementation**:
+   - Working code for APIs and the front-end interface.
+   - **Should Include**:
+     - **GitHub Repository**: All source code with logical organization and proper documentation.
+     - **README File**: Description of application components, setup instructions, and usage guidelines.
+
+3. **Continuous Integration Setup**:
+   - A functioning CI pipeline that runs on every push or merge.
+   - **Pipeline Must Include**:
+     - **Code Build and Linting**: Automated build process and code quality checks using linting tools (e.g., ESLint, Flake8) running on GitHub Actions.
+     - **Automated Testing**: Execution of unit, integration, and system tests with test results reported.
+
+4. **Automated Testing Implementation**:
+   - Integration of automated tests within the CI pipeline using GitHub Actions.
+   - **Should Include**:
+     - **Unit Tests**: For individual components and functions.
+     - **Integration Tests**: For integrating multiple components.
+     - **System Tests**: Covering user flows and interactions.
+     - **Test Coverage Reports**: Integrated into the CI pipeline to monitor code coverage to be at least 50%.
+
+5. **Test Documentation**:
+   - Detailed explanations of the testing strategy and implemented tests.
+   - **Should Include**:
+     - **Testing Tools Used**: (e.g., PyTest)
+     - **Instructions to Run Tests Manually**: For developers to replicate test results locally.
