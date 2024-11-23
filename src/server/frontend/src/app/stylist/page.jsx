@@ -89,7 +89,7 @@ export default function ChatPage({ searchParams }) {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {fashionItems.items.map((item, index) => (
                             <div key={index} className="flex flex-col">
-                                <a href={item.item_url} target="myWindow" rel="noopener noreferrer">
+                                <a href={item.item_url} target="_blank" rel="noopener noreferrer">
                                     <div className="relative aspect-square rounded-xl overflow-hidden shadow-lg mb-4">
                                         <img
                                             src={item.image_url}

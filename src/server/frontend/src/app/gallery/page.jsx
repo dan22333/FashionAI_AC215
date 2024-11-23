@@ -140,7 +140,7 @@ export default function StyleTransferPage() {
                                     <div key={itemIndex} className="flex flex-col">
                                         <a 
                                             href={item.item_url} 
-                                            target="myWindow" 
+                                            target="_blank" 
                                             rel="noopener noreferrer"
                                         >
                                             <div className="relative aspect-square rounded-xl overflow-hidden shadow-lg mb-4">
