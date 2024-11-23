@@ -166,9 +166,12 @@ jobs:
 
       - name: Load Global .env Variables
         run: |
-          set -a
-          . src/server/.env
-          set +a
+              set -a
+              . src/server/.env
+              set +a
+              for var in $(cat src/server/.env | cut -d= -f1); do
+                echo "$var=${!var}" >> $GITHUB_ENV
+              done
 
       - name: Validate Docker Compose
         run: docker-compose config
