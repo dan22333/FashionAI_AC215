@@ -145,36 +145,27 @@ jobs:
           name: coverage-report-${{ matrix.service.name }}
           path: ${{ matrix.service.path }}/coverage.xml
   
+  jobs:
   integration-tests:
     runs-on: ubuntu-latest
-    services:
-      backend:
-        image: backend:latest
-        ports:
-          - "${{ env.APP_PORT_BACKEND }}:${{ env.APP_PORT_BACKEND }}"
-      vector:
-        image: vector_service:latest
-        ports:
-          - "${{ env.APP_PORT_VECTOR }}:${{ env.APP_PORT_VECTOR }}"
-      pinecone:
-        image: pinecone_service:latest
-        ports:
-          - "${{ env.APP_PORT_PINECONE }}:${{ env.APP_PORT_PINECONE }}"
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
       - name: Load Global .env Variables
         run: |
-              set -a
-              . src/server/.env
-              set +a
-              for var in $(cat src/server/.env | cut -d= -f1); do
-                echo "$var=${!var}" >> $GITHUB_ENV
-              done
+          set -a
+          . src/server/.env
+          set +a
+          for var in $(cat src/server/.env | cut -d= -f1); do
+            echo "$var=${!var}" >> $GITHUB_ENV
+          done
 
       - name: Validate Docker Compose
-        run: docker-compose config
+        run: docker-compose -f docker-compose.yml config
+
+      - name: Start Services with Docker Compose
+        run: docker-compose -f docker-compose.yml up -d
 
       - name: Install Dependencies
         run: pip install pytest httpx pytest-asyncio numpy
