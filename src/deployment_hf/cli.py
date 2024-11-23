@@ -23,6 +23,7 @@ MODEL_PATH = "finetuned-fashionclip"
 ARTIFACT_URI = f"gs://{GCS_MODELS_BUCKET_NAME}"
 LOCAL_ARTIFACT_PATH = "./artifacts"
 
+
 def prepare():
     """
     Downloads all files from a specific folder in a GCP bucket
@@ -54,7 +55,9 @@ def prepare():
         print(f"Downloading {blob.name} to {local_file_path}...")
         blob.download_to_filename(local_file_path)
 
-    print(f"All files from {MODEL_PATH} have been downloaded to {LOCAL_ARTIFACT_PATH}")
+    print(
+        f"All files from {MODEL_PATH} have been downloaded to {LOCAL_ARTIFACT_PATH}")
+
 
 def deploy():
 
@@ -77,7 +80,8 @@ def deploy():
     # Delete files not in the preserve list
     for file_path in repo_files:
         if file_path not in files_to_preserve:
-            delete_file(path_in_repo=file_path, repo_id=repo_name, token=hf_token)
+            delete_file(path_in_repo=file_path,
+                        repo_id=repo_name, token=hf_token)
             print(f"Deleted: {file_path}")
 
     # Upload all files from the local folder
@@ -89,7 +93,6 @@ def deploy():
     )
 
     print("Upload complete.")
-
 
 
 def main(args=None):
@@ -105,7 +108,6 @@ def main(args=None):
         prepare()
         print("Deploying model...")
         deploy()
-
 
     # elif args.predict:
     #     print("Predicting using deployed endpoint...")

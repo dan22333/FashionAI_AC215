@@ -29,13 +29,15 @@ scrape_data = os.getenv('SCRAP_IMAGES')
 
 # Initialize the ApifyClient with your API token
 client = secretmanager.SecretManagerServiceClient()
-response = client.access_secret_version(request={"name": os.getenv('APIFY_GCP_SECRET_ACCESS')})
+response = client.access_secret_version(
+    request={"name": os.getenv('APIFY_GCP_SECRET_ACCESS')})
 secret_value = "apify_api_fmyOzdUdJa6NnRysW2LKPGccavak5R3YiHro"
 client = ApifyClient(secret_value)
 
 os.environ['APIFY_TOKEN'] = secret_value
 
 num_items_to_download = int(os.getenv('MAX_ITEMS'))
+
 
 def get_items_seed(url):
     # Prepare the Actor input for each page
@@ -44,7 +46,8 @@ def get_items_seed(url):
         "maxRequestsPerCrawl": num_items_to_download/2,
         "proxy": {
             "useApifyProxy": True,
-            "apifyProxyGroups": ["RESIDENTIAL"],  # This specifies using the residential proxy group
+            # This specifies using the residential proxy group
+            "apifyProxyGroups": ["RESIDENTIAL"],
         },
         "maxConcurrency": 10,
     }
@@ -65,9 +68,9 @@ def get_items_seed(url):
     # Fetch the CSV file
     response = requests.get(api_url)
 
-
     # Decode the byte string to UTF-8 and remove BOM
-    decoded_data = response.content.decode('utf-8-sig')  # The 'utf-8-sig' will handle the BOM
+    # The 'utf-8-sig' will handle the BOM
+    decoded_data = response.content.decode('utf-8-sig')
 
     # Use StringIO to treat the decoded string as a file-like object
     csv_data = StringIO(decoded_data)
@@ -75,6 +78,8 @@ def get_items_seed(url):
     return df
 
 # Function to asynchronously download a single image using Apify proxy
+
+
 async def download_image(session, url, image_name, bad_urls, id, proxy_url):
     # Check if the image already exists locally to skip downloading
     if os.path.exists(image_name):
@@ -91,16 +96,21 @@ async def download_image(session, url, image_name, bad_urls, id, proxy_url):
                 print(f"Photo successfully downloaded as {image_name}")
             else:
                 # Log the failed download
-                print(f"Failed to download {image_name}. Status code: {response.status}")
-                bad_urls.append({'url': url, 'id': id, 'error': f'Failed with status code {response.status}'})
+                print(
+                    f"Failed to download {image_name}. Status code: {response.status}")
+                bad_urls.append(
+                    {'url': url, 'id': id, 'error': f'Failed with status code {response.status}'})
     except Exception as e:
         # Log any exceptions
         print(f"Error downloading {url}: {e}")
         bad_urls.append({'url': url, 'id': id, 'error': str(e)})
 
 # Function to download multiple images asynchronously and return a DataFrame of failed downloads
+
+
 async def download_images(urls_df, output_folder):
-    os.makedirs(output_folder, exist_ok=True)  # Ensure the output folder exists
+    # Ensure the output folder exists
+    os.makedirs(output_folder, exist_ok=True)
     bad_urls = []  # List to store information about failed downloads
 
     # Set up Apify proxy configuration to use residential proxies
@@ -115,19 +125,23 @@ async def download_images(urls_df, output_folder):
         }
 
         # Create an aiohttp session with a limited connection pool
-        connector = aiohttp.TCPConnector(limit_per_host=30)  # Limit to 30 concurrent connections per host
+        # Limit to 30 concurrent connections per host
+        connector = aiohttp.TCPConnector(limit_per_host=30)
         async with aiohttp.ClientSession(connector=connector) as session:
             tasks = []
             for i, row in urls_df.iterrows():
                 url = row.get(image_url_col)
                 if url:
                     # Construct the image name based on the id column
-                    image_name = os.path.join(output_folder, f"image_{row.get(id_col_name)}.jpg")
+                    image_name = os.path.join(
+                        output_folder, f"image_{row.get(id_col_name)}.jpg")
                     # Schedule the download task, passing the proxy_url
-                    tasks.append(download_image(session, url, image_name, bad_urls, row.get(id_col_name), proxy_url))
+                    tasks.append(download_image(
+                        session, url, image_name, bad_urls, row.get(id_col_name), proxy_url))
                 else:
                     print(f"URL missing in row {i + 1}")
-                    bad_urls.append({'url': 'Missing', 'id': row.get(id_col_name), 'error': 'No URL provided'})
+                    bad_urls.append({'url': 'Missing', 'id': row.get(
+                        id_col_name), 'error': 'No URL provided'})
 
             # Await the completion of all tasks
             await asyncio.gather(*tasks)
@@ -138,7 +152,8 @@ async def download_images(urls_df, output_folder):
         print(f"Bad URLs collected: {len(bad_urls_df)}")
         return bad_urls_df
     else:
-        return pd.DataFrame(columns=['url', 'id', 'error'])  # Return an empty DataFrame if no errors
+        # Return an empty DataFrame if no errors
+        return pd.DataFrame(columns=['url', 'id', 'error'])
 
 if __name__ == '__main__':
     try:
@@ -164,9 +179,11 @@ if __name__ == '__main__':
         # bad_image_metadata_women.to_csv(os.path.join(meta_data_folder, bad_urls_women_file_name),  index=False)
 
         df_men = pd.read_csv(os.path.join(meta_data_folder, men_file_name))
-        bad_image_metadata_men = asyncio.run(download_images(df_men, os.path.join(images_folder, os.path.splitext(men_file_name)[0])))
+        bad_image_metadata_men = asyncio.run(download_images(
+            df_men, os.path.join(images_folder, os.path.splitext(men_file_name)[0])))
         print("Images saved for men")
-        bad_image_metadata_men.to_csv(os.path.join(meta_data_folder, bad_urls_men_file_name), index=False)
+        bad_image_metadata_men.to_csv(os.path.join(
+            meta_data_folder, bad_urls_men_file_name), index=False)
 
         print("Images files were saved")
         sys.exit(0)
@@ -176,4 +193,3 @@ if __name__ == '__main__':
         print(f"Error: {e}", file=sys.stderr)  # Print the error to stderr
         # Exit with an error code 1 to indicate failure
         sys.exit(1)
-

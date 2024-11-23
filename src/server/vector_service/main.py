@@ -15,18 +15,22 @@ app = FastAPI()
 model = CLIPModel.from_pretrained(MODEL_NAME)
 processor = CLIPProcessor.from_pretrained(PROCESSOR_NAME)
 
+
 class VectorRequest(BaseModel):
     text: str
+
 
 @app.post("/get_vector")
 async def get_vector(request: VectorRequest):
     try:
-        inputs = processor(text=[request.text], return_tensors="pt", padding=True)
+        inputs = processor(text=[request.text],
+                           return_tensors="pt", padding=True)
         outputs = model.get_text_features(**inputs)
         vector = outputs.detach().numpy().flatten().tolist()
         return {"vector": vector}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error generating vector: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error generating vector: {str(e)}")
 
 # Add this block to run the app with Uvicorn
 if __name__ == "__main__":

@@ -31,7 +31,7 @@ COPY --from=build /app/.env ./.env
 RUN npm ci --only=production
 
 # Expose the listening port
-EXPOSE 3000
+EXPOSE ${APP_PORT_FRONTEND:-3000}
 
 # Run the Next.js app
 CMD ["npm", "start"]

@@ -8,8 +8,10 @@ from google.cloud import secretmanager
 # Load environment variables
 APP_HOST = os.getenv("APP_HOST", "127.0.0.1")
 APP_PORT_PINECONE = int(os.getenv("APP_PORT_PINECONE", 8002))
-PINECONE_SECRET_NAME = os.getenv("PINECONE_SECRET_NAME", "projects/1087474666309/secrets/pincone/versions/latest")
-PINECONE_INDEX_NAME = os.getenv("PINECONE_INDEX_NAME", "clip-vector-index-test-prod")
+PINECONE_SECRET_NAME = os.getenv(
+    "PINECONE_SECRET_NAME", "projects/1087474666309/secrets/pincone/versions/latest")
+PINECONE_INDEX_NAME = os.getenv(
+    "PINECONE_INDEX_NAME", "clip-vector-index-test-prod")
 
 app = FastAPI()
 
@@ -20,9 +22,11 @@ secret_value = response.payload.data.decode("UTF-8")
 pc = Pinecone(api_key=secret_value)
 index = pc.Index(PINECONE_INDEX_NAME)
 
+
 class SearchRequest(BaseModel):
     vector: list
     top_k: int
+
 
 @app.post("/search")
 async def search(request: SearchRequest):
@@ -47,7 +51,8 @@ async def search(request: SearchRequest):
         return formatted_matches
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error querying Pinecone: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error querying Pinecone: {str(e)}")
 
 # Add this block to run the app with Uvicorn
 if __name__ == "__main__":

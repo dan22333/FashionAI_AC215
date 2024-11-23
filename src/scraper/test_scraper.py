@@ -13,6 +13,7 @@ os.environ['MEN_FILE_NAME'] = 'men_test_metadata.csv'
 os.environ['COLUMN_ID_NAME'] = 'id'
 os.environ['URL_IMAGE'] = 'image_url'
 
+
 @pytest.fixture(scope="module")
 def setup_environment():
     """Sets up a test environment with dummy metadata and directories."""
@@ -48,5 +49,7 @@ async def test_download_images_with_invalid_urls(setup_environment):
 
         with patch('scraper.aiohttp.ClientSession.get', return_value=async_mock_get):
             bad_urls_df = await download_images(urls_df, output_folder)
-            assert isinstance(bad_urls_df, pd.DataFrame), "Bad URLs output is not a DataFrame"
-            assert len(bad_urls_df) == 1, "Expected one bad URL but got a different count"
+            assert isinstance(
+                bad_urls_df, pd.DataFrame), "Bad URLs output is not a DataFrame"
+            assert len(
+                bad_urls_df) == 1, "Expected one bad URL but got a different count"

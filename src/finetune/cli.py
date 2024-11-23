@@ -13,7 +13,8 @@ def generate_uuid(length: int = 8) -> str:
 
 
 # Initialize Vertex AI SDK for Python
-aip.init(project=GCP_PROJECT, location=GCP_REGION, staging_bucket=GCS_BUCKET_URI)
+aip.init(project=GCP_PROJECT, location=GCP_REGION,
+         staging_bucket=GCS_BUCKET_URI)
 
 job_id = generate_uuid()
 DISPLAY_NAME = "cheese_" + job_id

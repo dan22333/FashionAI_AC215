@@ -15,14 +15,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-APP_PORT_BACKEND = int(os.getenv("APP_PORT_BACKEND", 8000)) 
-APP_HOST = os.getenv("APP_HOST", "127.0.0.1")  # Default to 127.0.0.1# Default to 8001
+APP_PORT_BACKEND = int(os.getenv("APP_PORT_BACKEND", 8000))
+# Default to 127.0.0.1# Default to 8001
+APP_HOST = os.getenv("APP_HOST", "127.0.0.1")
 PINECONE_SERVICE_HOST = os.getenv("PINECONE_SERVICE_HOST", "localhost")
 VECTOR_SERVICE_HOST = os.getenv("VECTOR_SERVICE_HOST", "localhost")
+
 
 class SearchQuery(BaseModel):
     queryText: str
     top_k: int = 5
+
 
 @app.post("/search")
 async def search(query: SearchQuery):
@@ -40,8 +43,8 @@ async def search(query: SearchQuery):
 
             pinecone_service_url = f"http://{PINECONE_SERVICE_HOST}:8002/search"
             pinecone_response = await client.post(
-                pinecone_service_url, 
-                json={"vector": query_vector, "top_k": top_k}, 
+                pinecone_service_url,
+                json={"vector": query_vector, "top_k": top_k},
                 timeout=10
             )
             pinecone_response.raise_for_status()
@@ -57,7 +60,7 @@ async def search(query: SearchQuery):
                     "image_url": result["metadata"].get("image_url", "Unknown URL"),
                     "item_caption": result["metadata"].get("caption", "No caption available"),
                     "rank": result.get("rank", "N/A"),
-                    "score": result.get("score", "N/A"),                  
+                    "score": result.get("score", "N/A"),
                 }
                 for result in search_results if "metadata" in result
             ]
@@ -65,16 +68,20 @@ async def search(query: SearchQuery):
             return {"description": f"Search results for '{query_text}'", "items": items}
 
         except httpx.RequestError as req_exc:
-            raise HTTPException(status_code=500, detail=f"Request error: {req_exc}")
+            raise HTTPException(
+                status_code=500, detail=f"Request error: {req_exc}")
 
         except ValueError as val_exc:
-            raise HTTPException(status_code=501, detail=f"Value error: {val_exc}")
+            raise HTTPException(
+                status_code=501, detail=f"Value error: {val_exc}")
 
         except KeyError as key_exc:
-            raise HTTPException(status_code=502, detail=f"Key error: {key_exc}")
+            raise HTTPException(
+                status_code=502, detail=f"Key error: {key_exc}")
 
         except Exception as e:
-            raise HTTPException(status_code=503, detail=f"Unexpected error: {e}")
+            raise HTTPException(
+                status_code=503, detail=f"Unexpected error: {e}")
 
 # Add this block to run the app with Uvicorn
 if __name__ == "__main__":

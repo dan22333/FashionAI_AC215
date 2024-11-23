@@ -1,4 +1,3 @@
-import os
 import re
 import pandas as pd
 from io import BytesIO, StringIO
@@ -48,9 +47,11 @@ def load_file_from_bucket(bucket_name, blob_name, file_type="json"):
     bucket = storage_client.bucket(bucket_name)
     blobs = list(bucket.list_blobs(prefix=blob_name))
 
-    file_blob = next((blob for blob in blobs if blob.name.endswith(f'.{file_type}')), None)
+    file_blob = next(
+        (blob for blob in blobs if blob.name.endswith(f'.{file_type}')), None)
     if not file_blob:
-        raise ValueError(f"No {file_type} file found under blob prefix: {blob_name}")
+        raise ValueError(
+            f"No {file_type} file found under blob prefix: {blob_name}")
 
     print(f"Reading file: {file_blob.name} from bucket: {bucket_name}")
     content = file_blob.download_as_text()
@@ -89,7 +90,8 @@ def process_image_metadata(caption_entry, metadata_df, topic, data_name, image_b
 
     # Extract metadata fields
 
-    metadata_entry = metadata_entry.iloc[0]  # Convert to a series for easy access
+    # Convert to a series for easy access
+    metadata_entry = metadata_entry.iloc[0]
     brand = metadata_entry.get("brand", "")
     image_url = metadata_entry.get("medias/0/url", "")
     gender = metadata_entry.get("categories/0", "")
@@ -137,8 +139,10 @@ def process_and_upload_topic_parallel(topic, base_bucket, pinecone_index, data_n
     image_bucket = base_bucket
 
     # Load captions and metadata
-    caption_data = load_file_from_bucket(base_bucket, caption_path, file_type="json")
-    metadata_text = load_file_from_bucket(base_bucket, metadata_path, file_type="csv")
+    caption_data = load_file_from_bucket(
+        base_bucket, caption_path, file_type="json")
+    metadata_text = load_file_from_bucket(
+        base_bucket, metadata_path, file_type="csv")
     metadata_df = parse_metadata(metadata_text)
 
     uploaded_items = []
@@ -151,7 +155,8 @@ def process_and_upload_topic_parallel(topic, base_bucket, pinecone_index, data_n
 
     # Parallelize processing with ThreadPoolExecutor
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        results = list(tqdm(executor.map(process_entry, caption_data), total=len(caption_data), desc=f"Processing {topic}"))
+        results = list(tqdm(executor.map(process_entry, caption_data), total=len(
+            caption_data), desc=f"Processing {topic}"))
 
     # Collect successful uploads
     uploaded_items = [item for item in results if item]
@@ -162,7 +167,8 @@ def process_and_upload_topic_parallel(topic, base_bucket, pinecone_index, data_n
 
 if __name__ == "__main__":
     pinecone_api_key = get_pinecone_api_key(SECRET_NAME)
-    pinecone_index = initialize_pinecone(INDEX_NAME, VECTOR_DIM, pinecone_api_key)
+    pinecone_index = initialize_pinecone(
+        INDEX_NAME, VECTOR_DIM, pinecone_api_key)
 
     # Load topics from CSV
     data_buckets = pd.read_csv("data_buckets.csv")
@@ -171,4 +177,5 @@ if __name__ == "__main__":
         topic = row["bucket"]
         data_name = row["name"]
         print(f"Processing topic: {topic}")
-        process_and_upload_topic_parallel(topic, BASE_BUCKET, pinecone_index, data_name)
+        process_and_upload_topic_parallel(
+            topic, BASE_BUCKET, pinecone_index, data_name)

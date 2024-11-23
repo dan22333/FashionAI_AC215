@@ -3,7 +3,9 @@ import shutil
 import pandas as pd
 import json
 from pathlib import Path
-from caption_generating import wrapper_function  # Replace `your_module_name` with the actual filename (without .py)
+# Replace `your_module_name` with the actual filename (without .py)
+from caption_generating import wrapper_function
+
 
 def setup_test_environment():
     """
@@ -20,12 +22,14 @@ def setup_test_environment():
         img1.write(b"\xFF\xD8\xFF")  # Add minimal JPEG header
         img2.write(b"\x89PNG\r\n\x1a\n")  # Add minimal PNG header
 
+
 def cleanup_test_environment():
     """
     Cleans up the test environment by removing test directories and files.
     """
     shutil.rmtree("data", ignore_errors=True)
     shutil.rmtree("output", ignore_errors=True)
+
 
 def validate_output():
     """
@@ -47,6 +51,7 @@ def validate_output():
         json_data = json.load(json_file)
         print(f"JSON Data:\n{json.dumps(json_data, indent=4)}")
 
+
 def test_wrapper_function():
     """
     Runs the complete test by setting up, running, and validating.
@@ -66,6 +71,7 @@ def test_wrapper_function():
     finally:
         print("Cleaning up test environment...")
         cleanup_test_environment()
+
 
 if __name__ == "__main__":
     test_wrapper_function()
