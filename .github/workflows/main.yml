@@ -145,7 +145,6 @@ jobs:
           name: coverage-report-${{ matrix.service.name }}
           path: ${{ matrix.service.path }}/coverage.xml
   
-  jobs:
   integration-tests:
     runs-on: ubuntu-latest
     steps:
