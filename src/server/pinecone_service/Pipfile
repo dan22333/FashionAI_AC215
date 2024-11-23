@@ -17,6 +17,7 @@ pinecone-client = "*"
 google-cloud-secret-manager = "*"
 pytest = "*"
 pytest-cov = "*"
+httpx = "*"
 
 [dev-packages]
 
