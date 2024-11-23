@@ -172,7 +172,7 @@ jobs:
         run: docker-compose -f src/server/docker-compose.yml up -d
 
       - name: Wait for Services
-        run: sleep 60  # wait for services to work
+        run: sleep 120  # wait for services to work
 
       - name: Install Dependencies
         run: pip install pytest httpx pytest-asyncio numpy
