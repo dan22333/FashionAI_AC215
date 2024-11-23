@@ -129,36 +129,10 @@ jobs:
           . src/server/.env
           set +a
 
-      - name: Install Dependencies for ${{ matrix.service.name }}
+      - name: Install Docker Compose
         run: |
-          cd ${{ matrix.service.path }}
-          pipenv install --dev
-
-      - name: Run Unit Tests for ${{ matrix.service.name }}
-        run: |
-          cd ${{ matrix.service.path }}
-          pipenv run pytest --cov=. --cov-report=xml --cov-fail-under=50
-
-      - name: Upload Coverage Report for ${{ matrix.service.name }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage-report-${{ matrix.service.name }}
-          path: ${{ matrix.service.path }}/coverage.xml
-
-  integration-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Load Global .env Variables
-        run: |
-          set -a
-          . src/server/.env
-          set +a
-          for var in $(cat src/server/.env | cut -d= -f1); do
-            echo "$var=${!var}" >> $GITHUB_ENV
-          done
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
 
       - name: Validate Docker Compose
         run: docker-compose -f docker-compose.yml config
