@@ -16,24 +16,36 @@ load_dotenv()
 def get_wandb_api_key():
     client = secretmanager.SecretManagerServiceClient()
     print("-----\nFetching Wandb API Key\n-----")
-    response = client.access_secret_version(request={"name": os.getenv('WANDB_GCP_SECRET_ACCESS')})
+    response = client.access_secret_version(
+        request={"name": os.getenv('WANDB_GCP_SECRET_ACCESS')})
     secret_value = response.payload.data.decode("UTF-8")
     print("-----\nWandb API Key Fetched\n-----")
     return secret_value
+
 
 def login_wandb():
     wandb.login(key=get_wandb_api_key())
 
 # Function to parse arguments
+
+
 def parse_args():
-    parser = argparse.ArgumentParser(description="Fine-tune FashionCLIP on a custom dataset")
-    parser.add_argument('--json_file', type=str, default='/src/finetune_data/final_output.json', help="Path to the dataset JSON file")
-    parser.add_argument('--image_dir', type=str, default='/src/finetune_data/AC215Images4', help="Path to the directory containing images")
-    parser.add_argument('--batch_size', type=int, default=32, help="Batch size for training")
-    parser.add_argument('--learning_rate', type=float, default=5e-6, help="Learning rate for optimizer")
-    parser.add_argument('--epochs', type=int, default=3, help="Number of epochs to train for")
-    parser.add_argument('--project', type=str, default="fashion-clip-finetuning_milestone2", help="Wandb project name")
+    parser = argparse.ArgumentParser(
+        description="Fine-tune FashionCLIP on a custom dataset")
+    parser.add_argument('--json_file', type=str,
+                        default='/src/finetune_data/final_output.json', help="Path to the dataset JSON file")
+    parser.add_argument('--image_dir', type=str, default='/src/finetune_data/AC215Images4',
+                        help="Path to the directory containing images")
+    parser.add_argument('--batch_size', type=int, default=32,
+                        help="Batch size for training")
+    parser.add_argument('--learning_rate', type=float,
+                        default=5e-6, help="Learning rate for optimizer")
+    parser.add_argument('--epochs', type=int, default=3,
+                        help="Number of epochs to train for")
+    parser.add_argument('--project', type=str,
+                        default="fashion-clip-finetuning_milestone2", help="Wandb project name")
     return parser.parse_args()
+
 
 # Define the sweep configuration
 sweep_config = {
@@ -50,9 +62,10 @@ sweep_config = {
     }
 }
 
+
 def sweep_train():
     args = parse_args()
-    
+
     # Initialize wandb for tracking experiments
     wandb.init(config=args)  # Now sweep config will override the defaults
     config = wandb.config
@@ -72,7 +85,7 @@ def sweep_train():
             item = self.data[idx]
             image_path = os.path.join(self.image_dir, item['image'])
             image = Image.open(image_path).convert('RGB')
-            
+
             if self.transform:
                 image = self.transform(image)
 
@@ -86,8 +99,10 @@ def sweep_train():
     ])
 
     # Load dataset and create DataLoader
-    train_dataset = FashionDataset(json_file=args.json_file, image_dir=args.image_dir, transform=transform)
-    train_loader = DataLoader(train_dataset, batch_size=config.batch_size, shuffle=True)
+    train_dataset = FashionDataset(
+        json_file=args.json_file, image_dir=args.image_dir, transform=transform)
+    train_loader = DataLoader(
+        train_dataset, batch_size=config.batch_size, shuffle=True)
 
     # Load pre-trained FashionCLIP model and processor
     model = CLIPModel.from_pretrained("patrickjohncyh/fashion-clip")
@@ -105,22 +120,26 @@ def sweep_train():
     for epoch in range(config.epochs):
         model.train()
         total_loss = 0
-        
+
         # Initialize the progress bar for the current epoch
-        progress_bar = tqdm(enumerate(train_loader), total=len(train_loader), desc=f"Epoch {epoch+1}/{config.epochs}")
+        progress_bar = tqdm(enumerate(train_loader), total=len(
+            train_loader), desc=f"Epoch {epoch+1}/{config.epochs}")
 
         for batch_idx, (images, texts) in progress_bar:
             images = images.to(device)
-            inputs = processor(text=texts, images=images, return_tensors="pt", padding=True, truncation=True, max_length=77, do_rescale=False).to(device)
+            inputs = processor(text=texts, images=images, return_tensors="pt", padding=True,
+                               truncation=True, max_length=77, do_rescale=False).to(device)
 
             # Forward pass
             outputs = model(**inputs)
             logits_per_image = outputs.logits_per_image
             logits_per_text = outputs.logits_per_text
-            
+
             # Compute loss
-            loss_image = torch.nn.functional.cross_entropy(logits_per_image, torch.arange(len(images), device=device))
-            loss_text = torch.nn.functional.cross_entropy(logits_per_text, torch.arange(len(texts), device=device))
+            loss_image = torch.nn.functional.cross_entropy(
+                logits_per_image, torch.arange(len(images), device=device))
+            loss_text = torch.nn.functional.cross_entropy(
+                logits_per_text, torch.arange(len(texts), device=device))
             loss = (loss_image + loss_text) / 2
             total_loss += loss.item()
 
@@ -134,7 +153,8 @@ def sweep_train():
 
             # Log loss every 10 batches
             if batch_idx % 10 == 0:
-                wandb.log({"epoch": epoch, "batch_idx": batch_idx, "loss": loss.item()})
+                wandb.log(
+                    {"epoch": epoch, "batch_idx": batch_idx, "loss": loss.item()})
 
         average_loss = total_loss / len(train_loader)
         wandb.log({"epoch": epoch, "avg_loss": average_loss})
@@ -146,11 +166,13 @@ def sweep_train():
 
     wandb.finish()
 
+
 if __name__ == "__main__":
     # Login to wandb
     login_wandb()
     # Initialize the sweep
-    sweep_id = wandb.sweep(sweep_config, project="fashion-clip-finetuning_1500_sweep")
-    
+    sweep_id = wandb.sweep(
+        sweep_config, project="fashion-clip-finetuning_1500_sweep")
+
     # Run the sweep agent
     wandb.agent(sweep_id, function=sweep_train)

@@ -10,4 +10,4 @@ if [ ! -f "$GOOGLE_CREDENTIALS_PATH/secret.json" ]; then
 fi
 
 # Run Docker Compose if the check passes
-docker-compose up --build
+docker compose up --build

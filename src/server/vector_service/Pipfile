@@ -16,6 +16,8 @@ numpy = "1.21.4"
 python-dotenv = "*"
 torch = {version = "*", index = "pytorch"}
 pillow = "*"
+pytest = "*"
+pytest-cov = "*"
 
 [dev-packages]
 

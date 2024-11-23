@@ -13,10 +13,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Initialize the Secret Manager client and retrieve the Gemini API key
-#secret_manager_client = secretmanager.SecretManagerServiceClient()
-#secret_name = os.getenv("GEMINI_GCP_SECRET_ACCESS", "projects/1087474666309/secrets/GeminiAPI/versions/1")
-#response = secret_manager_client.access_secret_version(request={"name": secret_name})
-#secret_value = response.payload.data.decode("UTF-8")
+secret_manager_client = secretmanager.SecretManagerServiceClient()
+secret_name = os.getenv("GEMINI_GCP_SECRET_ACCESS",
+                        "projects/1087474666309/secrets/GeminiAPI/versions/1")
+response = secret_manager_client.access_secret_version(
+    request={"name": secret_name})
+secret_value = response.payload.data.decode("UTF-8")
+
 
 def download_image_from_local(image_path):
     """Loads an image from the local file system."""
@@ -27,12 +30,14 @@ def download_image_from_local(image_path):
     image_file_io.name = image_name
     return image_file_io, image_name
 
+
 def preprocess_text(text):
     cleaned_text = re.sub(r'(\\u[0-9A-Fa-f]{4}|\\n|\\t)', '', text)
     cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip()
     return cleaned_text
 
-def generate_captions_with_gemini(image_path, secret_value):
+
+def generate_captions_with_gemini(image_path):
     """Generates captions for the given image using the Gemini client."""
     image_file, image_name = download_image_from_local(image_path)
 
@@ -44,10 +49,10 @@ def generate_captions_with_gemini(image_path, secret_value):
         mime_type = 'image/png'
     else:
         raise ValueError("Unsupported image format.")
-    
+
     myfile = genai.upload_file(image_file, mime_type=mime_type)
     model = genai.GenerativeModel("gemini-1.5-flash")
-    
+
     result = model.generate_content(
         [myfile, "\n\n", "For this image, come up with a caption that has 4 parts, and uses short phrases to answer each of the four categories below: - the style - the occasions that it’s worn in - material used - texture and patterns. You don't need to list the four categories."]
     )
@@ -58,6 +63,7 @@ def generate_captions_with_gemini(image_path, secret_value):
     total_token = result.usage_metadata.total_token_count
 
     return caption, prompt_token, candidate_token, total_token
+
 
 def save_intermediate_results(csv_data, json_data, failed_images, intermediate_folder, csv_output, json_output, failed_csv_output, batch_num):
     """Save intermediate results locally."""
@@ -73,6 +79,7 @@ def save_intermediate_results(csv_data, json_data, failed_images, intermediate_f
         failed_df = pd.DataFrame(failed_images)
         failed_batch_output = f"{intermediate_folder}/{failed_csv_output}_batch_{batch_num}.csv"
         failed_df.to_csv(failed_batch_output, index=False)
+
 
 def wrapper_function():
     gemini_key_path = os.getenv("GEMINI_KEY_PATH")  # Environment variable set in Docker
@@ -113,7 +120,8 @@ def wrapper_function():
         print(f"Processing image {total_images}: {image_file.name}")
 
         try:
-            caption, prompt_token, candidate_token, total_token = generate_captions_with_gemini(image_file, gemini_key)
+            caption, prompt_token, candidate_token, total_token = generate_captions_with_gemini(
+                image_file)
             csv_data.append({
                 'image_name': image_file.name,
                 'prompt_token_count': prompt_token,
@@ -123,7 +131,8 @@ def wrapper_function():
             json_data.append({'image': image_file.name, 'caption': caption})
 
         except Exception as e:
-            failed_images.append({'image_name': image_file.name, 'error': str(e)})
+            failed_images.append(
+                {'image_name': image_file.name, 'error': str(e)})
 
     # Print current working directory
     print("Current working directory (pwd):")
@@ -144,7 +153,6 @@ def wrapper_function():
     else:
         print(f"\n'{output_dir}' folder does not exist.")
 
-
     # Final output saving
     csv_df = pd.DataFrame(csv_data)
     output_path = f"/src/output/final_output.csv"
@@ -153,9 +161,11 @@ def wrapper_function():
     with open(f"/src/output/final_output.json", 'w') as json_file:
         json.dump(json_data, json_file, indent=4)
 
-    print(f"Total images: {total_images}, successfully processed: {len(csv_data)}, failed: {len(failed_images)}")
+    print(
+        f"Total images: {total_images}, successfully processed: {len(csv_data)}, failed: {len(failed_images)}")
 
     print(f"File saved at: {os.path.abspath(output_path)}")
+
 
 if __name__ == "__main__":
     wrapper_function()

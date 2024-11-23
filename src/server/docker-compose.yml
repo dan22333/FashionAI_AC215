@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   backend:
     build:
@@ -9,8 +7,11 @@ services:
       - ../../../secrets:/secrets
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=/secrets/secret.json
+      - PYTHONUNBUFFERED=1
+      - PINECONE_SERVICE_HOST=pinecone_service  # Removed extra spaces
+      - VECTOR_SERVICE_HOST=vector_service     # Removed extra spaces
     ports:
-      - "8000:8000"
+      - "${APP_PORT_BACKEND}:${APP_PORT_BACKEND}"
     networks:
       - app-network
     depends_on:
@@ -25,8 +26,9 @@ services:
       - ../../../secrets:/secrets
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=/secrets/secret.json
+      - PYTHONUNBUFFERED=1
     ports:
-      - "8001:8001"
+      - "${APP_PORT_VECTOR}:${APP_PORT_VECTOR}"
     networks:
       - app-network
 
@@ -38,8 +40,9 @@ services:
       - ../../../secrets:/secrets
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=/secrets/secret.json
+      - PYTHONUNBUFFERED=1
     ports:
-      - "8002:8002"
+      - "${APP_PORT_PINECONE}:${APP_PORT_PINECONE}"
     networks:
       - app-network
 
@@ -47,10 +50,12 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    volumes:
-      - ./frontend:/app
     ports:
-      - "8080:8080"
+      - "${APP_PORT_FRONTEND}:${APP_PORT_FRONTEND}"
+    environment:
+      NODE_ENV: production  # Ensure  the app runs in production mode
+    stdin_open: true  # Keep STDIN open for interactive mode (optional)
+    tty: true         # Allocate a pseudo-TTY (optional)
     networks:
       - app-network
     depends_on:
