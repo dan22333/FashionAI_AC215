@@ -20,6 +20,7 @@ google-cloud-storage = "*"             # GCP Storage client
 google-cloud-secret-manager = "*"      # GCP Secret Manager client
 pinecone-client = "*"                  # Pinecone vector database client
 tqdm = "*"                             # Progress bars
+json = "*"
 
 # Testing dependencies
 pytest = "*"                           # Testing framework
