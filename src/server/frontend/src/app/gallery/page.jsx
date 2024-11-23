@@ -101,43 +101,48 @@ export default function StyleTransferPage() {
 
     return (
         <div className="min-h-screen pt-20 pb-12 px-4">
-            <div className="container mx-auto max-w-7xl">
-                {/* Header */}
-                <div className="mb-12">
-                    <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 font-montserrat">
-                        Fashion Style Gallery
-                    </h1>
-                    <p className="text-gray-600 mt-2">
-                        Explore our curated collection of fashion styles
-                    </p>
-                </div>
-
-                {/* Loading State */}
-                {isLoading ? (
-                    <div className="text-center py-20">
-                        <div className="animate-pulse text-xl text-gray-600">
-                            Loading fashion styles...
-                        </div>
+        <div className="container mx-auto max-w-7xl">
+            {/* Header */}
+            <div className="mb-12">
+                <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 font-montserrat">
+                    Fashion Style Gallery
+                </h1>
+                <p className="text-gray-600 mt-2">
+                    Explore our curated collection of fashion styles
+                </p>
+            </div>
+    
+            {/* Loading State */}
+            {isLoading ? (
+                <div className="text-center py-20">
+                    <div className="animate-pulse text-xl text-gray-600">
+                        Loading fashion styles...
                     </div>
-                ) : (
-                    /* Style Galleries */
-                    <div className="space-y-16">
-                        {fashionStyles.map((gallery, index) => (
-                            <div key={index} className="bg-white rounded-xl shadow-sm p-8">
-                                {/* Style Section Header */}
-                                <div className="mb-6">
-                                    <h2 className="text-2xl font-semibold text-gray-800">
-                                        {gallery.style}
-                                    </h2>
-                                    <p className="text-gray-600 mt-1">
-                                        {gallery.description}
-                                    </p>
-                                </div>
-
-                                {/* Images Grid */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                    {gallery.items && gallery.items.map((item, itemIndex) => (
-                                        <div key={itemIndex} className="flex flex-col">
+                </div>
+            ) : (
+                /* Style Galleries */
+                <div className="space-y-16">
+                    {fashionStyles.map((gallery, index) => (
+                        <div key={index} className="bg-white rounded-xl shadow-sm p-8">
+                            {/* Style Section Header */}
+                            <div className="mb-6">
+                                <h2 className="text-2xl font-semibold text-gray-800">
+                                    {gallery.style}
+                                </h2>
+                                <p className="text-gray-600 mt-1">
+                                    {gallery.description}
+                                </p>
+                            </div>
+    
+                            {/* Images Grid */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                {gallery.items && gallery.items.map((item, itemIndex) => (
+                                    <div key={itemIndex} className="flex flex-col">
+                                        <a 
+                                            href={item.item_url} 
+                                            target="myWindow" 
+                                            rel="noopener noreferrer"
+                                        >
                                             <div className="relative aspect-square rounded-xl overflow-hidden shadow-lg mb-4">
                                                 <img 
                                                     src={item.image_url}
@@ -149,27 +154,28 @@ export default function StyleTransferPage() {
                                                     {/* Rank #{item.rank} */}
                                                 </div>
                                             </div>
-                                            <div className="p-4 bg-gray-50 rounded-lg">
-                                                <div className="flex justify-between items-start mb-2">
-                                                    <h3 className="text-lg font-semibold">{item.item_name}</h3>
-                                                    <span className="text-purple-600 font-semibold">
-                                                        {/* ${Math.floor(Math.random() * 150) + 50} */}
-                                                    </span>
-                                                </div>
-                                                <p className="text-sm text-gray-600 mb-2">By {item.item_brand}</p>
-                                                <p className="text-gray-800 text-sm">{item.item_caption}</p>
-                                                <div className="mt-2 text-sm text-gray-500">
-                                                    {/* Match Score: {Math.round(item.score * 100)}% */}
-                                                </div>
+                                        </a>
+                                        <div className="p-4 bg-gray-50 rounded-lg">
+                                            <div className="flex justify-between items-start mb-2">
+                                                <h3 className="text-lg font-semibold">{item.item_name}</h3>
+                                                <span className="text-purple-600 font-semibold">
+                                                    {/* ${Math.floor(Math.random() * 150) + 50} */}
+                                                </span>
+                                            </div>
+                                            <p className="text-sm text-gray-600 mb-2">By {item.item_brand}</p>
+                                            <p className="text-gray-800 text-sm">{item.item_caption}</p>
+                                            <div className="mt-2 text-sm text-gray-500">
+                                                {/* Match Score: {Math.round(item.score * 100)}% */}
                                             </div>
                                         </div>
-                                    ))}
-                                </div>
+                                    </div>
+                                ))}
                             </div>
-                        ))}
-                    </div>
-                )}
-            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
+    </div>    
     );
 }

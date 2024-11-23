@@ -87,8 +87,9 @@ export default function ChatPage({ searchParams }) {
                             Here are your outfits recommended by your AI personal stylist, Zyra:
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {fashionItems.items.map((item, index) => (
-                                <div key={index} className="flex flex-col">
+                        {fashionItems.items.map((item, index) => (
+                            <div key={index} className="flex flex-col">
+                                <a href={item.item_url} target="myWindow" rel="noopener noreferrer">
                                     <div className="relative aspect-square rounded-xl overflow-hidden shadow-lg mb-4">
                                         <img
                                             src={item.image_url}
@@ -97,18 +98,15 @@ export default function ChatPage({ searchParams }) {
                                             className="object-cover hover:scale-105 transition-transform duration-300"
                                         />
                                     </div>
-                                    <div className="p-4 bg-white rounded-lg shadow-sm">
-                                        <h3 className="text-xl font-semibold mb-2">
-                                            {item.item_name}
-                                        </h3>
-                                        <p className="text-sm text-gray-600 mb-2">
-                                            By {item.item_brand}
-                                        </p>
-                                        <p className="text-gray-800">{item.item_caption}</p>
-                                    </div>
+                                </a>
+                                <div className="p-4 bg-white rounded-lg shadow-sm">
+                                    <h3 className="text-xl font-semibold mb-2">{item.item_name}</h3>
+                                    <p className="text-sm text-gray-600 mb-2">By {item.item_brand}</p>
+                                    <p className="text-gray-800">{item.item_caption}</p>
                                 </div>
-                            ))}
-                        </div>
+                            </div>
+                        ))}
+                    </div>
                     </>
                 ) : (
                     <div className="text-center py-12">
