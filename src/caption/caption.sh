@@ -5,11 +5,14 @@ TODAY=$(date +'%Y-%m-%d %H:%M:%S')
 export $(grep -v '^#' .env | xargs)
 
 cd ../../
-echo $PATH_TO_SECRET_KEY
-export GOOGLE_APPLICATION_CREDENTIALS=$PATH_TO_SECRET_KEY
-pipenv run dvc pull --remote scraped_raw_data --force
 
-cd src/caption
+cd data
+pipenv run dvc pull sample_scrapped_images.dvc --remote sample_scrapped_images --force
+echo ../$PATH_TO_SECRET_KEY
+export GOOGLE_APPLICATION_CREDENTIALS=../$PATH_TO_SECRET_KEY
+
+
+cd ../src/caption
 
 mkdir -p output
 
@@ -20,19 +23,19 @@ if ! docker images $IMAGE_NAME | awk '{ print $1 }' | grep -q $IMAGE_NAME; then
 else
     echo "Image already exists. Skipping build..."
 fi
-docker build -t $IMAGE_NAME .s
+docker build -t $IMAGE_NAME .
 
 # Run the scraper container and redirect output to a log file
 docker run --rm --name $IMAGE_NAME \
     -v $(pwd):/src \
-    -v $(realpath ../../data/scraped_raw_images):/app/data \
+    -v $(realpath ../../data/sample_scrapped_images):/app/data \
     -v $(realpath ${SECRETS_PATH}${SECRET_FILE_NAME}):/secrets/$SECRET_FILE_NAME:ro \
+    -v $(realpath ${SECRETS_PATH}/gemini_key.json):/secrets/gemini_key.json:ro \
     -e GOOGLE_APPLICATION_CREDENTIALS="/secrets/$SECRET_FILE_NAME" \
+    -e GEMINI_KEY_PATH="/secrets/gemini_key.json" \
     $IMAGE_NAME
 
 CONTAINER_EXIT_CODE=$?
-
-
 
 # Check if the container ran successfully
 if [ $CONTAINER_EXIT_CODE -ne 0 ]; then

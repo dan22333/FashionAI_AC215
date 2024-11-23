@@ -13,10 +13,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Initialize the Secret Manager client and retrieve the Gemini API key
-secret_manager_client = secretmanager.SecretManagerServiceClient()
-secret_name = os.getenv("GEMINI_GCP_SECRET_ACCESS", "projects/1087474666309/secrets/GeminiAPI/versions/1")
-response = secret_manager_client.access_secret_version(request={"name": secret_name})
-secret_value = response.payload.data.decode("UTF-8")
+#secret_manager_client = secretmanager.SecretManagerServiceClient()
+#secret_name = os.getenv("GEMINI_GCP_SECRET_ACCESS", "projects/1087474666309/secrets/GeminiAPI/versions/1")
+#response = secret_manager_client.access_secret_version(request={"name": secret_name})
+#secret_value = response.payload.data.decode("UTF-8")
 
 def download_image_from_local(image_path):
     """Loads an image from the local file system."""
@@ -32,7 +32,7 @@ def preprocess_text(text):
     cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip()
     return cleaned_text
 
-def generate_captions_with_gemini(image_path):
+def generate_captions_with_gemini(image_path, secret_value):
     """Generates captions for the given image using the Gemini client."""
     image_file, image_name = download_image_from_local(image_path)
 
@@ -75,6 +75,15 @@ def save_intermediate_results(csv_data, json_data, failed_images, intermediate_f
         failed_df.to_csv(failed_batch_output, index=False)
 
 def wrapper_function():
+    gemini_key_path = os.getenv("GEMINI_KEY_PATH")  # Environment variable set in Docker
+    with open(gemini_key_path, 'r') as f:
+        gemini_key_data = json.load(f)
+
+    # Extract the API key
+    gemini_key = gemini_key_data.get("api_key")
+    if not gemini_key:
+        raise ValueError("The API key is missing from the gemini_key.json file.")
+
     images_folder = "data"
     output_folder = "output"
 
@@ -104,7 +113,7 @@ def wrapper_function():
         print(f"Processing image {total_images}: {image_file.name}")
 
         try:
-            caption, prompt_token, candidate_token, total_token = generate_captions_with_gemini(image_file)
+            caption, prompt_token, candidate_token, total_token = generate_captions_with_gemini(image_file, gemini_key)
             csv_data.append({
                 'image_name': image_file.name,
                 'prompt_token_count': prompt_token,
