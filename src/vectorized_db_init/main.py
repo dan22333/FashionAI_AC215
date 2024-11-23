@@ -1,6 +1,5 @@
 import os
 import re
-import json
 import pandas as pd
 from io import BytesIO, StringIO
 from PIL import Image
@@ -9,6 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 from google.cloud import storage, secretmanager
 from pinecone import Pinecone, ServerlessSpec
 from helper_functions import get_clip_vector
+import json
 
 # Initialize global constants
 PROJECT_ID = "fashion-ai"
