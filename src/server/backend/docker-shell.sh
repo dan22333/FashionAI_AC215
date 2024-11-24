@@ -6,7 +6,7 @@ set -e
 # Define constants
 export IMAGE_NAME="backend-app"
 export BASE_DIR=$(pwd)
-export ENV_FILE_PATH=$(realpath "../.env")  Path to the .env file in the env folder
+export ENV_FILE_PATH=$(realpath "../.env") # Path to the .env file in the env folder
 export GOOGLE_CREDENTIALS_PATH=$(realpath "../../../../secrets")
 
 # Check if the credentials file exists

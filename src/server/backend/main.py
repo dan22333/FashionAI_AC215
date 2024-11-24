@@ -1,133 +1,89 @@
-import pytest
-from fastapi.testclient import TestClient
-from unittest.mock import patch, AsyncMock
-from main import app, SearchQuery
+import httpx
+import os
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
-client = TestClient(app)
+app = FastAPI()
+
+# Enable CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Adjust this to limit the origins if needed
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+APP_PORT_BACKEND = int(os.getenv("APP_PORT_BACKEND", 8000))
+# Default to 127.0.0.1# Default to 8001
+APP_HOST = os.getenv("APP_HOST", "127.0.0.1")
+PINECONE_SERVICE_HOST = os.getenv("PINECONE_SERVICE_HOST", "localhost")
+VECTOR_SERVICE_HOST = os.getenv("VECTOR_SERVICE_HOST", "localhost")
 
 
-@pytest.fixture
-def mock_vector_service():
-    with patch("httpx.AsyncClient.post", new_callable=AsyncMock) as mock_post:
-        mock_post.return_value.status_code = 200
-        mock_post.return_value.json = AsyncMock(
-            return_value={"vector": [0.1, 0.2, 0.3]}
-        )
-        yield mock_post
+class SearchQuery(BaseModel):
+    queryText: str
+    top_k: int = 5
 
 
-@pytest.fixture
-def mock_pinecone_service():
-    with patch("httpx.AsyncClient.post", new_callable=AsyncMock) as mock_post:
-        mock_post.return_value.status_code = 200
-        mock_post.return_value.json = AsyncMock(
-            return_value=[
+@app.post("/search")
+async def search(query: SearchQuery):
+    query_text = query.queryText
+    top_k = query.top_k
+
+    async with httpx.AsyncClient() as client:
+        try:
+            vector_service_url = f"http://{VECTOR_SERVICE_HOST}:8001/get_vector"
+            response = await client.post(vector_service_url, json={"text": query_text}, timeout=10)
+            response.raise_for_status()
+            query_vector = response.json().get("vector")
+            if not query_vector:
+                raise ValueError("No vector returned from vector service.")
+
+            pinecone_service_url = f"http://{PINECONE_SERVICE_HOST}:8002/search"
+            pinecone_response = await client.post(
+                pinecone_service_url,
+                json={"vector": query_vector, "top_k": top_k},
+                timeout=10
+            )
+            pinecone_response.raise_for_status()
+            search_results = pinecone_response.json()
+            items = [
                 {
-                    "metadata": {
-                        "image_name": "Test Item",
-                        "brand": "Test Brand",
-                        "gender": "Unisex",
-                        "item_type": "Shirt",
-                        "item_sub_type": "Casual",
-                        "item_url": "https://example.com/item",
-                        "image_url": "https://example.com/image.jpg",
-                        "caption": "A stylish shirt",
-                    },
-                    "rank": 1,
-                    "score": 0.95,
+                    "item_name": result["metadata"].get("image_name", "Unknown Name"),
+                    "item_brand": result["metadata"].get("brand", "Unknown Name"),
+                    "item_gender": result["metadata"].get("gender", "Unknown Name"),
+                    "item_type": result["metadata"].get("item_type", "Unknown Name"),
+                    "item_sub_type": result["metadata"].get("item_sub_type", "Unknown Name"),
+                    "item_url": result["metadata"].get("item_url", "Unknown URL"),
+                    "image_url": result["metadata"].get("image_url", "Unknown URL"),
+                    "item_caption": result["metadata"].get("caption", "No caption available"),
+                    "rank": result.get("rank", "N/A"),
+                    "score": result.get("score", "N/A"),
                 }
+                for result in search_results if "metadata" in result
             ]
-        )
-        yield mock_post
 
+            return {"description": f"Search results for '{query_text}'", "items": items}
 
-def test_search_success(mock_vector_service, mock_pinecone_service):
-    """Test successful search endpoint with mocked services."""
-    query = {"queryText": "Find a casual shirt", "top_k": 3}
+        except httpx.RequestError as req_exc:
+            raise HTTPException(
+                status_code=500, detail=f"Request error: {req_exc}")
 
-    # Make the request
-    response = client.post("/search", json=query)
+        except ValueError as val_exc:
+            raise HTTPException(
+                status_code=501, detail=f"Value error: {val_exc}")
 
-    # Assertions
-    assert response.status_code == 200
-    data = response.json()
-    assert "description" in data
-    assert len(data["items"]) == 1
-    assert data["items"][0]["item_name"] == "Test Item"
-    assert data["items"][0]["item_brand"] == "Test Brand"
-    assert data["items"][0]["item_url"] == "https://example.com/item"
+        except KeyError as key_exc:
+            raise HTTPException(
+                status_code=502, detail=f"Key error: {key_exc}")
 
+        except Exception as e:
+            raise HTTPException(
+                status_code=503, detail=f"Unexpected error: {e}")
 
-def test_search_vector_service_error(mock_vector_service):
-    """Test vector service failure."""
-    mock_vector_service.return_value = AsyncMock(
-        return_value=AsyncMock(status_code=500, text="Internal Server Error")
-    )
-
-    query = {"queryText": "Find a casual shirt", "top_k": 3}
-    response = client.post("/search", json=query)
-
-    assert response.status_code == 500
-    assert "Request error" in response.json()["detail"]
-
-
-def test_search_no_vector(mock_vector_service):
-    """Test vector service returning no vector."""
-    mock_vector_service.return_value = AsyncMock(
-        return_value=AsyncMock(
-            status_code=200, json=AsyncMock(return_value={"vector": None})
-        )
-    )
-
-    query = {"queryText": "Find a casual shirt", "top_k": 3}
-    response = client.post("/search", json=query)
-
-    assert response.status_code == 500
-    assert "No vector returned from vector service." in response.json()["detail"]
-
-
-def test_search_pinecone_service_error(mock_vector_service, mock_pinecone_service):
-    """Test Pinecone service failure."""
-    mock_vector_service.return_value = AsyncMock(
-        return_value=AsyncMock(
-            status_code=200, json=AsyncMock(return_value={"vector": [0.1, 0.2, 0.3]})
-        )
-    )
-    mock_pinecone_service.return_value = AsyncMock(
-        return_value=AsyncMock(status_code=500, text="Internal Server Error")
-    )
-
-    query = {"queryText": "Find a casual shirt", "top_k": 3}
-    response = client.post("/search", json=query)
-
-    assert response.status_code == 500
-    assert "Request error" in response.json()["detail"]
-
-
-def test_search_invalid_payload():
-    """Test invalid payload."""
-    query = {"queryText": 123, "top_k": "five"}  # Invalid types
-
-    response = client.post("/search", json=query)
-
-    assert response.status_code == 422  # Unprocessable Entity
-    assert "detail" in response.json()
-
-
-def test_search_empty_results(mock_vector_service, mock_pinecone_service):
-    """Test empty results from Pinecone service."""
-    mock_vector_service.return_value = AsyncMock(
-        return_value=AsyncMock(
-            status_code=200, json=AsyncMock(return_value={"vector": [0.1, 0.2, 0.3]})
-        )
-    )
-    mock_pinecone_service.return_value = AsyncMock(
-        return_value=AsyncMock(status_code=200, json=AsyncMock(return_value=[]))
-    )
-
-    query = {"queryText": "Find a casual shirt", "top_k": 3}
-    response = client.post("/search", json=query)
-
-    assert response.status_code == 200
-    data = response.json()
-    assert len(data["items"]) == 0
+# Add this block to run the app with Uvicorn
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host=APP_HOST, port=APP_PORT_BACKEND, reload=True)
