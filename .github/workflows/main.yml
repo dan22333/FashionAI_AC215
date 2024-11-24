@@ -172,7 +172,7 @@ jobs:
         run: docker-compose -f src/server/docker-compose.yml up -d --remove-orphans
 
       - name: Wait for Services to Be Ready
-        run: sleep 100
+        run: sleep 150
 
       - name: Install Dependencies
         run: pip install pytest httpx pytest-asyncio numpy
