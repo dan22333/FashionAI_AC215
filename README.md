@@ -2,9 +2,132 @@
 
 ## Project Milestone 4 Organization
 
-
-```
-TODO: replace with file structure
+```plaintext
+|-- README.md
+|-- data
+|   |-- .gitkeep
+|   |-- sample_scrapped_images.dvc
+|-- jest.config.js
+|-- jest.setup.js
+|-- notebooks
+|   |-- .gitkeep
+|   |-- README.md
+|   `-- eda.ipynb
+|-- references
+|   `-- .gitkeep
+|-- reports
+|   |-- .gitkeep
+|   |-- AI stylist AI screen.png
+|   |-- Fashion AI App Mock Screens.pdf
+|   |-- Fashion AI ac215_proposal.pdf
+|   |-- Fashion shopper AI screen.png
+|   |-- Screenshot of running.png
+|   |-- W&B Chart 10_19_2024, 10_13_28 PM (1).svg
+|   |-- W&B Chart 10_19_2024, 10_13_28 PM (2).svg
+|   |-- W&B Chart 10_19_2024, 10_13_28 PM (3).svg
+|   `-- W&B Chart 10_19_2024, 10_13_28 PM.svg
+|-- src
+|   |-- caption
+|   |   |-- .env
+|   |   |-- Dockerfile
+|   |   |-- Pipfile
+|   |   |-- Pipfile.lock
+|   |   |-- caption.sh
+|   |   |-- caption_generating.py
+|   |   |-- output.dvc
+|   |   |-- test_caption_generating.py
+|   |   `-- test_main.py
+|   |-- deployment_hf
+|   |   |-- .gitignore
+|   |   |-- Dockerfile
+|   |   |-- Pipfile
+|   |   |-- Pipfile.lock
+|   |   |-- cli.py
+|   |   |-- docker-entrypoint.sh
+|   |   `-- docker-shell.sh
+|   |-- finetune
+|   |   |-- .env
+|   |   |-- Dockerfile
+|   |   |-- Pipfile
+|   |   |-- Pipfile.lock
+|   |   |-- cli.py
+|   |   |-- cli.sh
+|   |   |-- docker-entrypoint.sh
+|   |   |-- finetune.py
+|   |   |-- finetune.sh
+|   |   |-- finetune_data.dvc
+|   |   |-- models.dvc
+|   |   |-- package-trainer.sh
+|   |   |-- requirements.txt
+|   |   |-- trainer.tar.gz
+|   |   `-- wandb.dvc
+|   |-- scraper
+|   |   |-- .env
+|   |   |-- Dockerfile
+|   |   |-- Pipfile
+|   |   |-- Pipfile.lock
+|   |   |-- pytest.ini
+|   |   |-- scraper.py
+|   |   |-- scraper.sh
+|   |   `-- test_scraper.py
+|   |-- server
+|   |   |-- .env
+|   |   |-- backend
+|   |   |   |-- Dockerfile
+|   |   |   |-- Pipfile
+|   |   |   |-- Pipfile.lock
+|   |   |   |-- docker-shell.sh
+|   |   |   |-- main.py
+|   |   |   `-- test_main.py
+|   |   |-- docker-compose-shell.sh
+|   |   |-- docker-compose.yml
+|   |   |-- frontend
+|   |   |   |-- .env.development
+|   |   |   |-- .env.production
+|   |   |   |-- .gitignore
+|   |   |   |-- .vscode
+|   |   |   |   `-- launch.json
+|   |   |   |-- Dockerfile
+|   |   |   |-- Dockerfile.dev
+|   |   |   |-- docker-shell.sh
+|   |   |   |-- jsconfig.json
+|   |   |   |-- next.config.js
+|   |   |   |-- package-lock.json
+|   |   |   |-- package.json
+|   |   |   |-- postcss.config.js
+|   |   |   |-- public
+|   |   |   |-- src
+|   |   |   |   |-- app
+|   |   |   |   |   `-- stylist
+|   |   |   |   |-- components
+|   |   |   |   |   |-- layout
+|   |   |   |   |   `-- stylist
+|   |   |   |   `-- services
+|   |   |-- integration_tests
+|   |   |   `-- test_integration.py
+|   |   |-- pinecone_service
+|   |   |   |-- Dockerfile
+|   |   |   |-- Pipfile
+|   |   |   |-- Pipfile.lock
+|   |   |   |-- docker-shell.sh
+|   |   |   |-- main.py
+|   |   |   `-- test_main.py
+|   |   `-- vector_service
+|   |       |-- Dockerfile
+|   |       |-- Pipfile
+|   |       |-- Pipfile.lock
+|   |       |-- docker-shell.sh
+|   |       |-- main.py
+|   |       `-- test_main.py
+|   `-- vectorized_db_init
+|       |-- Dockerfile
+|       |-- Pipfile
+|       |-- Pipfile.lock
+|       |-- data_buckets.csv
+|       |-- docker-shell.sh
+|       |-- helper_functions.py
+|       |-- main.py
+|       `-- test_main.py
 ```
 
 
@@ -18,35 +141,35 @@ Yushu Qiu, Weiyue Li, Daniel Nurieli, Michelle Tan
 The Fashion AI Group
 
 **Project**
-Our goal is to create an AI-powered platform that aggregates fashion items from various brands, allowing users to quickly and easily find matching items without the hassle of endless browsing. Using our App, the users can put in a request such as "find me a classic dress for attending a summer wedding" and receive the clothing item that matches their request most closely. 
+We are developing an AI-driven platform that consolidates fashion products from multiple brands, enabling users to efficiently discover matching items without the need for extensive searching. With our application, users can submit queries like "find me a classic dress for attending a summer wedding," and receive recommendations of clothing items that best fit their criteria.
 
 ## 1. Application Design Document
 
 ### Overview
 
-We have designed this application to use a server to access our finetuned FashionClip model, a vector database, to take user text queries and return recommended fashion items with key metadata information. The application design and architecture choices reflect these user needs.
+Our application utilizes a server to access our fine-tuned FashionClip model and a vector database to process user text queries, returning recommended fashion items along with essential metadata. The design and architectural decisions outlined below are made to address these user requirements.
 
-In the next milestone, we intend to deploy an LLM agent to improve the flexibility of how the users could interact with the Application.
+In the upcoming milestone, we plan to integrate a Large Language Model (LLM) agent to enhance the ways users can interact with the application.
 
 ---
 
 ### Solution Architecture
 
-The Fashion AI application integrates key components to deliver a seamless user experience. During the application run, pinecone_service, vector_service, backend and frontend components are run. Users interact with the frontend application through a web browser, sending requests to the backend API for fashion recommendations and stylist interactions.
+The Fashion AI application brings together several key components to ensure a smooth user experience. When the application is running, the `pinecone_service`, `vector_service`, backend, and frontend are all operational simultaneously. Users interact with the frontend via a web browser, sending requests to the backend API for fashion recommendations and stylist interactions.
 
-During the development cycle, we also have additional components that handle scraping, captioning, fintuning.
+During development, we also have additional components responsible for scraping raw images, generating captions for those images, and fine-tuning the FashionClip model with our new data.
 
-User interface will be covered in the frontend section below.
+The user interface details are provided in the frontend section below.
 
-Here are the key components. each is a subfolder in the server folder:
+The main components, each located in a subfolder within the `[src/server](src/server)` directory, are:
 
-1. **Frontend**: the frontend application is built using Next.js. It serves as the user interface for the Fashion AI application, allowing users to interact with the AI stylist and browse fashion items.
+1. **`[Frontend](src/server/frontend)`**: Built with Next.js, the frontend serves as the user interface, allowing users to interact with the AI stylist and browse fashion items.
 
-2. **Backend**: The backend directory contains the core API for the Fashion AI application. It handles requests from the frontend, processes user queries, and interacts with the database and external services to provide fashion recommendations.
+2. **`[Backend](src/server/backend)`**: The backend contains the core API of the application. It handles incoming requests from the frontend, processes user queries, and communicates with the database and external services to provide fashion recommendations.
 
-3. **Pinecone service**: The pinecone_service directory contains the implementation for interacting with Pinecone, a vector database service used for managing and querying high-dimensional data. This service is essential for handling fashion item embeddings and similarity searches.
+3. **`[Pinecone service](src/server/pinecone_service)`**: This directory includes the implementation for interfacing with Pinecone, a vector database service used for managing and querying high-dimensional data.
 
-4. **Vector service**: The vector_service directory is responsible for managing vector representations of fashion items and performing similarity searches. This service leverages machine learning models to generate embeddings for fashion items, enabling efficient retrieval based on user queries.
+4. **`[Vector service](src/server/vector_service)`**: Responsible for handling vector representations of fashion items and performing similarity searches.
 
 ---
 
@@ -54,56 +177,55 @@ Here are the key components. each is a subfolder in the server folder:
 
 #### Technologies and Frameworks
 
-1. **Frontend**:
-   - **Next.js**: A React framework for building server-rendered applications, providing features like static site generation and API routes.
-   - **React**: A JavaScript library for building user interfaces, enabling the creation of reusable components.
-   - **Tailwind CSS**: A utility-first CSS framework for styling the application, allowing for rapid UI development.
-   - **Axios**: A promise-based HTTP client for making API requests from the frontend.
+1. **`[Frontend](src/server/frontend)`**:
+   - `Next.js`: A React framework for building server-rendered applications with features like static site generation and API routes.
+   - `React`: A JavaScript library for creating user interfaces through reusable components.
+   - `Tailwind CSS`: A utility-first CSS framework for styling, facilitating rapid UI development.
+   - `Axios`: A promise-based HTTP client for making API requests from the frontend.
 
-2. **Backend**:
-   - **Node.js**: A JavaScript runtime for building the backend API, allowing for asynchronous processing and scalability.
-   - **Fast API**: A modern Python framework for creating high-performance APIs, used for handling AI model requests and processing user queries efficiently.
-
-   - **Pytest**: A testing framework for writing and running unit tests to ensure the backend API's functionality and reliability.
+2. **`[Backend](src/server/backend)`**:
+   - `Node.js`: A JavaScript runtime used for building the backend API, supporting asynchronous processing and scalability.
+   - `FastAPI`: A modern Python framework for creating high-performance APIs, utilized for handling AI model requests and efficiently processing user queries.
+   - `Pytest`: A testing framework for writing and executing unit tests to ensure the functionality and reliability of the backend API.
 
 3. **Deployment**:
-   - **Docker**: A platform for developing, shipping, and running applications in containers, ensuring consistency across environments.
+   - `Docker`: A platform for developing, shipping, and running applications in containers, ensuring consistency across different environments.
 
 #### Design Patterns
 
-- **MVC (Model-View-Controller)**: The application follows the MVC design pattern, separating concerns between the data model, user interface, and control logic.
-- **Service Layer**: A service layer is implemented in the backend to handle business logic and API interactions, promoting code reusability and separation of concerns.
-- **Component-Based Architecture**: The frontend is built using a component-based architecture, allowing for modular development and easier maintenance.
+- **MVC (Model-View-Controller)**: The application adheres to the MVC design pattern, separating concerns among the data model, user interface, and control logic.
+- **Service Layer**: A service layer is implemented in the backend to handle business logic and API interactions, enhancing code reusability and promoting separation of concerns.
+- **Component-Based Architecture**: The frontend is developed using a component-based architecture, allowing for modular development and easier maintenance.
 
 ---
 
-## 2. Frontend and API Documentation
 
+## 2. Frontend and API Documentation
 
 ### Application Components
 
 #### Frontend Components
 
-1. **Pages**: The application consists of various pages, each representing a different route:
-   - **Home Page**: Introduces the application and provides navigation options.
-   - **Stylist Page**: Users can interact with the AI fashion stylist for personalized recommendations.
-   - **Gallery Page**: Showcases various fashion items and styles.
+1. **Pages**: The application features multiple pages, each corresponding to a specific route:
+   - **Home Page**: Offers an introduction to the application and navigation links.
+   - **Stylist Page**: Users can consult with the AI fashion stylist for tailored recommendations.
+   - **Gallery Page**: Displays a collection of fashion items and styles.
 
-2. **Components**: Reusable UI components used across different pages:
-   - **Buttons**: Custom button components for navigation and actions.
-   - **Image Gallery**: Displays images in a grid format.
-   - **Chat Input**: Component for user input in stylist interactions.
+2. **Components**: Includes reusable UI elements used across various pages:
+   - **Buttons**: Custom button components for navigation and user actions.
+   - **Image Gallery**: Presents images in a grid layout.
+   - **Chat Input**: Allows users to input messages when interacting with the stylist.
 
-3. **Services**: Modules that handle API calls and data fetching, such as `DataService`, which communicates with the backend to retrieve fashion items and stylist recommendations.
+3. **Services**: Modules responsible for API communications and data fetching, such as `DataService`, which interacts with the backend to obtain fashion items and stylist suggestions.
 
-4. **Styles**: The application uses Tailwind CSS for styling, allowing for responsive design and utility-first CSS classes.
+4. **Styles**: Utilizes Tailwind CSS for styling, providing responsive design capabilities and utility-first CSS classes.
 
 #### API Components
 
-The application utilizes a set of APIs to facilitate communication between the frontend and backend services. Key APIs include:
+The application leverages a set of APIs to manage communication between the frontend and backend. Key APIs include:
 
-1. **Get Fashion Items**: Retrieves fashion items based on user queries.
-2. **User Interaction with Stylist**: Allows users to send messages to the AI stylist and receive recommendations.
+1. **Fetch Fashion Items**: Retrieves fashion items based on user input.
+2. **Stylist Interaction**: Enables users to send messages to the AI stylist and receive personalized recommendations.
 
 ---
 
@@ -111,12 +233,13 @@ The application utilizes a set of APIs to facilitate communication between the f
 
 To set up the Fashion AI application, follow these steps:
 
+
 #### Frontend Setup
 
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/yourusername/your-repo-name.git
-   cd your-repo-name/src/server/frontend
+   git clone https://github.com/weiyueli7/AC215_FashionAI.git
+   cd AC215_FashionAI/src/server/frontend
    ```
 
 2. **Install Dependencies**:
@@ -157,9 +280,30 @@ To set up the Fashion AI application, follow these steps:
 - **Interacting with the Stylist**: On the Stylist page, describe your occasion and style preferences to receive personalized recommendations.
 - **Viewing the Gallery**: The Gallery page allows browsing through various fashion items. Click on any item for more details.
 
-#### API Usage
+#### User Journey Showcase
+- **Get Recommendation**:
 
-The function GetFashionItems posts the user query and gets items below in return to be serviced on the frontend. The url used is "/search".
+    1. Click "Get Started Here" to access the AI Stylist page and receive personalized clothing recommendations.
+    [Image Placeholder]
+    2. Enter a query based on your preferences, such as "I want a pair of shoes."
+    [Image Placeholder]
+    3. The AI Assistant will provide a selection of shoe images tailored to your preferences, along with brand details and a brief description for each item.
+    [Image Placeholder]
+    4. Click on the recommended image, and you will be redirected to the shopping link on Farfetch.
+    [Image Placeholder]
+    
+    
+- **Explore Fashion Gallery**:
+
+    1. Click on "Fashion Gallery" to explore a curated selection of clothing recommendations organized by category.
+    [Image Placeholder]
+    2. For instance, if you're looking for Business Professional attire, navigate to the corresponding section to view tailored recommendations.
+    [Image Placeholder]
+    3. Click on any recommended image to be redirected to the shopping link on Farfetch.
+    [Image Placeholder]
+
+
+#### Frontend Usage
 
     {
         "items": [
@@ -176,59 +320,50 @@ The function GetFashionItems posts the user query and gets items below in return
         ]
     }
 
+
+## 3. Testing Document
+
+#### CI Pipeline
+This document outlines our group's implementation of a CI pipeline to automate code build, linting, testing, and reporting processes. The pipeline is integrated with GitHub Actions to run on every push or merge. We mainly tested the front end and back end parts instead of the model training part based on the instructions. We test the following components:
+
+* **Build Testing:**
+    **Purpose:**
+    The build process ensures all Docker containers in the project are functional and properly configured. This step validates that containers are built successfully without errors.
+    **Steps to Test Locally**
+    1. Navigate to the /src/server folder
+    2. Run ```sh docker-compose-shell.sh```
+
+* **Lint Testing:**
+    Linting is performed on all containers using Python to maintain code quality. We utilize flake8 as the linting tool to identify and fix potential code style issues.
+    **Steps to Test Locally**
+    1. Navigate to the folder you want to test (e.g. src/caption)
+    2. Load Global Variables
+        ```set -a```
+        ```. src/server/.env```
+        ```set +a```
+    3. Install flake8 ```pip install flake8```
+    4. Run ```flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics```
     
-<!-- 
-#### Error Handling
+* **Unit Testing:**
+    We implemented unit testing for both the caption component and the server component to ensure that all defined functions operate correctly. PyTest was used for this purpose, with test files placed in their respective folders.
+    **Steps to Test Locally**
+    1. Load Global Variables
+        ```set -a```
+        ```. src/server/.env```
+        ```set +a```
+    2. Run ```pytest --cov=. --cov-report=xml --cov-fail-under=50```
+* **Integration Testing:**
+    We implemented integration testing for the entire server (front end and back end) to ensure seamless interaction and a smooth connection between the two components.
+    **Steps to Test Locally**
+    1. Load Global Variables
+        ```set -a```
+        ```. src/server/.env```
+        ```set +a```
+    2. Run ```pytest src/server/integration_tests/test_integration.py -v```
 
-Implement error handling in the frontend to manage API response errors gracefully. Common error responses include:
-- `400 Bad Request`: Invalid input data.
-- `404 Not Found`: Requested resource does not exist.
-- `500 Internal Server Error`: An unexpected error occurred on the server.
-
-#### Testing
-
-Use tools like Postman or cURL to test API endpoints during development. Ensure that all endpoints are functioning as expected before deploying changes.
- -->
-
-
----
----
----
-
-****Requirements****
-
-
- Description of application components, setup instructions, and usage guidelines.
-
-
-1. **Application Design Document**:
-   - A detailed document outlining the application’s architecture, user interface, and code organization.
-   - **Should Include**:
-     - **Solution Architecture**: High-level overview of system components and their interactions.
-     - **Technical Architecture**: Specific technologies, frameworks, and design patterns used.
-
-2. **APIs & Frontend Implementation**:
-   - Working code for APIs and the front-end interface.
-   - **Should Include**:
-     - **GitHub Repository**: All source code with logical organization and proper documentation.
-     - **README File**: Description of application components, setup instructions, and usage guidelines.
-
-3. **Continuous Integration Setup**:
-   - A functioning CI pipeline that runs on every push or merge.
-   - **Pipeline Must Include**:
-     - **Code Build and Linting**: Automated build process and code quality checks using linting tools (e.g., ESLint, Flake8) running on GitHub Actions.
-     - **Automated Testing**: Execution of unit, integration, and system tests with test results reported.
-
-4. **Automated Testing Implementation**:
-   - Integration of automated tests within the CI pipeline using GitHub Actions.
-   - **Should Include**:
-     - **Unit Tests**: For individual components and functions.
-     - **Integration Tests**: For integrating multiple components.
-     - **System Tests**: Covering user flows and interactions.
-     - **Test Coverage Reports**: Integrated into the CI pipeline to monitor code coverage to be at least 50%.
-
-5. **Test Documentation**:
-   - Detailed explanations of the testing strategy and implemented tests.
-   - **Should Include**:
-     - **Testing Tools Used**: (e.g., PyTest)
-     - **Instructions to Run Tests Manually**: For developers to replicate test results locally.
+#### Manual System Test
+Other than automated testing, our repo also supports manual system testing. To do that, you can use the following steps:
+1. Navigate to the /src/server folder
+2. Run ```sh docker-compose-shell.sh```
+3. Open your local browser and type `http://localhost:3000`
+4. Then you can try different services available on the front end
