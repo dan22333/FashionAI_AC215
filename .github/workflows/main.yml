@@ -169,13 +169,16 @@ jobs:
         run: docker-compose -f src/server/docker-compose.yml config
 
       - name: Start Services with Docker Compose
-        run: docker-compose -f src/server/docker-compose.yml up -d
+        run: docker-compose -f src/server/docker-compose.yml up -d --remove-orphans
 
-      - name: Wait for Services
-        run: sleep 250  # wait for services to work
+      - name: Wait for Services to Be Healthy
+        run: docker-compose -f src/server/docker-compose.yml wait
 
       - name: Install Dependencies
         run: pip install pytest httpx pytest-asyncio numpy
 
       - name: Run Integration Tests
         run: pytest src/server/integration_tests/test_integration.py -v
+     
+      - name: Print Docker Logs
+        run: docker-compose logs

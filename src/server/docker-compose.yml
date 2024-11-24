@@ -8,8 +8,8 @@ services:
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=/secrets/secret.json
       - PYTHONUNBUFFERED=1
-      - PINECONE_SERVICE_HOST=pinecone_service  # Removed extra spaces
-      - VECTOR_SERVICE_HOST=vector_service     # Removed extra spaces
+      - PINECONE_SERVICE_HOST=pinecone_service
+      - VECTOR_SERVICE_HOST=vector_service
     ports:
       - "${APP_PORT_BACKEND}:${APP_PORT_BACKEND}"
     networks:
@@ -53,9 +53,9 @@ services:
     ports:
       - "${APP_PORT_FRONTEND}:${APP_PORT_FRONTEND}"
     environment:
-      NODE_ENV: production  # Ensure  the app runs in production mode
-    stdin_open: true  # Keep STDIN open for interactive mode (optional)
-    tty: true         # Allocate a pseudo-TTY (optional)
+      NODE_ENV: production
+    stdin_open: true
+    tty: true
     networks:
       - app-network
     depends_on:
