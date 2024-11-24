@@ -164,15 +164,16 @@ During development, we also have additional components responsible for scraping 
 
 The user interface details are provided in the frontend section below.
 
-The main components, each located in a subfolder within the `[src/server](src/server)` directory, are:
+The main components, each located in a subfolder within the [`src/server`](src/server) directory, are:
 
-1. **`[Frontend](src/server/frontend)`**: Built with Next.js, the frontend serves as the user interface, allowing users to interact with the AI stylist and browse fashion items.
+1. **[`Frontend`](src/server/frontend)**: Built with Next.js, the frontend serves as the user interface, allowing users to interact with the AI stylist and browse fashion items.
 
-2. **`[Backend](src/server/backend)`**: The backend contains the core API of the application. It handles incoming requests from the frontend, processes user queries, and communicates with the database and external services to provide fashion recommendations.
+2. **[`Backend`](src/server/backend)**: The backend contains the core API of the application. It handles incoming requests from the frontend, processes user queries, and communicates with the database and external services to provide fashion recommendations.
 
-3. **`[Pinecone service](src/server/pinecone_service)`**: This directory includes the implementation for interfacing with Pinecone, a vector database service used for managing and querying high-dimensional data.
+3. **[`Pinecone service`](src/server/pinecone_service)**: This directory includes the implementation for interfacing with Pinecone, a vector database service used for managing and querying high-dimensional data.
 
-4. **`[Vector service](src/server/vector_service)`**: Responsible for handling vector representations of fashion items and performing similarity searches.
+4. **[`Vector service`](src/server/vector_service)**: Responsible for handling vector representations of fashion items and performing similarity searches.
+
 
 ---
 
@@ -180,13 +181,13 @@ The main components, each located in a subfolder within the `[src/server](src/se
 
 #### Technologies and Frameworks
 
-1. **`[Frontend](src/server/frontend)`**:
+1. **[`Frontend`](src/server/frontend)**:
    - `Next.js`: A React framework for building server-rendered applications with features like static site generation and API routes.
    - `React`: A JavaScript library for creating user interfaces through reusable components.
    - `Tailwind CSS`: A utility-first CSS framework for styling, facilitating rapid UI development.
    - `Axios`: A promise-based HTTP client for making API requests from the frontend.
 
-2. **`[Backend](src/server/backend)`**:
+2. **[`Backend`](src/server/backend)**:
    - `Node.js`: A JavaScript runtime used for building the backend API, supporting asynchronous processing and scalability.
    - `FastAPI`: A modern Python framework for creating high-performance APIs, utilized for handling AI model requests and efficiently processing user queries.
    - `Pytest`: A testing framework for writing and executing unit tests to ensure the functionality and reliability of the backend API.
@@ -237,41 +238,36 @@ The application leverages a set of APIs to manage communication between the fron
 To set up the Fashion AI application, follow these steps:
 
 
-#### Frontend Setup
+<!-- #### Frontend Setup -->
 
 1. **Clone the Repository**:
    ```bash
    git clone https://github.com/weiyueli7/AC215_FashionAI.git
-   cd AC215_FashionAI/src/server/frontend
+   cd AC215_FashionAI/src/server
    ```
+2. ** Run the Container**:
+   ```bash
+   sh docker-compose-shell.sh
+   ```
+The application will be available at `http://localhost:3000`.
 
-2. **Install Dependencies**:
+<!-- 2. **Install Dependencies**:
    Ensure you have Node.js and npm installed. Then, install the required dependencies:
    ```bash
    npm install
    ```
-<!-- 
-3. **Environment Variables**:
-   Create a `.env.production` file in the root of the frontend directory and add the necessary environment variables. Refer to the `.env.example` file for required variables.
-
-4. **Build the Application**:
-   Build the Next.js application for production:
-   ```bash
-   npm run build
-   ``` -->
-
 3. **Start the Development Server**:
    To start the application in development mode:
    ```bash
    npm run dev
    ```
-   The application will be available at `http://localhost:3000`.
+   The application will be available at `http://localhost:3000`. -->
 
-#### API Setup
+<!-- #### API Setup
 
 1. **Backend Service**: Ensure that the backend service is running and accessible. The frontend relies on the backend APIs to function correctly.
 
-2. **API Configuration**: Make sure the API base URL is correctly set in the environment variables. This is typically done in the `.env.production` file.
+2. **API Configuration**: Make sure the API base URL is correctly set in the environment variables. This is typically done in the `.env.production` file. -->
 
 ---
 
@@ -371,9 +367,9 @@ This document outlines our group's implementation of a CI pipeline to automate c
         ```set +a```
     2. Run ```pytest src/server/integration_tests/test_integration.py -v```
 
-#### Manual System Test
+<!-- #### Manual System Test
 Other than automated testing, our repo also supports manual system testing. To do that, you can use the following steps:
 1. Navigate to the /src/server folder
 2. Run ```sh docker-compose-shell.sh```
 3. Open your local browser and type `http://localhost:3000`
-4. Then you can try different services available on the front end
+4. Then you can try different services available on the front end -->
