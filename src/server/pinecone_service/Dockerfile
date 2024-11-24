@@ -11,7 +11,7 @@ RUN set -ex; \
     for i in $(seq 1 8); do mkdir -p "/usr/share/man/man${i}"; done && \
     apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y --no-install-recommends $DEBIAN_PACKAGES && \
+    apt-get install -y --no-install-recommends $DEBIAN_PACKAGES curl && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     pip install --no-cache-dir --upgrade pip && \
@@ -19,6 +19,7 @@ RUN set -ex; \
     useradd -ms /bin/bash app -d /home/app -u 1000 -p "$(openssl passwd -1 Passw0rd)" && \
     mkdir -p /app && \
     chown app:app /app
+
 
 # Set working directory
 WORKDIR /app

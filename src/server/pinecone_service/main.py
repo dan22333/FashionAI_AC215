@@ -55,8 +55,18 @@ async def search(request: SearchRequest, index=Depends(get_index)):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error querying Pinecone: {str(e)}")
-    print(f"Querying Pinecone with vector: {request.vector[:10]}... and top_k: {request.top_k}")
 
+
+@app.get("/health")
+async def health():
+    """Health check endpoint."""
+    try:
+        # Simple test to check if the index is accessible
+        index = get_index()
+        index.describe_index_stats()  # Call a lightweight Pinecone API
+        return {"status": "ok", "message": "Pinecone service is running"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Health check failed: {str(e)}")
 
 
 if __name__ == "__main__":

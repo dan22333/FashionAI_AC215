@@ -16,7 +16,6 @@ app.add_middleware(
 )
 
 APP_PORT_BACKEND = int(os.getenv("APP_PORT_BACKEND", 8000))
-# Default to 127.0.0.1# Default to 8001
 APP_HOST = os.getenv("APP_HOST", "127.0.0.1")
 PINECONE_SERVICE_HOST = os.getenv("PINECONE_SERVICE_HOST", "localhost")
 VECTOR_SERVICE_HOST = os.getenv("VECTOR_SERVICE_HOST", "localhost")
@@ -82,6 +81,13 @@ async def search(query: SearchQuery):
         except Exception as e:
             raise HTTPException(
                 status_code=503, detail=f"Unexpected error: {e}")
+
+
+@app.get("/health")
+async def health():
+    """Health check endpoint."""
+    return {"status": "ok", "message": "Backend service is running"}
+
 
 # Add this block to run the app with Uvicorn
 if __name__ == "__main__":

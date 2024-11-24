@@ -32,6 +32,22 @@ async def get_vector(request: VectorRequest):
         raise HTTPException(
             status_code=500, detail=f"Error generating vector: {str(e)}")
 
+
+@app.get("/health")
+async def health():
+    """Health check endpoint."""
+    try:
+        # Simple test to check if the model and processor are loaded
+        test_inputs = processor(text=["health check"], return_tensors="pt", padding=True)
+        test_output = model.get_text_features(**test_inputs)
+        if test_output is not None:
+            return {"status": "ok", "message": "CLIP service is running"}
+        else:
+            raise Exception("Model or processor not functional")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Health check failed: {str(e)}")
+
+
 # Add this block to run the app with Uvicorn
 if __name__ == "__main__":
     import uvicorn
