@@ -287,23 +287,30 @@ To set up the Fashion AI application, follow these steps:
 - **Get Recommendation**:
 
     1. Click "Get Started Here" to access the AI Stylist page and receive personalized clothing recommendations.
-    [Image Placeholder]
+    ![image](https://github.com/user-attachments/assets/7fc22823-04ee-4d5f-9d72-bbf13f5df2e6)
+
     2. Enter a query based on your preferences, such as "I want a pair of shoes."
-    [Image Placeholder]
+    ![image](https://github.com/user-attachments/assets/5bf4ead4-2017-4cff-8464-fe5af095058d)
+
     3. The AI Assistant will provide a selection of shoe images tailored to your preferences, along with brand details and a brief description for each item.
-    [Image Placeholder]
+    ![image](https://github.com/user-attachments/assets/a627ca5a-3692-415a-b565-6cf95d92524d)
+
     4. Click on the recommended image, and you will be redirected to the shopping link on Farfetch.
-    [Image Placeholder]
+    ![image](https://github.com/user-attachments/assets/d1173bd0-084f-4ba1-9a82-545e7d33dcaf)
+
     
     
 - **Explore Fashion Gallery**:
 
     1. Click on "Fashion Gallery" to explore a curated selection of clothing recommendations organized by category.
-    [Image Placeholder]
+    ![image](https://github.com/user-attachments/assets/c49d5ef5-0d81-4374-8e4e-b282f70c08dc)
+
     2. For instance, if you're looking for Business Professional attire, navigate to the corresponding section to view tailored recommendations.
-    [Image Placeholder]
+    ![image](https://github.com/user-attachments/assets/178684c4-5826-43e0-bdb8-8bdead870627)
+
     3. Click on any recommended image to be redirected to the shopping link on Farfetch.
-    [Image Placeholder]
+    ![image](https://github.com/user-attachments/assets/c39ea621-00cc-4a7d-8b43-f1cee60b1913)
+
 
 
 #### Frontend Usage
