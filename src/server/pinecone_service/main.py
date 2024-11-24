@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
 import numpy as np
 import os
@@ -9,18 +9,21 @@ from google.cloud import secretmanager
 APP_HOST = os.getenv("APP_HOST", "127.0.0.1")
 APP_PORT_PINECONE = int(os.getenv("APP_PORT_PINECONE", 8002))
 PINECONE_SECRET_NAME = os.getenv(
-    "PINECONE_SECRET_NAME", "projects/1087474666309/secrets/pincone/versions/latest")
-PINECONE_INDEX_NAME = os.getenv(
-    "PINECONE_INDEX_NAME", "clip-vector-index-test-prod")
+    "PINECONE_SECRET_NAME", "projects/1087474666309/secrets/pincone/versions/latest"
+)
+PINECONE_INDEX_NAME = os.getenv("PINECONE_INDEX_NAME", "clip-vector-index-test-prod")
 
 app = FastAPI()
 
-# Initialize Pinecone
-client = secretmanager.SecretManagerServiceClient()
-response = client.access_secret_version(request={"name": PINECONE_SECRET_NAME})
-secret_value = response.payload.data.decode("UTF-8")
-pc = Pinecone(api_key=secret_value)
-index = pc.Index(PINECONE_INDEX_NAME)
+
+def get_index():
+    print("Real get_index is called")  # Debug
+    """Dynamically initialize Pinecone index."""
+    client = secretmanager.SecretManagerServiceClient()
+    response = client.access_secret_version(request={"name": PINECONE_SECRET_NAME})
+    secret_value = response.payload.data.decode("UTF-8")
+    pc = Pinecone(api_key=secret_value)
+    return pc.Index(PINECONE_INDEX_NAME)
 
 
 class SearchRequest(BaseModel):
@@ -29,13 +32,13 @@ class SearchRequest(BaseModel):
 
 
 @app.post("/search")
-async def search(request: SearchRequest):
+async def search(request: SearchRequest, index=Depends(get_index)):
     try:
         results = index.query(
             vector=np.array(request.vector, dtype=np.float32).tolist(),
             top_k=request.top_k,
             include_values=True,
-            include_metadata=True
+            include_metadata=True,
         )
         matches = results.get("matches", [])
 
@@ -44,17 +47,19 @@ async def search(request: SearchRequest):
                 "rank": idx + 1,
                 "id": match["id"],
                 "score": match["score"],
-                "metadata": match.get("metadata", {})
+                "metadata": match.get("metadata", {}),
             }
             for idx, match in enumerate(matches)
         ]
         return formatted_matches
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error querying Pinecone: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error querying Pinecone: {str(e)}")
+    print(f"Querying Pinecone with vector: {request.vector[:10]}... and top_k: {request.top_k}")
 
-# Add this block to run the app with Uvicorn
+
+
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run("main:app", host=APP_HOST, port=APP_PORT_PINECONE, reload=True)
