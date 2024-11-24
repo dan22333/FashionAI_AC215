@@ -150,6 +150,9 @@ We are developing an AI-driven platform that consolidates fashion products from 
 Our application utilizes a server to access our fine-tuned FashionClip model and a vector database to process user text queries, returning recommended fashion items along with essential metadata. The design and architectural decisions outlined below are made to address these user requirements.
 
 In the upcoming milestone, we plan to integrate a Large Language Model (LLM) agent to enhance the ways users can interact with the application.
+![image](https://github.com/user-attachments/assets/389fbf27-7442-44b6-8fa5-929db0295a10)
+![image](https://github.com/user-attachments/assets/8d554639-13eb-4aff-bb20-f5402a8b68fb)
+
 
 ---
 
