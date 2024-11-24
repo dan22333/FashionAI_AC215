@@ -1,4 +1,4 @@
-# AC215 - Milestone4 - Fashion AI App
+# AC215 - Milestone 4 - Fashion AI App
 
 ## Project Milestone 4 Organization
 
