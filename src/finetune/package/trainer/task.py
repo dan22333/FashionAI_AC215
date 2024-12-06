@@ -10,7 +10,7 @@ import torch
 import wandb
 from tqdm import tqdm
 
-
+## uncomment for local testing
 # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "../../../../../secrets/secret.json"
 
 # Define dataset class
@@ -36,35 +36,6 @@ class FashionDataset(Dataset):
 
 
 # Function to download images and JSON file from GCS
-# def download_from_gcs(gcs_json_path, gcs_image_dir, local_json_path, local_image_dir):
-#     client = storage.Client()
-
-#     # Download JSON file
-#     bucket_name, json_blob_path = gcs_json_path.replace(
-#         "gs://", "").split("/", 1)
-#     bucket = client.bucket(bucket_name)
-#     json_blob = bucket.blob(json_blob_path)
-#     json_blob.download_to_filename(local_json_path)
-
-#     # Load JSON and filter first 100 items
-#     with open(local_json_path, 'r') as f:
-#         data = json.load(f)[:100]
-
-#     # Download images
-#     bucket_name, image_blob_prefix = gcs_image_dir.replace(
-#         "gs://", "").split("/", 1)
-#     blobs = client.list_blobs(bucket_name, prefix=image_blob_prefix)
-#     os.makedirs(local_image_dir, exist_ok=True)
-
-#     for blob in blobs:
-#         for item in data:
-#             if blob.name.endswith(item['image']):
-#                 local_path = os.path.join(
-#                     local_image_dir, os.path.basename(blob.name))
-#                 blob.download_to_filename(local_path)
-#                 print(f"Downloaded {blob.name} to {local_path}")
-
-
 def download_from_gcs(gcs_json_path, gcs_image_dir, local_json_path, local_image_dir, n_samples=None):
     client = storage.Client()
 
@@ -171,10 +142,6 @@ DIR_DICT = {
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--category", type=str, default="men_accessories", help="Category of the dataset.")
-    # parser.add_argument("--json_path", type=str, default="gs://fashion_ai_data/captioned_data/men_clothes/2024-11-18_11-34-54/men_clothes.json",
-    #                     help="Path to the JSON file in the GCP bucket.")
-    # parser.add_argument("--image_dir", type=str, default="gs://fashion_ai_data/scrapped_data/men_clothes/2024-11-18_11-34-54/",
-    #                     help="Path to the images directory in the GCP bucket.")
     parser.add_argument("--output_dir", type=str, required=True,
                         help="GCS path to save the fine-tuned model.")
     parser.add_argument("--batch_size", type=int, default=32,
@@ -251,7 +218,7 @@ def main():
                 return_tensors="pt",
                 padding=True,
                 truncation=True,
-                max_length=77  # Set a reasonable maximum sequence length for CLIP
+                max_length=77
             ).to(device)
             outputs = model(**inputs)
             logits_per_image = outputs.logits_per_image
