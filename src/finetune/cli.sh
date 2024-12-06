@@ -20,7 +20,7 @@ export GCP_REGION="us-central1" # Adjust region based on you approved quotas for
 
 echo $GCS_DATA_BUCKET_URI
 
-export CMDARGS="--output_dir=$GCS_BUCKET_URI/finetuned-fashionclip/,--wandb_key=$WANDB_KEY"
+export CMDARGS="--output_dir=$GCS_BUCKET_URI/test_fclip/,--wandb_key=$WANDB_KEY,--n_samples=100"
 
 # Run training with GPU
 # gcloud ai custom-jobs create \
