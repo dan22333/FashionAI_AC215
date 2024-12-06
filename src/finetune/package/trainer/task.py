@@ -11,7 +11,7 @@ import wandb
 from tqdm import tqdm
 
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "../../../../../secrets/secret.json"
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "../../../../../secrets/secret.json"
 
 # Define dataset class
 class FashionDataset(Dataset):
@@ -120,7 +120,7 @@ def upload_to_gcs(local_path, gcs_path, bucket_name="vertexai_train"):
             local_file_path = os.path.join(root, file)
             print(f"local_file_path: {local_file_path}")
             remote_path = os.path.relpath(local_file_path, local_path)
-            remote_path = os.path.join(gcs_path, remote_path)
+            # remote_path = os.path.join(gcs_path, remote_path)
             print(f"remote_path: {remote_path}")
             blob = bucket.blob(remote_path)
             blob.upload_from_filename(local_file_path)

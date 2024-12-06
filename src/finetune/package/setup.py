@@ -6,7 +6,7 @@ REQUIRED_PACKAGES = [
     "torchvision",
     "transformers",
     "Pillow==9.2.0",
-    "wandb==0.15.5",
+    "wandb",
     "annoy",
     "fashion-clip"
 ]

@@ -32,7 +32,7 @@ export CMDARGS="--output_dir=$GCS_BUCKET_URI/test_fclip/,--wandb_key=$WANDB_KEY,
 
 
 # Run training with No GPU
-export EXECUTOR_IMAGE_URI="us-docker.pkg.dev/vertex-ai/training/tf-cpu.2-14.py310:latest"
+export EXECUTOR_IMAGE_URI="us-docker.pkg.dev/vertex-ai/training/pytorch-xla.2-3.py310:latest"
 gcloud ai custom-jobs create \
   --region=$GCP_REGION \
   --display-name=$DISPLAY_NAME \
