@@ -114,13 +114,15 @@ def upload_to_gcs(local_path, gcs_path, bucket_name="vertexai_train"):
     client = storage.Client()
     # bucket_name, gcs_folder = gcs_path.replace("gs://", "").split("/", 1)
     bucket = client.bucket(bucket_name)
+    gcs_path = gcs_path[len(f"gs://{bucket_name}/"):]
+    print(f"Uploading model to {gcs_path}...")
 
     for root, _, files in os.walk(local_path):
         for file in files:
             local_file_path = os.path.join(root, file)
             print(f"local_file_path: {local_file_path}")
             remote_path = os.path.relpath(local_file_path, local_path)
-            # remote_path = os.path.join(gcs_path, remote_path)
+            remote_path = os.path.join(gcs_path, remote_path)
             print(f"remote_path: {remote_path}")
             blob = bucket.blob(remote_path)
             blob.upload_from_filename(local_file_path)
