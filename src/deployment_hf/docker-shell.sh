@@ -7,7 +7,7 @@ export BASE_DIR=$(pwd)
 export SECRETS_DIR=$(pwd)/../../../secrets/
 export GCP_PROJECT="fashion-ai-438801"
 export GCS_MODELS_BUCKET_NAME="vertexai_train"
-export HF_REPO_NAME="weiyueli7/fashionclip"
+export HF_REPO_NAME="weiyueli7/test"
 
 
 

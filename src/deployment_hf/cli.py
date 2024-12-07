@@ -15,16 +15,25 @@ from google.cloud import storage
 from google.cloud import aiplatform
 from transformers import CLIPProcessor, CLIPModel
 from huggingface_hub import login, HfApi, delete_file, upload_folder, list_repo_files
+from google.cloud import secretmanager
 
 # Environment variables
 GCP_PROJECT = os.environ["GCP_PROJECT"]
 GCS_MODELS_BUCKET_NAME = os.environ["GCS_MODELS_BUCKET_NAME"]
-MODEL_PATH = "finetuned-fashionclip"
 ARTIFACT_URI = f"gs://{GCS_MODELS_BUCKET_NAME}"
 LOCAL_ARTIFACT_PATH = "./artifacts"
 
 
-def prepare():
+def get_secret(secret):
+    client = secretmanager.SecretManagerServiceClient()
+    print("-----\nFetching Key\n-----")
+    response = client.access_secret_version(request={"name": secret})
+    secret_value = response.payload.data.decode("UTF-8")
+    print("-----\nKey Fetched\n-----")
+    return secret_value
+
+
+def prepare(MODEL_PATH):
     """
     Downloads all files from a specific folder in a GCP bucket
     and saves them locally, preserving the folder structure.
@@ -71,8 +80,14 @@ def deploy():
     # Initialize API
     api = HfApi()
 
-    # List current files in the repository
-    repo_files = list_repo_files(repo_id=repo_name, token=hf_token)
+    # Check if the repository exists
+    try:
+        repo_files = list_repo_files(repo_id=repo_name, token=hf_token)
+        print(f"Repository {repo_name} found. Proceeding with upload.")
+    except Exception as e:
+        print(f"Repository {repo_name} does not exist. Creating a new repository.")
+        api.create_repo(repo_id=repo_name, token=hf_token, repo_type="model", exist_ok=True)
+        repo_files = []  # Empty repository, no files to list
 
     # Files to preserve
     files_to_preserve = [".gitattributes", "README.md"]
@@ -98,21 +113,16 @@ def deploy():
 def main(args=None):
     if args.prepare:
         print("Preparing model...")
-        prepare()
+        prepare(args.model_path)
 
     elif args.deploy:
         print("Deploying model...")
         deploy()
     else:
         print("Preparing model...")
-        prepare()
+        prepare(args.model_path)
         print("Deploying model...")
         deploy()
-
-    # elif args.predict:
-    #     print("Predicting using deployed endpoint...")
-    #     predict()
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="FashionCLIP Deployment CLI")
@@ -127,11 +137,12 @@ if __name__ == "__main__":
         action="store_true",
         help="Deploy the FashionCLIP model to Vertex AI.",
     )
-    # parser.add_argument(
-    #     "--predict",
-    #     action="store_true",
-    #     help="Make predictions using the deployed endpoint.",
-    # )
-
+    parser.add_argument(
+        "--model_path",
+        type=str,
+        default="finetuned-fashionclip",
+        help="Path to the model in the GCS bucket.",
+    )
+    # print(get_secret("projects/1087474666309/secrets/HF_API/versions/latest"))
     args = parser.parse_args()
     main(args)
