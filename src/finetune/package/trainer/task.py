@@ -8,10 +8,20 @@ from PIL import Image
 from transformers import CLIPModel, CLIPProcessor
 import torch
 import wandb
+from google.cloud import secretmanager
 from tqdm import tqdm
 
 ## uncomment for local testing
-# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "../../../../../secrets/secret.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "../../../../../secrets/secret.json"
+
+
+def get_secret(secret):
+    client = secretmanager.SecretManagerServiceClient()
+    print("-----\nFetching Key\n-----")
+    response = client.access_secret_version(request={"name": secret})
+    secret_value = response.payload.data.decode("UTF-8")
+    print("-----\nKey Fetched\n-----")
+    return secret_value
 
 # Define dataset class
 class FashionDataset(Dataset):
@@ -151,7 +161,7 @@ def parse_args():
     parser.add_argument("--learning_rate", type=float,
                         default=5e-6, help="Learning rate.")
     parser.add_argument("--wandb_key", dest="wandb_key",
-                        default="f6a5db3158b243aad4f85469a635bc7aa2a641c2", type=str, help="WandB API Key")
+                        default="projects/1087474666309/secrets/WandbAPI/versions/latest", type=str, help="WandB API Key Secret Name")
     parser.add_argument("--model_name", type=str, default="patrickjohncyh/fashion-clip",
                         help="Name of the model to load.")
     parser.add_argument("--bucket_name", type=str, default="vertexai_train")
@@ -187,8 +197,9 @@ def main():
         transforms.ToTensor(),
     ])
 
-    wandb.login(key=args.wandb_key)
-    wandb.init(project=f"fashionclip_{args.category}", config=args)
+
+    # wandb.login(key=get_secret(args.wandb_key))
+    # wandb.init(project=f"fashionclip_{args.category}", config=args)
 
     dataset = FashionDataset(json_file=local_json_path,
                              image_dir=local_image_dir, transform=transform)
@@ -233,9 +244,9 @@ def main():
             loss.backward()
             optimizer.step()
             progress_bar.set_postfix(loss=loss.item())
-            wandb.log(
-                {"epoch": epoch, "batch_idx": batch_idx, "loss": loss.item()})
-        wandb.log({"epoch": epoch, "average_loss": total_loss / len(dataloader)})
+        #     wandb.log(
+        #         {"epoch": epoch, "batch_idx": batch_idx, "loss": loss.item()})
+        # wandb.log({"epoch": epoch, "average_loss": total_loss / len(dataloader)})
 
     # Save and upload the model
     model.save_pretrained(local_model_dir)

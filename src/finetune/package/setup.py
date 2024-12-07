@@ -8,7 +8,8 @@ REQUIRED_PACKAGES = [
     "Pillow==9.2.0",
     "wandb",
     "annoy",
-    "fashion-clip"
+    "fashion-clip",
+    "google-cloud-secret-manager"
 ]
 
 setup(
