@@ -1,13 +1,9 @@
 import os
-import argparse
-import random
-import string
 from kfp import dsl
 from kfp import compiler
 import google.cloud.aiplatform as aip
 from dotenv import load_dotenv
 import uuid
-import json
 
 load_dotenv()
 
@@ -16,20 +12,19 @@ GCS_OUTPUT_BUCKET = os.getenv("GCS_OUTPUT_BUCKET")
 SECRET_FILE_NAME = os.getenv("SECRET_FILE_NAME")
 SECRETS_PATH_CONTAINER = os.getenv("SECRETS_PATH_CONTAINER")
 
-GCS_BUCKET_NAME = "vertex_ai_pipeline_fashionai"
+GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME")
 BUCKET_URI = f"gs://{GCS_BUCKET_NAME}"
 PIPELINE_ROOT = f"{BUCKET_URI}/pipeline_root"
-GCP_PROJECT = "fashion-ai-438801"
+GCP_PROJECT = os.getenv("GCP_PROJECT")
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "../secrets/secret.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
 print(f"Using credentials at: {os.environ['GOOGLE_APPLICATION_CREDENTIALS']}")
 
-SECRETS_PATH = os.getenv("SECRETS_PATH", "../../../secrets/")
-SECRET_FILE_NAME = os.getenv("SECRET_FILE_NAME", "secret.json")
-GEMINI_KEY_PATH = os.path.join(SECRETS_PATH, "gemini_key.json")
+SECRETS_PATH = os.getenv("SECRETS_PATH")
+SECRET_FILE_NAME = os.getenv("SECRET_FILE_NAME")
 
-DATA_CAPTIONING_IMAGE = "us-east5-docker.pkg.dev/fashion-ai-438801/fashionai-repo/fashionai_caption:latest"
+DATA_CAPTIONING_IMAGE = os.getenv("DATA_CAPTIONING_IMAGE")
 
 
 def generate_uuid():
@@ -104,10 +99,7 @@ def model_training():
     job.run(service_account="fashion-ai-service@fashion-ai-438801.iam.gserviceaccount.com")
 
 # Model Deployment
-MODEL_DEPLOYMENT_IMAGE = "us-east5-docker.pkg.dev/fashion-ai-438801/fashionai-repo/fashionclip-deployment-hf:latest"
-with open("../secrets/huggingface_key.json", "r") as file:
-    secrets = json.load(file)
-os.environ["HUGGINGFACE_KEY"] = secrets["HUGGINGFACE_KEY"]
+MODEL_DEPLOYMENT_IMAGE = os.getenv("MODEL_DEPLOYMENT_IMAGE")
 
 def model_deploying():
     print("model_deploying()")
