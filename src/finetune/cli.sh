@@ -13,24 +13,10 @@ export PYTHON_MODULE="trainer.task"
 # export ACCELERATOR_COUNT=1
 export GCP_REGION="us-central1" # Adjust region based on you approved quotas for GPUs
 
-# Change the number of epochs
-#export CMDARGS="--model_name=mobilenetv2,--epochs=2,--batch_size=32,--wandb_key=$WANDB_KEY"
-#export CMDARGS="--model_name=mobilenetv2,--train_base,--epochs=2,--batch_size=32,--wandb_key=$WANDB_KEY"
-# export CMDARGS="--model_name=mobilenetv2,--train_base,--epochs=2,--batch_size=32,--wandb_key=$WANDB_KEY"
-
 echo $GCS_DATA_BUCKET_URI
 
-export CMDARGS="--output_dir=$GCS_BUCKET_URI/test_fclip/,--wandb_key=$WANDB_KEY,--n_samples=100"
-
-# Run training with GPU
-# gcloud ai custom-jobs create \
-#   --region=$GCP_REGION \
-#   --display-name=$DISPLAY_NAME \
-#   --python-package-uris=$PYTHON_PACKAGE_URI \
-#   --worker-pool-spec=machine-type=$MACHINE_TYPE,replica-count=$REPLICA_COUNT,accelerator-type=$ACCELERATOR_TYPE,accelerator-count=$ACCELERATOR_COUNT,executor-image-uri=$EXECUTOR_IMAGE_URI,python-module=$PYTHON_MODULE \
-#   --args=$CMDARGS
-
-
+# To train the model:
+export CMDARGS="--output_dir=$GCS_BUCKET_URI/test_fclip/,--n_samples=100"
 # Run training with No GPU
 export EXECUTOR_IMAGE_URI="us-docker.pkg.dev/vertex-ai/training/pytorch-xla.2-3.py310:latest"
 gcloud ai custom-jobs create \
@@ -39,3 +25,17 @@ gcloud ai custom-jobs create \
   --python-package-uris=$PYTHON_PACKAGE_URI \
   --worker-pool-spec=machine-type=$MACHINE_TYPE,replica-count=$REPLICA_COUNT,executor-image-uri=$EXECUTOR_IMAGE_URI,python-module=$PYTHON_MODULE \
   --args=$CMDARGS
+
+
+
+# To deploy the model:
+
+# export PYTHON_MODULE="trainer.deploy"
+# export CMDARGS="--hf_repo_name=weiyueli7/test2"
+# export EXECUTOR_IMAGE_URI="us-docker.pkg.dev/vertex-ai/training/pytorch-xla.2-3.py310:latest"
+# gcloud ai custom-jobs create \
+#   --region=$GCP_REGION \
+#   --display-name=$DISPLAY_NAME \
+#   --python-package-uris=$PYTHON_PACKAGE_URI \
+#   --worker-pool-spec=machine-type=$MACHINE_TYPE,replica-count=$REPLICA_COUNT,executor-image-uri=$EXECUTOR_IMAGE_URI,python-module=$PYTHON_MODULE \
+#   --args=$CMDARGS

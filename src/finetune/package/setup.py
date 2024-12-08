@@ -9,7 +9,10 @@ REQUIRED_PACKAGES = [
     "wandb",
     "annoy",
     "fashion-clip",
-    "google-cloud-secret-manager"
+    "google-cloud-secret-manager",
+    "huggingface_hub",
+    "google-cloud-aiplatform"
+
 ]
 
 setup(

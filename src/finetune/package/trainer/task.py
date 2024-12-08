@@ -12,7 +12,7 @@ from google.cloud import secretmanager
 from tqdm import tqdm
 
 ## uncomment for local testing
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "../../../../../secrets/secret.json"
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "../../../../../secrets/secret.json"
 
 
 def get_secret(secret):
