@@ -3,7 +3,7 @@
 export IMAGE_NAME=fashion_ai_training-cli
 export BASE_DIR=$(pwd)
 export SECRETS_DIR=$(pwd)/../../../secrets/
-export GCS_BUCKET_URI="gs://vertexai_train"
+export GCS_BUCKET_URI="gs://fashionai_training"
 export GCS_DATA_BUCKET_URI="gs://fashion_ai_data"
 export GCP_PROJECT="fashion-ai-438801"
 
