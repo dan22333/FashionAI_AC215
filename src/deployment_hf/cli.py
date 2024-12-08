@@ -7,6 +7,10 @@ import argparse
 from google.cloud import storage
 from huggingface_hub import login, HfApi, delete_file, upload_folder, list_repo_files
 from google.cloud import secretmanager
+import json
+
+# # uncomment for local testing
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "../../../secrets/secret.json"
 
 def get_secret(secret):
     client = secretmanager.SecretManagerServiceClient()
@@ -53,6 +57,15 @@ def prepare(model_path, gcp_project, gcs_bucket_name, local_artifact_path):
 
 
 def deploy(local_artifact_path, hf_token, hf_repo_name):
+    result_json_path = os.path.join(local_artifact_path, "test_results.json")
+    with open(result_json_path, "r") as f:
+        results = json.load(f)
+        if results["accuracy"] < 0.8:
+            print("Model accuracy is less than 0.8. Skipping deployment.")
+            return
+        else:
+            print("Model accuracy is greater than 0.8. Proceeding with deployment.")
+
     login(token=hf_token)
 
     # Initialize API
@@ -76,6 +89,9 @@ def deploy(local_artifact_path, hf_token, hf_repo_name):
             delete_file(path_in_repo=file_path,
                         repo_id=hf_repo_name, token=hf_token)
             print(f"Deleted: {file_path}")
+
+    # delete the test_results.json file
+    os.remove(result_json_path)
 
     # Upload all files from the local folder
     upload_folder(
@@ -133,7 +149,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--gcs_bucket_name",
         type=str,
-        default="vertexai_train",
+        default="fashionai_training",
         help="Name of the GCS bucket containing the model.",
     )
     parser.add_argument(
@@ -151,7 +167,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--hf_repo_name",
         type=str,
-        default="weiyueli7/test2",
+        default="weiyueli7/fashionclip",
         help="Name of the Hugging Face model repository.",
     )
 
