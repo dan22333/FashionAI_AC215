@@ -1,28 +1,12 @@
 """
-Module to deploy a Hugging Face model (FashionCLIP) on Vertex AI.
-
-Typical usage example from the command line:
-    python cli.py --prepare
-    python cli.py --deploy
+Module to deploy a Hugging Face model (FashionCLIP) on HuggingFace.
 """
 
 import os
-import base64
 import argparse
-from glob import glob
-import numpy as np
 from google.cloud import storage
-from google.cloud import aiplatform
-from transformers import CLIPProcessor, CLIPModel
 from huggingface_hub import login, HfApi, delete_file, upload_folder, list_repo_files
 from google.cloud import secretmanager
-
-# Environment variables
-GCP_PROJECT = os.environ["GCP_PROJECT"]
-GCS_MODELS_BUCKET_NAME = os.environ["GCS_MODELS_BUCKET_NAME"]
-ARTIFACT_URI = f"gs://{GCS_MODELS_BUCKET_NAME}"
-LOCAL_ARTIFACT_PATH = "./artifacts"
-
 
 def get_secret(secret):
     client = secretmanager.SecretManagerServiceClient()
@@ -33,27 +17,27 @@ def get_secret(secret):
     return secret_value
 
 
-def prepare(MODEL_PATH):
+def prepare(model_path, gcp_project, gcs_bucket_name, local_artifact_path):
     """
     Downloads all files from a specific folder in a GCP bucket
     and saves them locally, preserving the folder structure.
     """
-    storage_client = storage.Client(project=GCP_PROJECT)
-    bucket = storage_client.bucket(GCS_MODELS_BUCKET_NAME)
+    storage_client = storage.Client(project=gcp_project)
+    bucket = storage_client.bucket(gcs_bucket_name)
 
     # List all blobs in the specified folder
-    blobs = bucket.list_blobs(prefix=MODEL_PATH)
+    blobs = bucket.list_blobs(prefix=model_path)
 
     for blob in blobs:
         # Remove the folder prefix to get the relative path
-        relative_path = blob.name[len(MODEL_PATH) + 1:]
+        relative_path = blob.name[len(model_path) + 1:]
 
         # Skip folder paths
         if not relative_path:
             continue
 
         # Define the local file path
-        local_file_path = os.path.join(LOCAL_ARTIFACT_PATH, relative_path)
+        local_file_path = os.path.join(local_artifact_path, relative_path)
 
         # Ensure the local directory exists
         local_dir = os.path.dirname(local_file_path)
@@ -65,28 +49,22 @@ def prepare(MODEL_PATH):
         blob.download_to_filename(local_file_path)
 
     print(
-        f"All files from {MODEL_PATH} have been downloaded to {LOCAL_ARTIFACT_PATH}")
+        f"All files from {model_path} have been downloaded to {local_artifact_path}")
 
 
-def deploy():
-
-    hf_token = os.environ["HUGGINGFACE_KEY"]
-
+def deploy(local_artifact_path, hf_token, hf_repo_name):
     login(token=hf_token)
-
-    # Specify model repository name
-    repo_name = os.environ["HF_REPO_NAME"]
 
     # Initialize API
     api = HfApi()
 
     # Check if the repository exists
     try:
-        repo_files = list_repo_files(repo_id=repo_name, token=hf_token)
-        print(f"Repository {repo_name} found. Proceeding with upload.")
+        repo_files = list_repo_files(repo_id=hf_repo_name, token=hf_token)
+        print(f"Repository {hf_repo_name} found. Proceeding with upload.")
     except Exception as e:
-        print(f"Repository {repo_name} does not exist. Creating a new repository.")
-        api.create_repo(repo_id=repo_name, token=hf_token, repo_type="model", exist_ok=True)
+        print(f"Repository {hf_repo_name} does not exist. Creating a new repository.")
+        api.create_repo(repo_id=hf_repo_name, token=hf_token, repo_type="model", exist_ok=True)
         repo_files = []  # Empty repository, no files to list
 
     # Files to preserve
@@ -96,13 +74,13 @@ def deploy():
     for file_path in repo_files:
         if file_path not in files_to_preserve:
             delete_file(path_in_repo=file_path,
-                        repo_id=repo_name, token=hf_token)
+                        repo_id=hf_repo_name, token=hf_token)
             print(f"Deleted: {file_path}")
 
     # Upload all files from the local folder
     upload_folder(
-        folder_path=LOCAL_ARTIFACT_PATH,
-        repo_id=repo_name,
+        folder_path=local_artifact_path,
+        repo_id=hf_repo_name,
         token=hf_token,
         commit_message="Updated upload after cleanup"
     )
@@ -110,19 +88,22 @@ def deploy():
     print("Upload complete.")
 
 
-def main(args=None):
+def main(args):
+    print("Starting FashionCLIP deployment...")
+    secret = get_secret(args.hf_token)
     if args.prepare:
         print("Preparing model...")
-        prepare(args.model_path)
+        prepare(args.model_path, args.gcp_project, args.gcs_bucket_name, args.local_artifact_path)
 
     elif args.deploy:
         print("Deploying model...")
-        deploy()
+        deploy(args.local_artifact_path, secret, args.hf_repo_name)
     else:
         print("Preparing model...")
-        prepare(args.model_path)
+        prepare(args.model_path, args.gcp_project, args.gcs_bucket_name, args.local_artifact_path)
         print("Deploying model...")
-        deploy()
+        deploy(args.local_artifact_path, secret, args.hf_repo_name)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="FashionCLIP Deployment CLI")
@@ -143,6 +124,36 @@ if __name__ == "__main__":
         default="finetuned-fashionclip",
         help="Path to the model in the GCS bucket.",
     )
-    # print(get_secret("projects/1087474666309/secrets/HF_API/versions/latest"))
+    parser.add_argument(
+        "--gcp_project",
+        type=str,
+        default="fashion-ai-438801",
+        help="Google Cloud Project ID.",
+    )
+    parser.add_argument(
+        "--gcs_bucket_name",
+        type=str,
+        default="vertexai_train",
+        help="Name of the GCS bucket containing the model.",
+    )
+    parser.add_argument(
+        "--local_artifact_path",
+        type=str,
+        default="./artifacts",
+        help="Local path to save downloaded artifacts.",
+    )
+    parser.add_argument(
+        "--hf_token",
+        type=str,
+        default="projects/1087474666309/secrets/HF_API/versions/latest",
+        help="Hugging Face API token.",
+    )
+    parser.add_argument(
+        "--hf_repo_name",
+        type=str,
+        default="weiyueli7/test2",
+        help="Name of the Hugging Face model repository.",
+    )
+
     args = parser.parse_args()
     main(args)

@@ -7,14 +7,14 @@ export BASE_DIR=$(pwd)
 export SECRETS_DIR=$(pwd)/../../../secrets/
 export GCP_PROJECT="fashion-ai-438801"
 export GCS_MODELS_BUCKET_NAME="vertexai_train"
-export HF_REPO_NAME="weiyueli7/test"
+export HF_REPO_NAME="weiyueli7/fashionclip"
 
 
 
 # Build the image based on the Dockerfile
 #docker build -t $IMAGE_NAME -f Dockerfile .
 # M1/2 chip macs use this line
-docker build -t $IMAGE_NAME --platform=linux/arm64/v8 -f Dockerfile .
+docker build -t $IMAGE_NAME --platform=linux/amd64 -f Dockerfile .
 
 # Run Container
 docker run --rm --name $IMAGE_NAME -ti \
