@@ -185,7 +185,7 @@ jobs:
       - name: Print Docker Logs
         run: docker-compose logs
   deploy:
-    needs: integration-tests
+    needs: lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
