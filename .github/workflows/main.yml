@@ -193,7 +193,8 @@ jobs:
       - name: Authenticate with Google Cloud using Service Account
         run: |
           echo "${{secrets.GCP_SA_KEY}}" > /tmp/gcp-key.json
-          cat /tmp/gcp-key.json
+          ls -l /tmp/gcp-key.json  # List the file to verify it's present
+          cat /tmp/gcp-key.json  # This is just to debug (but remember to 
           gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
           gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
           gcloud auth configure-docker
