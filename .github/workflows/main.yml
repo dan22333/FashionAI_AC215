@@ -187,17 +187,23 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+
+
       - name: Checkout Code
         uses: actions/checkout@v3
 
       - name: Authenticate with Google Cloud using Service Account
-        run: |
-          echo "${{secrets.GCP_SA_KEY}}" > /tmp/gcp-key.json
-          ls -l /tmp/gcp-key.json  # List the file to verify it's present
-          cat /tmp/gcp-key.json  # This is just to debug (but remember to 
-          gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
-          gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
-          gcloud auth configure-docker
+        uses: google-github-actions/auth@v0
+        with:
+          credentials_json: "${{ secrets.GCP_SA_KEY }}"  # This is the GitHub secret with your service account key
+          
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}  # Your Google Cloud Project ID
+
+      - name: Authenticate Docker to GCR
+        run: gcloud auth configure-docker
 
       - name: Set up Ansible
         run: |
