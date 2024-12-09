@@ -6,9 +6,13 @@ REQUIRED_PACKAGES = [
     "torchvision",
     "transformers",
     "Pillow==9.2.0",
-    "wandb==0.15.5",
+    "wandb",
     "annoy",
-    "fashion-clip"
+    "fashion-clip",
+    "google-cloud-secret-manager",
+    "huggingface_hub",
+    "google-cloud-aiplatform"
+
 ]
 
 setup(
