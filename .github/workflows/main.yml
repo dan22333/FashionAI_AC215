@@ -184,37 +184,38 @@ jobs:
      
       - name: Print Docker Logs
         run: docker-compose logs
+
   deploy:
-  runs-on: ubuntu-latest
-  steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-    - name: Authenticate with Google Cloud using Service Account
-      uses: google-github-actions/auth@v1
-      with:
-        credentials_json: "${{ secrets.GCP_SA_KEY }}"  # GitHub secret with your service account key
+      - name: Authenticate with Google Cloud using Service Account
+        uses: google-github-actions/auth@v1  # Updated to v1
+        with:
+          credentials_json: "${{ secrets.GCP_SA_KEY }}"  # GitHub secret with your service account key
 
-    - name: Set up Google Cloud SDK
-      uses: google-github-actions/setup-gcloud@v1
-      with:
-        project_id: ${{ secrets.GCP_PROJECT_ID }}  # Your Google Cloud Project ID
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1  # Updated to v1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}  # Your Google Cloud Project ID
 
-    - name: Authenticate Docker to GCR
-      run: gcloud auth configure-docker
+      - name: Authenticate Docker to GCR
+        run: gcloud auth configure-docker
 
-    - name: Set up Ansible and Install Dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y ansible python3-requests  # Install Ansible and the 'requests' module
-        ansible-galaxy collection install kubernetes.core  # Install the updated collection
+      - name: Set up Ansible and Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible python3-requests  # Install Ansible and the 'requests' module
+          ansible-galaxy collection install kubernetes.core  # Install the updated collection
 
-    - name: Set up Kubernetes kubeconfig
-      run: |
-        mkdir -p ~/.kube
-        echo "${{ secrets.KUBECONFIG_CONTENT }}" > ~/.kube/config
-        export KUBECONFIG=~/.kube/config  # Ensure it's available for the next steps
+      - name: Set up Kubernetes kubeconfig
+        run: |
+          mkdir -p ~/.kube  # Ensure the .kube directory exists
+          echo "${{ secrets.KUBECONFIG_CONTENT }}" > ~/.kube/config
+          export KUBECONFIG=~/.kube/config  # Ensure it's available for the next steps
 
-    - name: Run Ansible Playbook for Kubernetes Deployment
-      run: |
-        ansible-playbook -i src/ansible/inventory.ini src/ansible/playbooks/deploy_k8s.yml
+      - name: Run Ansible Playbook for Kubernetes Deployment
+        run: |
+          ansible-playbook -i src/ansible/inventory.ini src/ansible/playbooks/deploy_k8s.yml
