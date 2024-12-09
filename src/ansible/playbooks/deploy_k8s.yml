@@ -1,0 +1,122 @@
+---
+- name: Build, Push Docker Images and Deploy Kubernetes resources
+  hosts: localhost
+  gather_facts: no
+  vars_files:
+    - vars.yml  # Path to your variables file
+  tasks:
+    # Step 1: Build Docker Image for backend
+    - name: Build Docker image for backend
+      docker_image:
+        name: gcr.io/{{ gcp_project_id }}/backend
+        build:
+          path: ../../server/backend  # Path to the Dockerfile
+        source: build
+        tag: latest
+
+    - name: Push Docker image for backend to GCR
+      docker_image:
+        name: gcr.io/{{ gcp_project_id }}/backend
+        push: yes
+        tag: latest
+        source: local
+
+    # Step 2: Build Docker Image for frontend
+    - name: Build Docker image for frontend
+      docker_image:
+        name: gcr.io/{{ gcp_project_id }}/frontend
+        build:
+          path: ../../server/frontend  # Path to the Dockerfile
+        source: build
+        tag: latest
+
+    - name: Push Docker image for frontend to GCR
+      docker_image:
+        name: gcr.io/{{ gcp_project_id }}/frontend
+        push: yes
+        tag: latest
+        source: local
+
+    # Step 3: Build Docker Image for pinecone service
+    - name: Build Docker image for pinecone service
+      docker_image:
+        name: gcr.io/{{ gcp_project_id }}/pinecone-service
+        build:
+          path: ../../server/pinecone_service  # Path to the Dockerfile
+        source: build
+        tag: latest
+
+    - name: Push Docker image for pinecone service to GCR
+      docker_image:
+        name: gcr.io/{{ gcp_project_id }}/pinecone-service
+        push: yes
+        tag: latest
+        source: local
+
+    # Step 4: Build Docker Image for vector service
+    - name: Build Docker image for vector service
+      docker_image:
+        name: gcr.io/{{ gcp_project_id }}/vector-service
+        build:
+          path: ../../server/vector-service  # Path to the Dockerfile
+        source: build
+        tag: latest
+
+    - name: Push Docker image for vector service to GCR
+      docker_image:
+        name: gcr.io/{{ gcp_project_id }}/vector-service
+        push: yes
+        tag: latest
+        source: local
+
+    # Step 5: Apply Kubernetes resources (Deployment and Service) for backend
+    - name: Apply Kubernetes deployment for backend
+      community.kubernetes.k8s:
+        kubeconfig: "~/.kube/config"
+        state: present
+        src: ../../server/kubernetes/backend-deployment.yaml  # Path to the backend deployment file
+
+    - name: Apply Kubernetes service for backend
+      community.kubernetes.k8s:
+        kubeconfig: "~/.kube/config"
+        state: present
+        src: ../../server/kubernetes/backend-service.yaml  # Path to the backend service file
+
+    # Step 6: Apply Kubernetes resources for frontend
+    - name: Apply Kubernetes deployment for frontend
+      community.kubernetes.k8s:
+        kubeconfig: "~/.kube/config"
+        state: present
+        src: ../../server/kubernetes/frontend-deployment.yaml  # Path to the frontend deployment file
+
+    - name: Apply Kubernetes service for frontend
+      community.kubernetes.k8s:
+        kubeconfig: "~/.kube/config"
+        state: present
+        src: ../../server/kubernetes/frontend-service.yaml  # Path to the frontend service file
+
+    # Step 7: Apply Kubernetes resources for pinecone service
+    - name: Apply Kubernetes deployment for pinecone service
+      community.kubernetes.k8s:
+        kubeconfig: "~/.kube/config"
+        state: present
+        src: ../../server/kubernetes/pinecone-service-deployment.yaml  # Path to the pinecone service deployment file
+
+    - name: Apply Kubernetes service for pinecone service
+      community.kubernetes.k8s:
+        kubeconfig: "~/.kube/config"
+        state: present
+        src: ../../server/kubernetes/pinecone-service.yaml  # Path to the pinecone service service file
+
+    # Step 8: Apply Kubernetes resources for vector service
+    - name: Apply Kubernetes deployment for vector service
+      community.kubernetes.k8s:
+        kubeconfig: "~/.kube/config"
+        state: present
+        src: ../../server/kubernetes/vector-service-deployment.yaml  # Path to the vector service deployment file
+
+    - name: Apply Kubernetes service for vector service
+      community.kubernetes.k8s:
+        kubeconfig: "~/.kube/config"
+        state: present
+        src: ../../server/kubernetes/vector-service.yaml  # Path to the vector service service file

@@ -5,46 +5,44 @@ FROM python:3.9-slim
 ARG DEBIAN_PACKAGES="build-essential git screen vim"
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8
+ENV PYENV_SHELL=/bin/bash
 ENV PYTHONUNBUFFERED=1
 
-# Install necessary tools with signature verification disabled
+# Disable GPG signature verification and install dependencies
 RUN set -ex; \
-    # Configure APT to disable GPG signature verification
+    # Disable GPG verification
     echo "Acquire::AllowInsecureRepositories \"true\";" > /etc/apt/apt.conf.d/99insecure-repos && \
     echo "Acquire::AllowDowngradeToInsecureRepositories \"true\";" >> /etc/apt/apt.conf.d/99insecure-repos && \
     echo "Acquire::Gpgv::Options::=--ignore-time-conflict;" >> /etc/apt/apt.conf.d/99insecure-repos && \
     echo "Acquire::Check-Valid-Until \"false\";" >> /etc/apt/apt.conf.d/99insecure-repos && \
-    echo "deb http://deb.debian.org/debian bookworm main" > /etc/apt/sources.list && \
-    echo "deb http://deb.debian.org/debian-security bookworm-security main" >> /etc/apt/sources.list && \
-    echo "deb http://deb.debian.org/debian bookworm-updates main" >> /etc/apt/sources.list && \
-    # Update and install packages without signature verification
+    # Update package sources and install necessary dependencies
     apt-get update && \
     apt-get upgrade -y --allow-unauthenticated && \
     apt-get install -y --no-install-recommends gnupg curl ca-certificates $DEBIAN_PACKAGES --allow-unauthenticated && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    # Install pipenv for Python dependency management
+    # Install pipenv for managing Python dependencies
     pip install --no-cache-dir --upgrade pip && \
     pip install pipenv && \
-    # Create a non-root user and setup application directory
-    useradd -ms /bin/bash app -d /home/app -u 1000 && \
+    # Create a non-root user and set up application directory
+    useradd -ms /bin/bash app -d /home/app -u 1000 -p "$(openssl passwd -1 Passw0rd)" && \
     mkdir -p /app && \
     chown app:app /app
 
-# Set the working directory
+# Set working directory
 WORKDIR /app
 
-# Copy Pipfile and Pipfile.lock for dependency installation
+# Copy Pipfile first to leverage Docker caching
 COPY Pipfile Pipfile.lock ./
 
-# Install dependencies using Pipenv
+# Install dependencies using pipenv
 RUN pipenv install --deploy --ignore-pipfile
 
-# Copy application code into the container
+# Copy application code
 COPY . .
 
-# Expose the default application port
-EXPOSE 8000
+# Expose the application port (default is 8002, can be changed with APP_PORT_PINECONE)
+EXPOSE 8002
 
-# Run the application with Uvicorn, dynamically using APP_PORT_BACKEND
-CMD ["sh", "-c", "pipenv run uvicorn main:app --host 0.0.0.0 --port ${APP_PORT_BACKEND:-8000}"]
+# Run the application with Uvicorn, dynamically using APP_PORT_PINECONE
+CMD ["sh", "-c", "pipenv run uvicorn main:app --host 0.0.0.0 --port ${APP_PORT_PINECONE:-8002}"]

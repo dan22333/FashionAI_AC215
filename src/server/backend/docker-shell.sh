@@ -45,6 +45,5 @@ docker run --rm --name "${IMAGE_NAME}-shell" -ti \
     --env-file "$ENV_FILE_PATH" \
     -v "$BASE_DIR":/app \
     -v "$GOOGLE_CREDENTIALS_PATH":/secrets \
-    -e GOOGLE_APPLICATION_CREDENTIALS=/secrets/secret.json \
     -p "$APP_PORT_BACKEND":"$APP_PORT_BACKEND" \
     "$IMAGE_NAME" $CMD

@@ -4,10 +4,10 @@ from transformers import CLIPProcessor, CLIPModel
 import os
 
 # Get environment variables directly from Docker
-APP_HOST = os.getenv("APP_HOST", "127.0.0.1")  # Default to 127.0.0.1
-APP_PORT_VECTOR = int(os.getenv("APP_PORT_VECTOR", 8001))    # Default to 8001
-MODEL_NAME = os.getenv("MODEL_NAME", "weiyueli7/fashionclip")
-PROCESSOR_NAME = os.getenv("PROCESSOR_NAME", "weiyueli7/fashionclip")
+APP_HOST = os.getenv("APP_HOST")  # Default to 127.0.0.1
+APP_PORT_VECTOR = int(os.getenv("APP_PORT_VECTOR"))    # Default to 8001
+MODEL_NAME = os.getenv("MODEL_NAME")
+PROCESSOR_NAME = os.getenv("PROCESSOR_NAME")
 
 app = FastAPI()
 

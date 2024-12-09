@@ -15,8 +15,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-APP_PORT_BACKEND = int(os.getenv("APP_PORT_BACKEND", 8000))
-APP_HOST = os.getenv("APP_HOST", "127.0.0.1")
+APP_PORT_BACKEND = int(os.getenv("APP_PORT_BACKEND"))
+APP_HOST = os.getenv("APP_HOST")
 PINECONE_SERVICE_HOST = os.getenv("PINECONE_SERVICE_HOST", "localhost")
 VECTOR_SERVICE_HOST = os.getenv("VECTOR_SERVICE_HOST", "localhost")
 

@@ -8,13 +8,15 @@ from google.cloud import storage, secretmanager
 from pinecone import Pinecone, ServerlessSpec
 from helper_functions import get_clip_vector
 import json
+import os 
 
 # Initialize global constants
-PROJECT_ID = "fashion-ai"
-SECRET_NAME = "projects/1087474666309/secrets/pincone/versions/latest"
-INDEX_NAME = "clip-vector-index-test-prod"
-VECTOR_DIM = 512
-BASE_BUCKET = "fashion_ai_data"
+PROJECT_ID = os.getenv("PROJECT_ID")
+PINECONE_SECRET_NAME = os.getenv("PINECONE_SECRET_NAME")
+PINECONE_INDEX_NAME = os.getenv("PINECONE_INDEX_NAME")
+VECTOR_DIM_MODEL = os.getenv("VECTOR_DIM_MODEL")
+BASE_BUCKET = os.getenv("BASE_BUCKET")
+
 
 # Initialize global GCP storage client
 storage_client = storage.Client(PROJECT_ID)
@@ -166,9 +168,9 @@ def process_and_upload_topic_parallel(topic, base_bucket, pinecone_index, data_n
 # Main Execution
 
 if __name__ == "__main__":
-    pinecone_api_key = get_pinecone_api_key(SECRET_NAME)
+    pinecone_api_key = get_pinecone_api_key(PINECONE_SECRET_NAME)
     pinecone_index = initialize_pinecone(
-        INDEX_NAME, VECTOR_DIM, pinecone_api_key)
+        PINECONE_INDEX_NAME, int(VECTOR_DIM_MODEL), pinecone_api_key)
 
     # Load topics from CSV
     data_buckets = pd.read_csv("data_buckets.csv")

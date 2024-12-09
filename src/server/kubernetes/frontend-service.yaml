@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: my-namespace
+  labels:
+    io.kompose.service: frontend
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 3000          # External port
+      targetPort: 3000  # Port used by the backend container
+  selector:
+    io.kompose.service: frontend

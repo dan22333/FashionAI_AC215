@@ -23,11 +23,11 @@ jobs:
           - name: scraper
             path: src/scraper
             python_version: 3.11
-          - name: vector_service
-            path: src/server/vector_service
+          - name: vector-service
+            path: src/server/vector-service
             python_version: 3.9
-          - name: pinecone_service
-            path: src/server/pinecone_service
+          - name: pinecone-service
+            path: src/server/pinecone-service
             python_version: 3.9
           - name: vectorized_db_init
             path: src/vectorized_db_init
@@ -75,10 +75,10 @@ jobs:
             path: src/server/backend
             python_version: 3.9
           - name: pinecone_service
-            path: src/server/pinecone_service
+            path: src/server/pinecone-service
             python_version: 3.9
           - name: vector_service
-            path: src/server/vector_service
+            path: src/server/vector-service
             python_version: 3.9
           - name: frontend
             path: src/server/frontend
@@ -91,6 +91,7 @@ jobs:
         run: docker build -t ${{ matrix.service.name }}:latest ${{ matrix.service.path }}
 
   test:
+    needs: lint
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -108,10 +109,10 @@ jobs:
             path: src/server/backend
             python_version: 3.9
           - name: pinecone_service
-            path: src/server/pinecone_service
+            path: src/server/pinecone-service
             python_version: 3.9
           - name: vector_service
-            path: src/server/vector_service
+            path: src/server/vector-service
             python_version: 3.9
     steps:
       - name: Checkout Code
@@ -146,6 +147,7 @@ jobs:
           path: ${{ matrix.service.path }}/coverage.xml
 
   integration-tests:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -182,3 +184,31 @@ jobs:
      
       - name: Print Docker Logs
         run: docker-compose logs
+  deploy:
+    needs: integration-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Authenticate with Google Cloud using Service Account
+        run: |
+          echo "${{ secrets.GCP_SA_KEY }}" > /tmp/gcp-key.json
+          gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
+          gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
+          gcloud auth configure-docker
+
+      - name: Set up Ansible
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible
+          ansible-galaxy collection install community.kubernetes
+
+      - name: Set up Kubernetes kubeconfig
+        run: |
+          echo "${{ secrets.KUBECONFIG_CONTENT }}" > ~/.kube/config
+          export KUBECONFIG=~/.kube/config  # Ensure it's available for the next steps
+
+      - name: Run Ansible Playbook for Kubernetes Deployment
+        run: |
+          ansible-playbook -i ansible/inventory.ini ansible/playbooks/deploy_k8s.yml
