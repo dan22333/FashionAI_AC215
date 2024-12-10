@@ -233,7 +233,15 @@ jobs:
       - name: Verify Kubernetes Config
         run: cat ~/.kube/config
 
+      - name: Write GCP Service Account Secret to File
+      run: echo "${{ secrets.GCP_SA_KEY }}" > gcp_service_account.json
+
       - name: Run Ansible Playbook for Kubernetes Deployment
         run: |
-          source ansible-env/bin/activate  # Activate the virtual environment
-          ansible-playbook -i src/ansible/inventory.ini src/ansible/playbook.yml
+          source ansible-env/bin/activate
+          ansible-playbook -i inventory.ini playbook.yml \
+            -e "gcp_service_account_file=gcp_service_account.json"
+
+      - name: Clean Up GCP Service Account File
+        run: rm -f gcp_service_account.json
+
