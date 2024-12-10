@@ -8,6 +8,13 @@
   set_fact:
     docker_tag: "{{ tag.stdout | default('latest') }}"  # Use the tag from the file, or default to 'latest'
 
+- name: "List Files in Current Directory"
+  command: ls -l
+
+- name: "List Files in Backend Directory"
+  command: ls -l ../../../../server/backend
+  ignore_errors: yes  # Prevent failure if the directory doesn't exist
+  
 # Step 1: Build Docker Image for backend
 - name: "Build Docker image for backend"
   docker_image:
