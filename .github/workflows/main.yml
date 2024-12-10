@@ -218,4 +218,4 @@ jobs:
 
       - name: Run Ansible Playbook for Kubernetes Deployment
         run: |
-          ansible-playbook -i src/ansible/inventory.ini src/ansible/playbooks/deploy_k8s.yml
+          ansible-playbook -i src/ansible/inventories/inventory.ini src/ansible/playbooks/deploy_k8s.yml
