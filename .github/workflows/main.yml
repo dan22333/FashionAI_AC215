@@ -224,6 +224,12 @@ jobs:
           mkdir -p ~/.kube  # Ensure the .kube directory exists
           echo "${{ secrets.KUBECONFIG_CONTENT }}" > ~/.kube/config
           export KUBECONFIG=~/.kube/config  # Ensure it's available for the next steps
+      
+      - name: Check Kubernetes Authentication
+        run: kubectl get nodes
+
+      - name: Verify Kubernetes Config
+        run: cat ~/.kube/config
 
       - name: Run Ansible Playbook for Kubernetes Deployment
         run: |
