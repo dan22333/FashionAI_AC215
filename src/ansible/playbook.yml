@@ -8,8 +8,8 @@
     - vars/main.yml
 
   roles:
-    - secrets-env
     - gke-setup
+    - secrets-env
     - build-images
     - nginx-ingress
     - deploy-services
