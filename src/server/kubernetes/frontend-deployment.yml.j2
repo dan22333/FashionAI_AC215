@@ -1,8 +1,10 @@
+# kubernetes/deployments/frontend_deployment.yml
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend
-  namespace: my-namespace
+  namespace: "{{ namespace }}"
 spec:
   replicas: 1
   selector:
@@ -16,12 +18,12 @@ spec:
     spec:
       initContainers:
         - name: wait-for-backend
-          image: busybox  # A simple image to wait for the other services
-          command: ['sh', '-c', 'until nc -zv backend 8000; do echo "Waiting for Pinecone and Vector..."; sleep 5; done;']
+          image: busybox
+          command: ['sh', '-c', 'until nc -zv backend 8000; do echo "Waiting for Backend..."; sleep 5; done;']
           resources: {}
       containers:
         - name: frontend
-          image: gcr.io/fashion-ai-438801/frontend:latest
+          image: "gcr.io/fashion-ai-438801/frontend:{{ tag.stdout }}"
           ports:
             - containerPort: 3000
           env:

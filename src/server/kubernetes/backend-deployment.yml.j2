@@ -1,8 +1,10 @@
+# kubernetes/deployments/backend_deployment.yml
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend
-  namespace: my-namespace
+  namespace: "{{ namespace }}"
 spec:
   replicas: 1
   selector:
@@ -17,51 +19,49 @@ spec:
     spec:
       initContainers:
         - name: wait-for-pinecone-vector
-          image: busybox  # A simple image to wait for the other services
+          image: busybox
           command: ['sh', '-c', 'until nc -zv pinecone-service 8002 && nc -zv vector-service 8001; do echo "Waiting for Pinecone and Vector..."; sleep 5; done;']
           resources: {}
       containers:
         - name: backend
-          image: gcr.io/fashion-ai-438801/backend:latest
+          image: "gcr.io/fashion-ai-438801/backend:{{ tag.stdout }}"
           ports:
             - containerPort: 8000
           envFrom:
             - secretRef:
-                name: service-env  # The name of the secret containing the .env variables
+                name: "{{ env_secret_name }}"
           env:
             - name: PINECONE_SERVICE_HOST
               value: pinecone-service
             - name: VECTOR_SERVICE_HOST
               value: vector-service
             - name: GOOGLE_APPLICATION_CREDENTIALS
-              value: /secrets/key.json  # Set to the path where the secret is mounted
+              value: /secrets/key.json
           volumeMounts:
-            - name: gcp-service-account-key  # Reference the volume
-              mountPath: /secrets            # Mount the secret as a file here
-              readOnly: true                 # Ensure it's read-only
+            - name: "{{ gcp_secret_name }}"
+              mountPath: /secrets
+              readOnly: true
           resources:
             requests:
-              cpu: "250m"    # 0.25 CPU
-              memory: "1Gi"  # 1 GiB of memory
+              cpu: "250m"
+              memory: "1Gi"
             limits:
-              cpu: "500m"    # 0.5 CPU
-              memory: "2Gi" 
-          resources: {}
+              cpu: "500m"
+              memory: "2Gi"
           readinessProbe:
             httpGet:
-              path: /health  # Ensure your app exposes a /health endpoint
+              path: /health
               port: 8000
             initialDelaySeconds: 5
             periodSeconds: 5
           livenessProbe:
             httpGet:
-              path: /health  # Ensure your app exposes a /health endpoint
+              path: /health
               port: 8000
             initialDelaySeconds: 10
             periodSeconds: 10
       volumes:
-      - name: gcp-service-account-key
-        secret:
-          secretName: gcp-service-account-key  # The name of your secret
+        - name: "{{ gcp_secret_name }}"
+          secret:
+            secretName: "{{ gcp_secret_name }}"
       restartPolicy: Always
-status: {}

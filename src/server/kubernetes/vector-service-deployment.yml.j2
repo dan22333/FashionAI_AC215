@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: vector-service
-  namespace: my-namespace
+  namespace: "{{ namespace }}"
 spec:
   replicas: 1
   selector:
@@ -17,32 +17,29 @@ spec:
     spec:
       containers:
         - name: vector-service
-          image: gcr.io/fashion-ai-438801/vector-service:latest
+          image: "gcr.io/fashion-ai-438801/vector-service:{{ tag.stdout }}"  # Using variable for tag
           ports:
             - containerPort: 8001
           resources: {}
           envFrom:
-            # Using the secret containing the .env file variables
             - secretRef:
-                name: service-env  # The secret containing the .env file values
+                name: "{{ env_secret_name }}"
           env:
-            # Explicitly set GOOGLE_APPLICATION_CREDENTIALS for authentication
             - name: GOOGLE_APPLICATION_CREDENTIALS
               valueFrom:
                 secretKeyRef:
-                  name: gcp-service-account-key  # The name of the secret containing the service account key
-                  key: key.json  # The key inside the secret that holds the service account JSON
+                  name: "{{ gcp_secret_name }}"
+                  key: key.json
           readinessProbe:
             httpGet:
-              path: /health  # Ensure your app exposes a /health endpoint
+              path: /health
               port: 8001
             initialDelaySeconds: 5
             periodSeconds: 5
           livenessProbe:
             httpGet:
-              path: /health  # Ensure your app exposes a /health endpoint
+              path: /health
               port: 8001
             initialDelaySeconds: 10
             periodSeconds: 10
       restartPolicy: Always
-status: {}
