@@ -1,6 +1,10 @@
 # ansible/roles/gke_setup/tasks/main.yml
 
 ---
+- name: "Debug GCP Service Account File Path"
+  debug:
+    msg: "GCP Service Account File Path: {{ gcp_service_account_file }}"
+
 - name: "Create a GKE cluster"
   google.cloud.gcp_container_cluster:
     name: "{{ cluster_name }}"
