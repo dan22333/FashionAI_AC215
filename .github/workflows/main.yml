@@ -227,4 +227,5 @@ jobs:
 
       - name: Run Ansible Playbook for Kubernetes Deployment
         run: |
+          source ansible-env/bin/activate  # Activate the virtual environment
           ansible-playbook -i src/ansible/inventories/inventory.ini src/ansible/playbooks/deploy_k8s.yml
