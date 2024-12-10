@@ -237,10 +237,14 @@ jobs:
         run: |
           printf "%s" "${{ secrets.GCP_SA_KEY }}" > ./src/ansible/gcp_service_account.json
 
-      - name: Verify GCP Service Account File
+      - name: Fix Newlines in Private Key
         run: |
-          ls -l ./src/ansible
-          cat ./src/ansible/gcp_service_account.json
+          sed -i 's/\\n/\n/g' ./src/ansible/gcp_service_account.json
+          
+      - name: Verify GCP Service Account File Content
+        run: |
+          cat ./src/ansible/gcp_service_account.json | python -m json.tool
+
 
       - name: Run Ansible Playbook for Kubernetes Deployment
         run: |
