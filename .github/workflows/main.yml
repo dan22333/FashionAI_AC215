@@ -186,7 +186,8 @@ jobs:
      
       - name: Print Docker Logs
         run: docker-compose logs
-
+  
+  
   deploy:
     if: contains(github.event.head_commit.message, '/deploy-app')
     runs-on: ubuntu-latest
@@ -218,7 +219,7 @@ jobs:
           pip install requests
           pip install kubernetes  # Install the missing 'kubernetes' library
           ansible-galaxy collection install kubernetes.core
-          
+
       - name: Set up Kubernetes kubeconfig
         run: |
           mkdir -p ~/.kube  # Ensure the .kube directory exists
