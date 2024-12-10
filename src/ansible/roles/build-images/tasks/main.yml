@@ -11,10 +11,9 @@
 - name: "List Files in Current Directory"
   command: ls -l
 
-- name: "List Files in Backend Directory"
-  command: ls -l ../../../../server/backend
-  ignore_errors: yes  # Prevent failure if the directory doesn't exist
-  
+- name: Debug Current Working Directory
+  command: pwd
+
 # Step 1: Build Docker Image for backend
 - name: "Build Docker image for backend"
   docker_image:

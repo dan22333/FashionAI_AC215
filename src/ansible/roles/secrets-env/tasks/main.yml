@@ -5,10 +5,6 @@
   set_fact:
     env_vars: "{{ lookup('file', env_file_path) | split('\n') | select('search', '^([^#].*)$') | selectattr('strip', 'ne', '') | map('regex_replace', '^\\s*(.*)\\s*$', '\\1') | map('split', '=') | list }}"
 
-- name: "Debug the parsed .env variables"
-  debug:
-    msg: "{{ env_vars }}"
-
 - name: "Sanitize env variable keys"
   set_fact:
     sanitized_env_vars_dict: "{{ dict(env_vars | map('first') | map('regex_replace', '[^a-zA-Z0-9-_]', '') | zip(env_vars | map('last')) | list) }}"
