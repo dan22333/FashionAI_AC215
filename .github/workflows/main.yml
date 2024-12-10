@@ -233,23 +233,28 @@ jobs:
       - name: Verify Kubernetes Config
         run: cat ~/.kube/config
 
+      - name: Debug Raw GCP Secret
+        run: |
+          echo "Raw GCP_SA_KEY content:"
+          echo "${{ secrets.GCP_SA_KEY }}"
+
       - name: Write GCP Service Account Secret to File
         run: |
           echo "${{ secrets.GCP_SA_KEY }}" > ./src/ansible/gcp_service_account.json
 
-      - name: Verify GCP Service Account File Content
-        run: |
-          echo "Validating JSON structure..."
-          cat ./src/ansible/gcp_service_account.json | python -m json.tool
-
-      - name: Fix JSON Formatting (Optional)
+      - name: Fix Newlines in Private Key
         run: |
           sed -i 's/\\n/\n/g' ./src/ansible/gcp_service_account.json
 
-      - name: Debug GCP Service Account File
+      - name: Debug Written File Content
         run: |
-          echo "Debugging the file content"
+          echo "Debugging written file content:"
           cat ./src/ansible/gcp_service_account.json
+
+      - name: Validate JSON Structure
+        run: |
+          echo "Validating JSON structure..."
+          cat ./src/ansible/gcp_service_account.json | python -m json.tool
 
       - name: Run Ansible Playbook for Kubernetes Deployment
         run: |
