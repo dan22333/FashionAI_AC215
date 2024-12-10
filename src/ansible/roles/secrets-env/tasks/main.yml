@@ -1,20 +1,6 @@
 # ansible/roles/secrets_env/tasks/main.yml
 
 ---
-- name: "Create GCP Service Account Secret"
-  k8s:
-    state: present
-    definition:
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: "{{ gcp_secret_name }}"
-        namespace: "{{ namespace }}"
-      type: Opaque
-      data:
-        key.json: "{{ lookup('file', gcp_service_account_file) | b64encode }}"
-  when: cluster_state == "present"
-
 - name: "Parse .env file into key-value pairs"
   set_fact:
     env_vars: "{{ lookup('file', env_file_path) | split('\n') | select('search', '^([^#].*)$') | selectattr('strip', 'ne', '') | map('regex_replace', '^\\s*(.*)\\s*$', '\\1') | map('split', '=') | list }}"

@@ -233,11 +233,7 @@ jobs:
       - name: Verify Kubernetes Config
         run: cat ~/.kube/config
 
-      - name: Encode GCP Service Account Secret
-        run: echo "GCP_SA_KEY=$(echo '${{ secrets.GCP_SA_KEY }}' | base64 -w0)" >> $GITHUB_ENV
-
       - name: Run Ansible Playbook for Kubernetes Deployment
         run: |
-          source ansible-env/bin/activate
-          ansible-playbook -i src/ansible/inventory.ini src/ansible/playbook.yml \
-            -e "gcp_service_account_key=$(echo $GCP_SA_KEY | base64 -d)"
+          source ansible-env/bin/activate  # Activate the virtual environment
+          ansible-playbook -i src/ansible/inventory.ini src/ansible/playbook.yml
