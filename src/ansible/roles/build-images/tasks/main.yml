@@ -11,14 +11,6 @@
 - name: "List Files in Current Directory"
   command: ls -l
 
-- name: Debug Current Working Directory
-  command: pwd
-
-- name: Debug Current Working Directory
-  debug:
-    msg: "Current working directory is: {{ ansible_env.PWD }}"
-
-
 # Step 1: Build Docker Image for backend
 - name: "Build Docker image for backend"
   docker_image:
