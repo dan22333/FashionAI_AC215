@@ -24,7 +24,7 @@ ingress_class: "nginx"
 gcp_secret_name: "gcp-service-account-key"
 env_secret_name: "service-env"
 env_file_path: "{{ playbook_dir }}/../server/.env"
-gcp_service_account_file: "{{ playbook_dir }}/../../../secrets/secret.json"
+gcp_service_account_file: ""
 
 
 # New Variables for Static IP

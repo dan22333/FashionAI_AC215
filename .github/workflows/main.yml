@@ -233,7 +233,10 @@ jobs:
       - name: Verify Kubernetes Config
         run: cat ~/.kube/config
 
+      - name: Load GCP Service Account Secret from GitHub Secret
+        run: echo "GCP_SA_KEY=${{ secrets.GCP_SA_KEY }}" >> $GITHUB_ENV
+
       - name: Run Ansible Playbook for Kubernetes Deployment
-        run: |
-          source ansible-env/bin/activate  # Activate the virtual environment
-          ansible-playbook -i src/ansible/inventory.ini src/ansible/playbook.yml
+        run: source ansible-env/bin/activate
+             ansible-playbook -i src/ansible/inventory.ini src/ansible/playbook.yml \
+             -e "gcp_service_account_key=${GCP_SA_KEY}"
