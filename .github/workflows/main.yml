@@ -91,7 +91,6 @@ jobs:
         run: docker build -t ${{ matrix.service.name }}:latest ${{ matrix.service.path }}
 
   test:
-    needs: lint
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -147,7 +146,10 @@ jobs:
           path: ${{ matrix.service.path }}/coverage.xml
 
   integration-tests:
-    needs: test
+    needs:
+      - lint
+      - test
+      - build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -186,6 +188,7 @@ jobs:
         run: docker-compose logs
 
   deploy:
+    if: contains(github.event.head_commit.message, '/deploy-app')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -209,7 +212,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ansible python3-requests  # Install Ansible and the 'requests' module
           ansible-galaxy collection install kubernetes.core  # Install the updated collection
-
+        
       - name: Set up Kubernetes kubeconfig
         run: |
           mkdir -p ~/.kube  # Ensure the .kube directory exists
