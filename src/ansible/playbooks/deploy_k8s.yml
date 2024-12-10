@@ -71,52 +71,52 @@
 
     # Step 5: Apply Kubernetes resources (Deployment and Service) for backend
     - name: Apply Kubernetes deployment for backend
-      community.kubernetes.k8s:
+      kubernetes.core.k8s:
         kubeconfig: "~/.kube/config"
         state: present
         src: ../../server/kubernetes/backend-deployment.yaml  # Path to the backend deployment file
 
     - name: Apply Kubernetes service for backend
-      community.kubernetes.k8s:
+      kubernetes.core.k8s:
         kubeconfig: "~/.kube/config"
         state: present
         src: ../../server/kubernetes/backend-service.yaml  # Path to the backend service file
 
     # Step 6: Apply Kubernetes resources for frontend
     - name: Apply Kubernetes deployment for frontend
-      community.kubernetes.k8s:
+      kubernetes.core.k8s:
         kubeconfig: "~/.kube/config"
         state: present
         src: ../../server/kubernetes/frontend-deployment.yaml  # Path to the frontend deployment file
 
     - name: Apply Kubernetes service for frontend
-      community.kubernetes.k8s:
+      kubernetes.core.k8s:
         kubeconfig: "~/.kube/config"
         state: present
         src: ../../server/kubernetes/frontend-service.yaml  # Path to the frontend service file
 
     # Step 7: Apply Kubernetes resources for pinecone service
     - name: Apply Kubernetes deployment for pinecone service
-      community.kubernetes.k8s:
+      kubernetes.core.k8s:
         kubeconfig: "~/.kube/config"
         state: present
         src: ../../server/kubernetes/pinecone-service-deployment.yaml  # Path to the pinecone service deployment file
 
     - name: Apply Kubernetes service for pinecone service
-      community.kubernetes.k8s:
+      kubernetes.core.k8s:
         kubeconfig: "~/.kube/config"
         state: present
         src: ../../server/kubernetes/pinecone-service.yaml  # Path to the pinecone service service file
 
     # Step 8: Apply Kubernetes resources for vector service
     - name: Apply Kubernetes deployment for vector service
-      community.kubernetes.k8s:
+      kubernetes.core.k8s:
         kubeconfig: "~/.kube/config"
         state: present
         src: ../../server/kubernetes/vector-service-deployment.yaml  # Path to the vector service deployment file
 
     - name: Apply Kubernetes service for vector service
-      community.kubernetes.k8s:
+      kubernetes.core.k8s:
         kubeconfig: "~/.kube/config"
         state: present
         src: ../../server/kubernetes/vector-service.yaml  # Path to the vector service service file
