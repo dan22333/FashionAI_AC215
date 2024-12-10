@@ -234,7 +234,7 @@ jobs:
         run: cat ~/.kube/config
 
       - name: Write GCP Service Account Secret to File
-      run: echo "${{ secrets.GCP_SA_KEY }}" > gcp_service_account.json
+        run: echo "${{ secrets.GCP_SA_KEY }}" > gcp_service_account.json
 
       - name: Run Ansible Playbook for Kubernetes Deployment
         run: |
