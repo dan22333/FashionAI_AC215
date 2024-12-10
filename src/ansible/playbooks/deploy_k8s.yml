@@ -120,3 +120,6 @@
         kubeconfig: "~/.kube/config"
         state: present
         src: ../../server/kubernetes/vector-service.yaml  # Path to the vector service service file
+      
+    - name: "Remove all unused containers"
+      shell: docker system prune -a
