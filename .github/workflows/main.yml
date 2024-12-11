@@ -35,6 +35,12 @@ jobs:
           - name: backend
             path: src/server/backend
             python_version: 3.9
+          - name: deployment_hf
+            path: src/deployment_hf
+            python_version: 3.9
+          - name: workflow
+            path: src/workflow
+            python_version: 3.11
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -82,6 +88,12 @@ jobs:
             python_version: 3.9
           - name: frontend
             path: src/server/frontend
+            python_version: 3.9
+           name: workflow
+            path: src/workflow
+            python_version: 3.11
+          - name: deployment_hf
+            path: src/deployment_hf
             python_version: 3.9
     steps:
       - name: Checkout Code
