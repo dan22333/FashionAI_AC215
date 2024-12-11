@@ -16,7 +16,7 @@
   docker_image:
     name: gcr.io/{{ gcp_project }}/backend
     build:
-      path: "{{ playbook_dir }}/../../../../server/backend"
+      path: "{{ playbook_dir }}/../server/backend"
     source: build
     tag: "{{ docker_tag }}"  # Use the tag read from the file or default
 
