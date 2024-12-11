@@ -89,7 +89,7 @@ jobs:
           - name: frontend
             path: src/server/frontend
             python_version: 3.9
-           name: workflow
+          - name: workflow
             path: src/workflow
             python_version: 3.11
           - name: deployment_hf
