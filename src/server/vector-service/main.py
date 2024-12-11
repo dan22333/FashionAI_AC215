@@ -22,10 +22,18 @@ class VectorRequest(BaseModel):
 
 @app.post("/get_vector")
 async def get_vector(request: VectorRequest):
+    """
+    Endpoint to generate vector embeddings for a given text input.
+    - Accepts a JSON request with a 'text' field.
+    - Returns a flattened vector representing the text.
+    """
     try:
+        # Preprocess the input text using the CLIP processor
         inputs = processor(text=[request.text],
                            return_tensors="pt", padding=True)
+        # Generate text features using the CLIP model
         outputs = model.get_text_features(**inputs)
+        # Convert the output tensor to a flattened list
         vector = outputs.detach().numpy().flatten().tolist()
         return {"vector": vector}
     except Exception as e:

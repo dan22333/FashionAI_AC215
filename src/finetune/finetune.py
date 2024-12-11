@@ -27,8 +27,6 @@ def login_wandb():
     wandb.login(key=get_wandb_api_key())
 
 # Function to parse arguments
-
-
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Fine-tune FashionCLIP on a custom dataset")
@@ -50,11 +48,6 @@ def parse_args():
 # Define the sweep configuration
 sweep_config = {
     'method': 'grid',  # You can use 'random' or 'bayes' for random or Bayesian search
-    # 'parameters': {
-    #     'batch_size': {'values': [16, 32, 64]},  # Different batch sizes to try
-    #     'learning_rate': {'values': [5e-5, 5e-6, 1e-6]},  # Learning rates to sweep
-    #     'epochs': {'values': [3, 5]}  # Number of epochs to try
-    # }
     'parameters': {
         'batch_size': {'values': [32]},  # Different batch sizes to try
         'learning_rate': {'values': [5e-6]},  # Learning rates to sweep

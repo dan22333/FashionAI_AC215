@@ -5,31 +5,21 @@ import google.cloud.aiplatform as aip
 from dotenv import load_dotenv
 import uuid
 
+# Load and set up environment variables
 load_dotenv()
-
-GCS_INPUT_BUCKET = os.getenv("GCS_INPUT_BUCKET")
-GCS_OUTPUT_BUCKET = os.getenv("GCS_OUTPUT_BUCKET")
-SECRET_FILE_NAME = os.getenv("SECRET_FILE_NAME")
-SECRETS_PATH_CONTAINER = os.getenv("SECRETS_PATH_CONTAINER")
-
 GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME")
 BUCKET_URI = f"gs://{GCS_BUCKET_NAME}"
 PIPELINE_ROOT = f"{BUCKET_URI}/pipeline_root"
 GCP_PROJECT = os.getenv("GCP_PROJECT")
-
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-
 print(f"Using credentials at: {os.environ['GOOGLE_APPLICATION_CREDENTIALS']}")
-
-SECRETS_PATH = os.getenv("SECRETS_PATH")
-SECRET_FILE_NAME = os.getenv("SECRET_FILE_NAME")
-
-DATA_CAPTIONING_IMAGE = os.getenv("DATA_CAPTIONING_IMAGE")
-
 
 def generate_uuid():
     """Generate a unique job ID."""
     return str(uuid.uuid4())[:8]
+
+# Data Captioning
+DATA_CAPTIONING_IMAGE = os.getenv("DATA_CAPTIONING_IMAGE")
 
 # Data Captioning
 def data_captioning():

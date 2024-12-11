@@ -15,31 +15,39 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Load environment variables
 APP_PORT_BACKEND = int(os.getenv("APP_PORT_BACKEND"))
 APP_HOST = os.getenv("APP_HOST")
 PINECONE_SERVICE_HOST = os.getenv("PINECONE_SERVICE_HOST", "localhost")
 VECTOR_SERVICE_HOST = os.getenv("VECTOR_SERVICE_HOST", "localhost")
 
-
 class SearchQuery(BaseModel):
     queryText: str
     top_k: int = 5
 
-
 @app.post("/search")
 async def search(query: SearchQuery):
+    """
+    Handles search requests. 
+    Communicates with a vector service to retrieve query vectors and
+    with a Pinecone service for retrieving the top-k search results.
+    """
     query_text = query.queryText
     top_k = query.top_k
 
     async with httpx.AsyncClient() as client:
         try:
+            # Call the vector service to convert text into a vector
             vector_service_url = f"http://{VECTOR_SERVICE_HOST}:8001/get_vector"
             response = await client.post(vector_service_url, json={"text": query_text}, timeout=10)
             response.raise_for_status()
+
+            # Parse the vector from the response
             query_vector = response.json().get("vector")
             if not query_vector:
                 raise ValueError("No vector returned from vector service.")
 
+            # Call the Pinecone service for retrieving search results
             pinecone_service_url = f"http://{PINECONE_SERVICE_HOST}:8002/search"
             pinecone_response = await client.post(
                 pinecone_service_url,
@@ -47,6 +55,8 @@ async def search(query: SearchQuery):
                 timeout=10
             )
             pinecone_response.raise_for_status()
+
+            # Parse the search results
             search_results = pinecone_response.json()
             items = [
                 {

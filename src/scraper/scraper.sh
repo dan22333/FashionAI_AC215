@@ -24,7 +24,6 @@ rm -rf $TEMP_RAW_IMAGES
 mkdir -p $TEMP_METADATA
 mkdir -p $TEMP_RAW_IMAGES
 
-
 # Run the scraper container and redirect output to a log file
 docker run --rm --name $IMAGE_NAME \
     -v $(pwd):/src \
@@ -38,8 +37,6 @@ CONTAINER_EXIT_CODE=$?
 # Check if the container ran successfully
 if [ $CONTAINER_EXIT_CODE -ne 0 ]; then
     echo "The scraper container encountered an issue. Checking logs..."
-    
-
     # Cleanup temporary directories
     rm -rf $TEMP_METADATA
     rm -rf $TEMP_RAW_IMAGES

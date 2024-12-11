@@ -11,9 +11,11 @@ import asyncio
 from google.cloud import secretmanager
 from apify import Actor
 from aiohttp import ClientTimeout
+
 # Load the .env file
 load_dotenv()
 
+# Setting up Environment Variables
 meta_data_folder = os.getenv('SCRAPED_METADATA')
 images_folder = os.getenv('SCRAPED_RAW_IMAGES')
 
@@ -30,7 +32,8 @@ scrape_data = os.getenv('SCRAP_IMAGES')
 # Initialize the ApifyClient with your API token
 client = secretmanager.SecretManagerServiceClient()
 response = client.access_secret_version(
-    request={"name": os.getenv('APIFY_GCP_SECRET_ACCESS')})
+    request={"name": os.getenv('APIFY_GCP_SECRET_ACCESS')}
+    )
 secret_value = "apify_api_fmyOzdUdJa6NnRysW2LKPGccavak5R3YiHro"
 client = ApifyClient(secret_value)
 
@@ -78,8 +81,6 @@ def get_items_seed(url):
     return df
 
 # Function to asynchronously download a single image using Apify proxy
-
-
 async def download_image(session, url, image_name, bad_urls, id, proxy_url):
     # Check if the image already exists locally to skip downloading
     if os.path.exists(image_name):
@@ -106,8 +107,6 @@ async def download_image(session, url, image_name, bad_urls, id, proxy_url):
         bad_urls.append({'url': url, 'id': id, 'error': str(e)})
 
 # Function to download multiple images asynchronously and return a DataFrame of failed downloads
-
-
 async def download_images(urls_df, output_folder):
     # Ensure the output folder exists
     os.makedirs(output_folder, exist_ok=True)
@@ -157,27 +156,6 @@ async def download_images(urls_df, output_folder):
 
 if __name__ == '__main__':
     try:
-        # base_url_women = "https://www.farfetch.com/shopping/women/clothing-1/items.aspx?page=1"
-        # base_url_men = "https://www.farfetch.com/shopping/men/clothing-2/items.aspx?page=1"
-        #
-        # # Set number of pages to scrape (can be dynamically determined later)
-        # num_of_items = 2
-        # df_women = pd.DataFrame()
-        # df_men = pd.DataFrame()
-        #
-        # if(not int(scrape_data)):
-        #     df_women = get_items_seed(base_url_women)
-        #     df_men  = get_items_seed(base_url_men)
-        #     print("Metadata files were downloaded")
-        #     # Save the DataFrame to the full path
-        #     df_women.to_csv(os.path.join(meta_data_folder, women_file_name), index=False)
-        #     df_men.to_csv(os.path.join(meta_data_folder, men_file_name), index=False)
-
-        # df_women = pd.read_csv(os.path.join(meta_data_folder, women_file_name))
-        # bad_image_metadata_women = asyncio.run(download_images(df_women, os.path.join(images_folder, os.path.splitext(women_file_name)[0])))
-        # print("Images saved for women")
-        # bad_image_metadata_women.to_csv(os.path.join(meta_data_folder, bad_urls_women_file_name),  index=False)
-
         df_men = pd.read_csv(os.path.join(meta_data_folder, men_file_name))
         bad_image_metadata_men = asyncio.run(download_images(
             df_men, os.path.join(images_folder, os.path.splitext(men_file_name)[0])))
