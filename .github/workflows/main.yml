@@ -221,6 +221,12 @@ jobs:
       - name: Install gke-gcloud-auth-plugin
         run: gcloud components install gke-gcloud-auth-plugin
         
+      - name: Debug Working Directory
+        run: |
+          echo "Current Directory: $(pwd)"
+          echo "Directory Contents:"
+          ls -R
+          
       - name: Set up Kubernetes kubeconfig
         run: |
           mkdir -p ~/.kube  # Ensure the .kube directory exists
