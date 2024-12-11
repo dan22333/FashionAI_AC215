@@ -240,3 +240,33 @@ jobs:
 
       - name: Clean Up GCP Service Account File
         run: rm -f ./src/ansible/gcp_service_account.json
+  
+  run-ml-workflow:
+  if: contains(github.event.head_commit.message, '/run-ml-workflow')
+  needs: deploy  # Remove this line if the job should run independently
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'  # Match your Dockerfile's Python version
+
+    - name: Install Pipenv
+      run: |
+        python3 -m pip install --upgrade pip
+        pip install pipenv
+
+    - name: Set Up Pipenv Environment
+      run: |
+        pipenv install --deploy --ignore-pipfile
+
+    - name: Make docker-shell.sh Executable
+      run: chmod +x ./src/workflow/docker-shell.sh
+
+    - name: Run docker-shell.sh
+      working-directory: ./src/workflow  # Update to the correct path where docker-shell.sh resides
+      run: |
+        pipenv run sh docker-shell.sh
