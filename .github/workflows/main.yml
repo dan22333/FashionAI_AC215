@@ -262,23 +262,29 @@ jobs:
         run: |
           pipenv install --deploy --ignore-pipfile
 
-        # 5. Create GCP Secret File from GitHub Secrets
+        # 5. Create GCP Secret File using a here-document to preserve JSON structure
       - name: Create GCP Secret File
         run: |
           mkdir -p ./secrets
-          echo "${{ secrets.GCP_SA_KEY }}" > ./secrets/secret.json
+          cat <<EOF > ./secrets/secret.json
+          ${{ secrets.GCP_SA_KEY }}
+          EOF
 
-      # 6. Build the Docker Image
+      # 6. Validate Secret JSON to ensure it's correctly formatted
+      - name: Validate Secret JSON
+        run: |
+          sudo apt-get update && sudo apt-get install -y jq
+          jq empty ./secrets/secret.json
+
+      # 7. Build the Docker Image
       - name: Build Workflow Docker Image
         run: |
           docker build -t workflow ./src/workflow
 
-      # 7. Run the Docker Container with GCP Secret Mounted
+      # 8. Run the Docker Container with GCP Secret Mounted
       - name: Run Workflow Docker Container with GCP Secret
         run: |
           docker run --rm --name workflow-container \
             -v "$(realpath ./secrets/secret.json)":/secrets/secret.json:ro \
             -e GOOGLE_APPLICATION_CREDENTIALS="/secrets/secret.json" \
             workflow
-
-        
