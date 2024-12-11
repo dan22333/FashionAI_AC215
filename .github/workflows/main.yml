@@ -262,10 +262,23 @@ jobs:
         run: |
           pipenv install --deploy --ignore-pipfile
 
-      - name: Make docker-shell.sh Executable
-        run: chmod +x ./src/workflow/docker-shell.sh
-
-      - name: Run docker-shell.sh
-        working-directory: ./src/workflow  # Update to the correct path where docker-shell.sh resides
+        # 5. Create GCP Secret File from GitHub Secrets
+      - name: Create GCP Secret File
         run: |
-          pipenv run sh docker-shell.sh
+          mkdir -p ./secrets
+          echo "${{ secrets.GCP_SA_KEY }}" > ./secrets/secret.json
+
+      # 6. Build the Docker Image
+      - name: Build Workflow Docker Image
+        run: |
+          docker build -t workflow ./src/workflow
+
+      # 7. Run the Docker Container with GCP Secret Mounted
+      - name: Run Workflow Docker Container with GCP Secret
+        run: |
+          docker run --rm --name workflow-container \
+            -v "$(realpath ./secrets/secret.json)":/secrets/secret.json:ro \
+            -e GOOGLE_APPLICATION_CREDENTIALS="/secrets/secret.json" \
+            workflow
+
+        
