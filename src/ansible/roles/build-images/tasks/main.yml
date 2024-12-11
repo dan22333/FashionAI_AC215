@@ -32,7 +32,7 @@
   docker_image:
     name: gcr.io/{{ gcp_project }}/frontend
     build:
-      path: ../../../../server/frontend  # Path to the Dockerfile
+      path: "{{ playbook_dir }}/../server/frontend"
     source: build
     tag: "{{ docker_tag }}"  # Use the tag read from the file or default
 
@@ -48,7 +48,7 @@
   docker_image:
     name: gcr.io/{{ gcp_project }}/pinecone-service
     build:
-      path: ../../../../server/pinecone-service  # Path to the Dockerfile
+      path: "{{ playbook_dir }}/../server/pinecone-service"
     source: build
     tag: "{{ docker_tag }}"  # Use the tag read from the file or default
 
@@ -64,7 +64,7 @@
   docker_image:
     name: gcr.io/{{ gcp_project }}/vector-service
     build:
-      path: ../../../../server/vector-service  # Path to the Dockerfile
+      path: "{{ playbook_dir }}/../server/vector-service"
     source: build
     tag: "{{ docker_tag }}"  # Use the tag read from the file or default
 
