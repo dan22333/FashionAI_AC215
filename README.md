@@ -82,6 +82,7 @@ We also set up a CI/CD pipeline to allow automatic running of the workflow. The 
 - **Process:**
   - The deployment Docker image downloads the fine-tuned model and evaluation results from GCS.
   - The model’s accuracy is checked against a defined threshold (default: 0.8). If it meets or exceeds the threshold, the workflow uploads the model to a Hugging Face repository using the Hugging Face API.
+      -  Our final deployed model has an accuracy of 90% on our test bench.
   - An endpoint is generated for integration with the frontend and backend systems to provide real-time inference capabilities for user queries.
 
 
