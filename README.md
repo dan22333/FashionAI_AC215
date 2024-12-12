@@ -44,6 +44,8 @@ sh docker-shell.sh
 
 The shell script builds and runs a Docker image, automatically submitting the captioning, training, and deployment jobs to Vertex AI step by step through pulling the corresponding docker images.
 
+We also set up a CI/CD pipeline to allow automatic running of the workflow. The workflow will automatically run once we add "/run-ml-workflow" in our commit message.
+
 **Note:** To reproduce this workflow, you must update the GCP project name, bucket name, and other configurations in the `docker-shell.sh` scripts located in each subfolder of [`src`](src). Then, follow the instructions to run each container individually and push the image to the Artifact Registry so that `secret.json` has proper access.
 
 ---
@@ -85,7 +87,22 @@ The shell script builds and runs a Docker image, automatically submitting the ca
 
 ### App Deployment
 
-**TODO** 
+The application has a CI/CD pipeline set up in GitHub Actions that automatically triggers the deployment process whenever a commit is made with "/deploy-app" in the commit name. This pipeline is configured to use GCP secrets and Kubernetes configuration details that have been pre-defined in the project's src/ansible/vars/main.yml file. Before the deployment process, you need to revise the variable values in this file to set up details like your GCP projects and your GCP regions.
+
+The deployment pipeline:
+
+* Sets up a Kubernetes cluster, including nodes and a static IP address. This Kubernetes environment is accessible at the URL http://34.56.234.182.sslip.io.
+* Configures the necessary environment variables and secrets that the application's Docker images will use when running in the Kubernetes cluster.
+* Builds and pushes the Docker images to a container registry.
+* Deploys the Kubernetes resources required for the application, including an Nginx ingress controller and the deployments and services defined in the src/server/kubernetes folder. These Kubernetes files help set up and deploy front end, back end, and vectorrerized database.
+
+To run:
+```ansible-playbook -i src/ansible/inventory.ini src/ansible/playbook.yml```
+However, the deployment should not be run locally, but rather should be executed as part of the CI/CD pipeline.
+
+Overall, this deployment process is fully automated, leveraging a CI/CD pipeline to handle the provisioning of the Kubernetes infrastructure, building and deploying the application's Docker images, and configuring the necessary networking and service resources in the target Kubernetes environment.
+
+The application is now fully hosted on GCP. The frontend, backend, and vectorized database components are integrated and working together seamlessly on GCP.
 
 
 ## Usage details and examples
