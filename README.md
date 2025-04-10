@@ -7,10 +7,7 @@ FashionAI is a full-stack, AI-driven platform that consolidates fashion products
 ### Developers:
 
 <div style="display: flex; justify-content: space-around; align-items: center;">
-    <div><a href="mailto:yushuqiu@g.harvard.edu"><strong>Yushu Qiu</strong></a></div>
-    <div><a href="mailto:weiyueli@g.harvard.edu"><strong>Weiyue Li</strong></a></div>
     <div><a href="mailto:dnurieli@g.harvard.edu"><strong>Daniel Nurieli</strong></a></div>
-    <div><a href="mailto:mtan@mba2025.hbs.edu"><strong>Michelle Tan</strong></a></div>
 </div>
 
 ## Prerequisites and Setup Instructions
